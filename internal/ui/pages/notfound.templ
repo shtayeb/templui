@@ -1,0 +1,25 @@
+package pages
+
+import (
+	"github.com/axzilla/templui/internal/ui/layouts"
+	"github.com/axzilla/templui/internal/ui/modules"
+)
+
+templ NotFound() {
+	@layouts.BaseLayout(
+		"404 - Page Not Found",
+		"The page you are looking for does not exist.",
+	) {
+		<div class="h-screen flex items-center justify-center">
+			<div class="text-center">
+				<h1 class="text-8xl font-bold text-muted-foreground/30 mb-4">404</h1>
+				<p class="text-xl text-muted-foreground">Page not found</p>
+			</div>
+			<!-- Floating Theme Switcher -->
+			<div class="fixed bottom-4 right-4">
+				@modules.ThemeSwitcher()
+			</div>
+		</div>
+	}
+}
+
