@@ -105,7 +105,7 @@ func main() {
 	})
 
 
-	mux.Handle("GET /", templ.Handler(pages.Landing()))
+	mux.Handle("GET /{$}", templ.Handler(pages.Landing()))
 	mux.Handle("GET /docs", http.RedirectHandler("/docs/introduction", http.StatusSeeOther))
 	mux.Handle("GET /docs/getting-started", http.RedirectHandler("/docs/introduction", http.StatusSeeOther))
 	mux.Handle("GET /docs/components", templ.Handler(pages.ComponentsOverview()))
@@ -165,8 +165,18 @@ func main() {
 	mux.Handle("GET /docs/htmx-example", templ.Handler(pages.ExampleHtmx()))
 	mux.Handle("GET /api/load-modal-htmx", http.HandlerFunc(handleLoadModalHtmx))
 
+	// 404 handler - using Go 1.22+ wildcard syntax
+	// The {$} ensures this only matches exactly "/" and not as a prefix
+	// All unmatched routes will fall through to this catch-all
+	mux.HandleFunc("/{path...}", notFoundHandler)
+
 	log.Println("Server is running on http://localhost:8090")
 	http.ListenAndServe(":8090", wrappedMux)
+}
+
+func notFoundHandler(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotFound)
+	pages.NotFound().Render(r.Context(), w)
 }
 
 func SetupAssetsRoutes(mux *http.ServeMux) {
