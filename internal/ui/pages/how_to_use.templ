@@ -1,9 +1,9 @@
 package pages
 
 import (
-	"github.com/axzilla/templui/internal/ui/layouts"
-	"github.com/axzilla/templui/internal/ui/modules"
-	"github.com/axzilla/templui/internal/components/icon"
+	"github.com/templui/templui/internal/ui/layouts"
+	"github.com/templui/templui/internal/ui/modules"
+	"github.com/templui/templui/internal/components/icon"
 )
 
 var installGo = `go version`
@@ -563,7 +563,7 @@ templ HowToUse() {
 							@modules.Code(modules.CodeProps{
 								Language:       "shell",
 								ShowCopyButton: true,
-								CodeContent:    "go install github.com/axzilla/templui/cmd/templui@latest",
+								CodeContent:    "go install github.com/templui/templui/cmd/templui@latest",
 							})
 							<br/>
 							<p class="mb-2 text-muted-foreground">Verify the installation:</p>
@@ -656,7 +656,7 @@ templ HowToUse() {
 						<div id="quickstart-template">
 							<h3 class="text-xl font-semibold mb-2">7. Quickstart Template</h3>
 							<p class="mb-4 text-muted-foreground">
-								For a completely new project with everything pre-configured, use our <a href="https://github.com/axzilla/templui-quickstart" class="text-primary underline" target="_blank">templUI Quickstart</a> template.
+								For a completely new project with everything pre-configured, use our <a href="https://github.com/templui/templui-quickstart" class="text-primary underline" target="_blank">templUI Quickstart</a> template.
 							</p>
 						</div>
 					</div>
