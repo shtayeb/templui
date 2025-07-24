@@ -20,7 +20,7 @@ const (
 	manifestPath   = "internal/manifest.json" // Path to the manifest within the repository
 	// Base URL for fetching raw file content.
 	// Needs adjustment if the repository location changes.
-	rawContentBaseURL = "https://raw.githubusercontent.com/axzilla/templui/"
+	rawContentBaseURL = "https://raw.githubusercontent.com/templui/templui/"
 )
 
 // version of the tool (can be set during build with ldflags).
@@ -1175,7 +1175,7 @@ func updateCLI(ref string) error {
 	if ref == "" {
 		ref = "latest"
 	}
-	cmd := exec.Command("go", "install", fmt.Sprintf("github.com/axzilla/templui/cmd/templui@%s", ref))
+	cmd := exec.Command("go", "install", fmt.Sprintf("github.com/templui/templui/cmd/templui@%s", ref))
 	output, err := cmd.Output()
 	if err != nil {
 		return err
@@ -1239,15 +1239,15 @@ func askForOverwrite(filePath, oldRef, newRef string) bool {
 // replaceImports replaces internal templUI import paths with the user's configured module name and paths.
 func replaceImports(data []byte, config Config, context string) []byte {
 	content := string(data)
-	// Pattern to find "github.com/axzilla/templui/internal/..." imports.
+	// Pattern to find "github.com/templui/templui/internal/..." imports.
 	// It captures the part after "internal/", e.g., "components/icon" or "utils".
-	internalImportPattern := `"github.com/axzilla/templui/internal/([^"]+)"`
+	internalImportPattern := `"github.com/templui/templui/internal/([^"]+)"`
 	re := regexp.MustCompile(internalImportPattern)
 
 	modified := false // Flag to track if any replacement occurred
 
 	newContent := re.ReplaceAllStringFunc(content, func(originalFullImport string) string {
-		// originalFullImport is like: "github.com/axzilla/templui/internal/components/icon" (with quotes)
+		// originalFullImport is like: "github.com/templui/templui/internal/components/icon" (with quotes)
 		// submatches[0] is originalFullImport
 		// submatches[1] is the captured group, e.g., "components/icon" or "utils"
 		submatches := re.FindStringSubmatch(originalFullImport)

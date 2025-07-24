@@ -8,13 +8,13 @@ import (
 
 	"github.com/a-h/templ"
 
-	"github.com/axzilla/templui/assets"
-	"github.com/axzilla/templui/internal/components/toast"
-	"github.com/axzilla/templui/internal/config"
-	"github.com/axzilla/templui/internal/middleware"
-	"github.com/axzilla/templui/internal/ui/pages"
-	"github.com/axzilla/templui/internal/ui/showcase"
-	"github.com/axzilla/templui/static"
+	"github.com/templui/templui/assets"
+	"github.com/templui/templui/internal/components/toast"
+	"github.com/templui/templui/internal/config"
+	"github.com/templui/templui/internal/middleware"
+	"github.com/templui/templui/internal/ui/pages"
+	"github.com/templui/templui/internal/ui/showcase"
+	"github.com/templui/templui/static"
 
 	datastar "github.com/starfederation/datastar/sdk/go"
 )
