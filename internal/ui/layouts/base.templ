@@ -77,6 +77,8 @@ templ BaseLayout(title, description string) {
 				document.querySelectorAll('aside a').forEach(a => {
 					a.classList.toggle('bg-accent', a.href === location.href);
 				});
+				// Scroll main content to top
+				document.getElementById('main-content').scrollTop = 0;
 			});
 
 		</script>
