@@ -128,13 +128,6 @@
       btn.addEventListener("click", close);
     });
 
-    // Prevent backdrop clicks on content
-    content
-      .querySelector("[data-drawer-inner]")
-      ?.addEventListener("click", (e) => {
-        e.stopPropagation();
-      });
-
     // Set initial state
     setState(isInitiallyOpen);
 
