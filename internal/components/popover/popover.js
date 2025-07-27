@@ -478,7 +478,7 @@ if (typeof window.popoverState === "undefined") {
   }
 
   window.templUI = window.templUI || {};
-  window.templUI.popover = { init: init, cleanup: cleanupPopovers };
+  window.templUI.popover = { init: init };
 
   document.addEventListener("DOMContentLoaded", () => {
     whenFloatingUiReady(() => {
