@@ -3,7 +3,7 @@
     const item = event.currentTarget;
 
     // Check if this item should prevent dropdown from closing
-    if (item.dataset.preventClose === "true") {
+    if (item.getAttribute("data-tui-dropdown-prevent-close") === "true") {
       return; // Don't close the dropdown
     }
 
@@ -20,9 +20,9 @@
   }
 
   function init(root = document) {
-    // Select items with 'data-dropdown-item' but not 'data-dropdown-submenu-trigger'
+    // Select items with 'data-tui-dropdown-item' but not 'data-tui-dropdown-submenu-trigger'
     const items = root.querySelectorAll(
-      "[data-dropdown-item]:not([data-dropdown-submenu-trigger]):not([data-initialized])"
+      "[data-tui-dropdown-item]:not([data-tui-dropdown-submenu-trigger]):not([data-initialized])"
     );
     items.forEach((item) => {
       item.setAttribute("data-initialized", "true");

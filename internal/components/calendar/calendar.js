@@ -4,17 +4,17 @@
     container.setAttribute("data-initialized", "true");
 
     const monthDisplay = container.querySelector(
-      "[data-calendar-month-display]"
+      "[data-tui-calendar-month-display]"
     );
     const weekdaysContainer = container.querySelector(
-      "[data-calendar-weekdays]"
+      "[data-tui-calendar-weekdays]"
     );
-    const daysContainer = container.querySelector("[data-calendar-days]");
-    const prevButton = container.querySelector("[data-calendar-prev]");
-    const nextButton = container.querySelector("[data-calendar-next]");
-    const wrapper = container.closest("[data-calendar-wrapper]");
+    const daysContainer = container.querySelector("[data-tui-calendar-days]");
+    const prevButton = container.querySelector("[data-tui-calendar-prev]");
+    const nextButton = container.querySelector("[data-tui-calendar-next]");
+    const wrapper = container.closest("[data-tui-calendar-wrapper]");
     const hiddenInput = wrapper
-      ? wrapper.querySelector("[data-calendar-hidden-input]")
+      ? wrapper.querySelector("[data-tui-calendar-hidden-input]")
       : null;
 
     if (
@@ -32,7 +32,7 @@
       return;
     }
 
-    const localeTag = container.dataset.localeTag || "en-US";
+    const localeTag = container.getAttribute("data-tui-calendar-locale-tag") || "en-US";
     let monthNames;
     try {
       monthNames = Array.from({ length: 12 }, (_, i) =>
@@ -76,12 +76,12 @@
       // Keep default dayNames on error
     }
 
-    let currentMonth = parseInt(container.dataset.initialMonth);
-    let currentYear = parseInt(container.dataset.initialYear);
+    let currentMonth = parseInt(container.getAttribute("data-tui-calendar-initial-month"));
+    let currentYear = parseInt(container.getAttribute("data-tui-calendar-initial-year"));
     let selectedDate = null; // Stored as JS Date object (UTC midnight)
 
-    if (container.dataset.selectedDate) {
-      selectedDate = parseISODate(container.dataset.selectedDate);
+    if (container.getAttribute("data-tui-calendar-selected-date")) {
+      selectedDate = parseISODate(container.getAttribute("data-tui-calendar-selected-date"));
     }
 
     function parseISODate(isoStr) {
@@ -247,11 +247,11 @@
   }
 
   function init(root = document) {
-    if (root instanceof Element && root.matches("[data-calendar-container]")) {
+    if (root instanceof Element && root.matches("[data-tui-calendar-container]")) {
       initCalendar(root);
     }
 
-    for (const calendar of root.querySelectorAll("[data-calendar-container]:not([data-initialized])")) {
+    for (const calendar of root.querySelectorAll("[data-tui-calendar-container]:not([data-initialized])")) {
       initCalendar(calendar);
     }
   }

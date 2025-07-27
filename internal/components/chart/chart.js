@@ -16,7 +16,7 @@ window.chartInstances = window.chartInstances || {};
     }
 
     function initChart(canvas) {
-      if (!canvas || !canvas.id || !canvas.hasAttribute("data-chart-id"))
+      if (!canvas || !canvas.id || !canvas.hasAttribute("data-tui-chart-id"))
         return;
       
       if (canvas.hasAttribute("data-initialized")) return;
@@ -26,7 +26,7 @@ window.chartInstances = window.chartInstances || {};
         cleanupChart(canvas);
       }
 
-      const dataId = canvas.getAttribute("data-chart-id");
+      const dataId = canvas.getAttribute("data-tui-chart-id");
       const dataElement = document.getElementById(dataId);
       if (!dataElement) return;
 
@@ -164,7 +164,7 @@ window.chartInstances = window.chartInstances || {};
     function init(root = document) {
       if (typeof Chart === "undefined") return;
 
-      for (const canvas of root.querySelectorAll("canvas[data-chart-id]:not([data-initialized])")) {
+      for (const canvas of root.querySelectorAll("canvas[data-tui-chart-id]:not([data-initialized])")) {
         initChart(canvas);
       }
     }
@@ -187,7 +187,7 @@ window.chartInstances = window.chartInstances || {};
       clearTimeout(timeout);
       timeout = setTimeout(() => {
         for (const canvas of document.querySelectorAll(
-          "canvas[data-chart-id]"
+          "canvas[data-tui-chart-id]"
         )) {
           if (window.chartInstances[canvas.id]) {
             cleanupChart(canvas);

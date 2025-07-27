@@ -12,20 +12,20 @@ if (typeof window.ratingState === "undefined") {
       cleanupRating(ratingElement, existingState);
     }
 
-    ratingElement.dataset.ratingInitialized = "true";
+    ratingElement.setAttribute("data-tui-rating-initialized", "true");
 
     const config = {
-      value: parseFloat(ratingElement.dataset.initialValue) || 0,
-      precision: parseFloat(ratingElement.dataset.precision) || 1,
-      readonly: ratingElement.dataset.readonly === "true",
-      name: ratingElement.dataset.name || "",
-      onlyInteger: ratingElement.dataset.onlyinteger === "true",
+      value: parseFloat(ratingElement.getAttribute("data-tui-rating-initial-value")) || 0,
+      precision: parseFloat(ratingElement.getAttribute("data-tui-rating-precision")) || 1,
+      readonly: ratingElement.getAttribute("data-tui-rating-readonly") === "true",
+      name: ratingElement.getAttribute("data-tui-rating-name") || "",
+      onlyInteger: ratingElement.getAttribute("data-tui-rating-onlyinteger") === "true",
       maxValue: 0,
     };
 
-    const hiddenInput = ratingElement.querySelector("[data-rating-input]");
+    const hiddenInput = ratingElement.querySelector("[data-tui-rating-input]");
     let items = Array.from(
-      ratingElement.querySelectorAll("[data-rating-item]")
+      ratingElement.querySelectorAll("[data-tui-rating-item]")
     );
 
     let currentValue = config.value;
@@ -40,7 +40,7 @@ if (typeof window.ratingState === "undefined") {
     function calculateMaxValue() {
       let highestValue = 0;
       for (const item of items) {
-        const value = parseInt(item.dataset.ratingValue, 10);
+        const value = parseInt(item.getAttribute("data-tui-rating-value"), 10);
         if (!isNaN(value) && value > highestValue) {
           highestValue = value;
         }
@@ -60,10 +60,10 @@ if (typeof window.ratingState === "undefined") {
 
     function updateItemStyles(displayValue) {
       for (const item of items) {
-        const itemValue = parseInt(item.dataset.ratingValue, 10);
+        const itemValue = parseInt(item.getAttribute("data-tui-rating-value"), 10);
         if (isNaN(itemValue)) continue;
 
-        const foreground = item.querySelector("[data-rating-item-foreground]");
+        const foreground = item.querySelector("[data-tui-rating-item-foreground]");
         if (!foreground) continue;
 
         const valueToCompare = displayValue > 0 ? displayValue : currentValue;
@@ -123,10 +123,10 @@ if (typeof window.ratingState === "undefined") {
 
     function handleMouseOver(event) {
       if (config.readonly) return;
-      const item = event.target.closest("[data-rating-item]");
+      const item = event.target.closest("[data-tui-rating-item]");
       if (!item) return;
 
-      previewValue = parseInt(item.dataset.ratingValue, 10);
+      previewValue = parseInt(item.getAttribute("data-tui-rating-value"), 10);
       if (!isNaN(previewValue)) {
         updateItemStyles(previewValue);
       }
@@ -140,10 +140,10 @@ if (typeof window.ratingState === "undefined") {
 
     function handleClick(event) {
       if (config.readonly) return;
-      const item = event.target.closest("[data-rating-item]");
+      const item = event.target.closest("[data-tui-rating-item]");
       if (!item) return;
 
-      const itemValue = parseInt(item.dataset.ratingValue, 10);
+      const itemValue = parseInt(item.getAttribute("data-tui-rating-value"), 10);
       if (!isNaN(itemValue)) {
         setValue(itemValue);
       }
@@ -177,10 +177,10 @@ if (typeof window.ratingState === "undefined") {
     const observer = new MutationObserver(() => {
       try {
         const currentItemCount =
-          ratingElement.querySelectorAll("[data-rating-item]").length;
+          ratingElement.querySelectorAll("[data-tui-rating-item]").length;
         if (currentItemCount !== items.length) {
           items = Array.from(
-            ratingElement.querySelectorAll("[data-rating-item]")
+            ratingElement.querySelectorAll("[data-tui-rating-item]")
           );
           calculateMaxValue();
           updateItemStyles(previewValue > 0 ? previewValue : 0);
@@ -204,7 +204,7 @@ if (typeof window.ratingState === "undefined") {
   function cleanupRating(ratingElement, state) {
     if (!ratingElement || !state) return;
 
-    if (!ratingElement.dataset.readonly === "true") {
+    if (!ratingElement.getAttribute("data-tui-rating-readonly") === "true") {
       ratingElement.removeEventListener("click", state.handlers.click);
       ratingElement.removeEventListener("mouseover", state.handlers.mouseover);
       ratingElement.removeEventListener(
@@ -218,15 +218,15 @@ if (typeof window.ratingState === "undefined") {
     }
 
     window.ratingState.delete(ratingElement);
-    ratingElement.removeAttribute("data-rating-initialized");
+    ratingElement.removeAttribute("data-tui-rating-initialized");
   }
 
   function init(root = document) {
-    if (root instanceof Element && root.matches("[data-rating-component]")) {
+    if (root instanceof Element && root.matches("[data-tui-rating-component]")) {
       initRating(root); // initRating handles already initialized check internally
     }
     if (root && typeof root.querySelectorAll === "function") {
-      root.querySelectorAll("[data-rating-component]:not([data-initialized])").forEach(initRating);
+      root.querySelectorAll("[data-tui-rating-component]:not([data-initialized])").forEach(initRating);
     }
   }
 

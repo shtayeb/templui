@@ -31,10 +31,10 @@ import "./highlight.js";
     if (!component || component.hasAttribute("data-initialized")) return;
     component.setAttribute("data-initialized", "true");
 
-    const codeBlock = component.querySelector("[data-code-block]");
-    const copyButton = component.querySelector("[data-copy-button]");
-    const iconCheck = component.querySelector("[data-icon-check]");
-    const iconClipboard = component.querySelector("[data-icon-clipboard]");
+    const codeBlock = component.querySelector("[data-tui-code-block]");
+    const copyButton = component.querySelector("[data-tui-code-copy-button]");
+    const iconCheck = component.querySelector("[data-tui-code-icon-check]");
+    const iconClipboard = component.querySelector("[data-tui-code-icon-clipboard]");
 
     // Highlight if hljs is available and not already highlighted
     if (codeBlock && window.hljs) {
@@ -83,10 +83,10 @@ import "./highlight.js";
   }
 
   function init(root = document) {
-    if (root instanceof Element && root.matches("[data-code-component]")) {
+    if (root instanceof Element && root.matches("[data-tui-code-component]")) {
       initCode(root);
     }
-    for (const component of root.querySelectorAll("[data-code-component]:not([data-initialized])")) {
+    for (const component of root.querySelectorAll("[data-tui-code-component]:not([data-initialized])")) {
       initCode(component);
     }
   }

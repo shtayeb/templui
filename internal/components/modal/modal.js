@@ -5,9 +5,9 @@
   // Update trigger states
   function updateTriggers(modalId, isOpen) {
     document
-      .querySelectorAll(`[data-modal-trigger="${modalId}"]`)
+      .querySelectorAll(`[data-tui-modal-trigger="${modalId}"]`)
       .forEach((trigger) => {
-        trigger.setAttribute("data-open", isOpen);
+        trigger.setAttribute("data-tui-modal-trigger-open", isOpen);
       });
   }
 
@@ -17,8 +17,8 @@
     modal.setAttribute("data-initialized", "true");
     
     const modalId = modal.id;
-    const content = modal.querySelector("[data-modal-content]");
-    const isInitiallyOpen = modal.hasAttribute("data-initial-open");
+    const content = modal.querySelector("[data-tui-modal-content]");
+    const isInitiallyOpen = modal.hasAttribute("data-tui-modal-initial-open");
 
     if (!content || !modalId) return null;
 
@@ -28,7 +28,7 @@
     function setState(open) {
       isOpen = open;
       modal.style.display = open ? "flex" : "none";
-      modal.setAttribute("data-open", open);
+      modal.setAttribute("data-tui-modal-open", open);
       updateTriggers(modalId, open);
 
       if (open) {
@@ -104,7 +104,7 @@
       if (
         e.key === "Escape" &&
         isOpen &&
-        modal.getAttribute("data-disable-esc") !== "true"
+        modal.getAttribute("data-tui-modal-disable-esc") !== "true"
       ) {
         close();
       }
@@ -112,7 +112,7 @@
 
     // Handle click away
     function handleClickAway(e) {
-      if (modal.getAttribute("data-disable-click-away") === "true") return;
+      if (modal.getAttribute("data-tui-modal-disable-click-away") === "true") return;
 
       if (!content.contains(e.target) && !isTriggerClick(e.target)) {
         close();
@@ -121,12 +121,12 @@
 
     // Check if click is on a trigger
     function isTriggerClick(target) {
-      const trigger = target.closest("[data-modal-trigger]");
-      return trigger && trigger.getAttribute("data-modal-trigger") === modalId;
+      const trigger = target.closest("[data-tui-modal-trigger]");
+      return trigger && trigger.getAttribute("data-tui-modal-trigger") === modalId;
     }
 
     // Setup close buttons
-    modal.querySelectorAll("[data-modal-close]").forEach((btn) => {
+    modal.querySelectorAll("[data-tui-modal-close]").forEach((btn) => {
       btn.addEventListener("click", close);
     });
 
@@ -139,7 +139,7 @@
   // Initialize all modals and triggers
   function init(root = document) {
     // Find and initialize modals
-    root.querySelectorAll("[data-modal]:not([data-initialized])").forEach((modal) => {
+    root.querySelectorAll("[data-tui-modal]:not([data-initialized])").forEach((modal) => {
       const modalInstance = createModal(modal);
       if (modalInstance && modal.id) {
         modals.set(modal.id, modalInstance);
@@ -147,11 +147,11 @@
     });
 
     // Setup trigger clicks
-    root.querySelectorAll("[data-modal-trigger]").forEach((trigger) => {
+    root.querySelectorAll("[data-tui-modal-trigger]").forEach((trigger) => {
       if (trigger.dataset.initialized) return;
       trigger.dataset.initialized = "true";
 
-      const modalId = trigger.getAttribute("data-modal-trigger");
+      const modalId = trigger.getAttribute("data-tui-modal-trigger");
       trigger.addEventListener("click", () => {
         if (
           !trigger.hasAttribute("disabled") &&

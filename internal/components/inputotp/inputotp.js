@@ -14,12 +14,12 @@ if (typeof window.inputOTPState === "undefined") {
 
     // Basic elements
     const hiddenInput = container.querySelector(
-      "[data-input-otp-value-target]"
+      "[data-tui-inputotp-value-target]"
     );
     const slots = Array.from(
-      container.querySelectorAll("[data-input-otp-slot]")
+      container.querySelectorAll("[data-tui-inputotp-slot]")
     ).sort(
-      (a, b) => parseInt(a.dataset.inputIndex) - parseInt(b.dataset.inputIndex)
+      (a, b) => parseInt(a.getAttribute("data-tui-inputotp-index")) - parseInt(b.getAttribute("data-tui-inputotp-index"))
     );
 
     if (!hiddenInput || slots.length === 0) return;
@@ -55,7 +55,7 @@ if (typeof window.inputOTPState === "undefined") {
     // Event Handlers specific to this instance
     const handleInput = (e) => {
       const input = e.target;
-      const index = parseInt(input.dataset.inputIndex);
+      const index = parseInt(input.getAttribute("data-tui-inputotp-index"));
       if (input.value === " ") {
         input.value = "";
         return;
@@ -67,7 +67,7 @@ if (typeof window.inputOTPState === "undefined") {
 
     const handleKeydown = (e) => {
       const input = e.target;
-      const index = parseInt(input.dataset.inputIndex);
+      const index = parseInt(input.getAttribute("data-tui-inputotp-index"));
       if (e.key === "Backspace") {
         const currentValue = input.value;
         if (index > 0) {
@@ -93,7 +93,7 @@ if (typeof window.inputOTPState === "undefined") {
 
     const handleFocus = (e) => {
       const input = e.target;
-      const index = parseInt(input.dataset.inputIndex);
+      const index = parseInt(input.getAttribute("data-tui-inputotp-index"));
       const firstEmptyIndex = findFirstEmptySlotIndex();
       if (firstEmptyIndex !== -1 && index !== firstEmptyIndex) {
         focusSlot(firstEmptyIndex);
@@ -113,7 +113,7 @@ if (typeof window.inputOTPState === "undefined") {
       // Try to find focused slot to start paste from, fallback to 0
       const focusedSlot = slots.find((slot) => slot === document.activeElement);
       if (focusedSlot)
-        currentSlotIndex = parseInt(focusedSlot.dataset.inputIndex);
+        currentSlotIndex = parseInt(focusedSlot.getAttribute("data-tui-inputotp-index"));
 
       for (
         let i = 0;
@@ -155,7 +155,7 @@ if (typeof window.inputOTPState === "undefined") {
             if (slots.length > 0) focusSlot(0);
           };
           label.addEventListener("click", labelClickListener);
-          label.dataset.inputOtpListener = "true"; // Mark as having listener
+          label.setAttribute("data-tui-inputotp-listener", "true"); // Mark as having listener
           // Store handler for potential cleanup
           label._inputOtpClickListener = labelClickListener;
         }
@@ -163,8 +163,8 @@ if (typeof window.inputOTPState === "undefined") {
     }
 
     // Initial value handling
-    if (container.dataset.value) {
-      const initialValue = container.dataset.value;
+    if (container.getAttribute("data-tui-inputotp-value")) {
+      const initialValue = container.getAttribute("data-tui-inputotp-value");
       for (let i = 0; i < slots.length && i < initialValue.length; i++) {
         slots[i].value = initialValue[i];
       }
@@ -206,7 +206,7 @@ if (typeof window.inputOTPState === "undefined") {
         if (label._inputOtpClickListener) {
           label.removeEventListener("click", label._inputOtpClickListener);
           delete label._inputOtpClickListener;
-          delete label.dataset.inputOtpListener;
+          label.removeAttribute("data-tui-inputotp-listener");
         }
       }
     }
@@ -215,10 +215,10 @@ if (typeof window.inputOTPState === "undefined") {
   }
 
   function init(root = document) {
-    if (root instanceof Element && root.matches("[data-input-otp]")) {
+    if (root instanceof Element && root.matches("[data-tui-inputotp]")) {
       initInputOTP(root);
     }
-    const containers = root.querySelectorAll("[data-input-otp]:not([data-initialized])");
+    const containers = root.querySelectorAll("[data-tui-inputotp]:not([data-initialized])");
     containers.forEach(initInputOTP);
   }
 

@@ -3,8 +3,8 @@
     if (!avatar || avatar.hasAttribute("data-initialized")) return;
     avatar.setAttribute("data-initialized", "true");
     
-    const image = avatar.querySelector("[data-avatar-image]");
-    const fallback = avatar.querySelector("[data-avatar-fallback]");
+    const image = avatar.querySelector("[data-tui-avatar-image]");
+    const fallback = avatar.querySelector("[data-tui-avatar-fallback]");
 
     if (image && fallback) {
       image.style.display = "none";
@@ -45,10 +45,10 @@
   }
 
   function init(root = document) {
-    if (root instanceof Element && root.matches("[data-avatar]")) {
+    if (root instanceof Element && root.matches("[data-tui-avatar]")) {
       initAvatar(root);
     }
-    for (const avatar of root.querySelectorAll("[data-avatar]:not([data-initialized])")) {
+    for (const avatar of root.querySelectorAll("[data-tui-avatar]:not([data-initialized])")) {
       initAvatar(avatar);
     }
   }

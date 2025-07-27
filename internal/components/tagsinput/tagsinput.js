@@ -4,12 +4,12 @@
     container.setAttribute("data-initialized", "true");
     
     // Use data attributes instead of CSS classes for JavaScript functionality
-    const textInput = container.querySelector("[data-text-input]");
+    const textInput = container.querySelector("[data-tui-tagsinput-text-input]");
     const hiddenInputsContainer = container.querySelector(
-      "[data-hidden-inputs]"
+      "[data-tui-tagsinput-hidden-inputs]"
     );
-    const tagsContainer = container.querySelector("[data-tags-container]");
-    const name = container.dataset.name;
+    const tagsContainer = container.querySelector("[data-tui-tagsinput-container]");
+    const name = container.getAttribute("data-tui-tagsinput-name");
     const disabled = textInput ? textInput.hasAttribute("disabled") : false;
 
     if (!textInput) {
@@ -18,7 +18,7 @@
 
     function createTagChip(tagValue, isDisabled) {
       const tagChip = document.createElement("div");
-      tagChip.setAttribute("data-tag-chip", "");
+      tagChip.setAttribute("data-tui-tagsinput-chip", "");
       tagChip.className =
         "inline-flex items-center gap-2 rounded-md border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-hidden focus:ring-2 focus:ring-ring focus:ring-offset-2 border-transparent bg-primary text-primary-foreground";
 
@@ -31,7 +31,7 @@
       removeButton.type = "button";
       removeButton.className =
         "ml-1 text-current hover:text-destructive disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer";
-      removeButton.setAttribute("data-tag-remove", "");
+      removeButton.setAttribute("data-tui-tagsinput-remove", "");
       if (isDisabled) removeButton.disabled = true;
 
       // Create SVG icon
@@ -78,7 +78,7 @@
 
     function removeTag(removeButton) {
       if (disabled) return;
-      const tagChip = removeButton.closest("[data-tag-chip]");
+      const tagChip = removeButton.closest("[data-tui-tagsinput-chip]");
       if (!tagChip) return;
 
       const tagValue = tagChip.querySelector("span").textContent.trim();
@@ -101,10 +101,10 @@
         event.preventDefault();
 
         const lastChip = tagsContainer.querySelector(
-          "[data-tag-chip]:last-child"
+          "[data-tui-tagsinput-chip]:last-child"
         );
         if (lastChip) {
-          const removeButton = lastChip.querySelector("[data-tag-remove]");
+          const removeButton = lastChip.querySelector("[data-tui-tagsinput-remove]");
           if (removeButton) {
             removeTag(removeButton);
           }
@@ -113,10 +113,10 @@
     }
 
     function handleClick(event) {
-      if (event.target.closest("[data-tag-remove]")) {
+      if (event.target.closest("[data-tui-tagsinput-remove]")) {
         event.preventDefault();
         event.stopPropagation();
-        removeTag(event.target.closest("[data-tag-remove]"));
+        removeTag(event.target.closest("[data-tui-tagsinput-remove]"));
       } else if (!event.target.closest("input")) {
         // Focus the input when clicking anywhere in the container except on input itself
         textInput.focus();
@@ -134,7 +134,7 @@
     if (form) {
       form.addEventListener('reset', () => {
         // Remove all tag chips
-        tagsContainer.querySelectorAll('[data-tag-chip]').forEach(chip => chip.remove());
+        tagsContainer.querySelectorAll('[data-tui-tagsinput-chip]').forEach(chip => chip.remove());
         // Remove all hidden inputs
         hiddenInputsContainer.querySelectorAll('input[type="hidden"]').forEach(input => input.remove());
         // Clear text input
@@ -144,7 +144,7 @@
   }
 
   function init(root = document) {
-    const allTagsInputs = root.querySelectorAll("[data-tags-input]:not([data-initialized])");
+    const allTagsInputs = root.querySelectorAll("[data-tui-tagsinput]:not([data-initialized])");
     allTagsInputs.forEach(initializeTagsInput);
   }
 

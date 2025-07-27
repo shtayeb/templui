@@ -129,9 +129,12 @@ templ Row(props ...RowProps) {
 		class={
 			utils.TwMerge(
 				"border-b transition-colors hover:bg-muted/50",
-				utils.If(p.Selected, "data-[state=selected]:bg-muted"),
+				utils.If(p.Selected, "data-[tui-table-state-selected]:bg-muted"),
 				p.Class,
 			),
+		}
+		if p.Selected {
+			data-tui-table-state-selected
 		}
 		{ p.Attributes... }
 	>

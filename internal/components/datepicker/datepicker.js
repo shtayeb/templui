@@ -71,7 +71,7 @@
 
     const datePickerID = triggerButton.id;
     const displaySpan = triggerButton.querySelector(
-      "[data-datepicker-display]"
+      "[data-tui-datepicker-display]"
     );
     const calendarInstanceId = datePickerID + "-calendar-instance";
     const calendarInstance = document.getElementById(calendarInstanceId);
@@ -89,13 +89,13 @@
         : null;
       if (popoverContent) {
         if (!calendar)
-          calendar = popoverContent.querySelector("[data-calendar-container]");
+          calendar = popoverContent.querySelector("[data-tui-calendar-container]");
         if (!hiddenInput) {
           const wrapper = popoverContent.querySelector(
-            "[data-calendar-wrapper]"
+            "[data-tui-calendar-wrapper]"
           );
           hiddenInput = wrapper
-            ? wrapper.querySelector("[data-calendar-hidden-input]")
+            ? wrapper.querySelector("[data-tui-calendar-hidden-input]")
             : null;
         }
       }
@@ -112,9 +112,9 @@
     }
 
     const displayFormat =
-      triggerButton.dataset.displayFormat || "locale-medium";
-    const localeTag = triggerButton.dataset.localeTag || "en-US";
-    const placeholder = triggerButton.dataset.placeholder || "Select a date";
+      triggerButton.getAttribute("data-tui-datepicker-display-format") || "locale-medium";
+    const localeTag = triggerButton.getAttribute("data-tui-datepicker-locale-tag") || "en-US";
+    const placeholder = triggerButton.getAttribute("data-tui-datepicker-placeholder") || "Select a date";
 
     const onCalendarSelect = (event) => {
       if (
@@ -134,8 +134,8 @@
 
       // Find and click the popover trigger to close it
       const popoverTrigger = triggerButton
-        .closest("[data-popover]")
-        ?.querySelector("[data-popover-trigger]");
+        .closest("[data-tui-popover]")
+        ?.querySelector("[data-tui-popover-trigger]");
       if (popoverTrigger instanceof HTMLElement) {
         popoverTrigger.click();
       } else {
@@ -201,11 +201,11 @@
   }
 
   function init(root = document) {
-    if (root instanceof Element && root.matches('[data-datepicker="true"]')) {
+    if (root instanceof Element && root.matches('[data-tui-datepicker="true"]')) {
       initDatePicker(root);
     }
     root
-      .querySelectorAll('[data-datepicker="true"]:not([data-initialized])')
+      .querySelectorAll('[data-tui-datepicker="true"]:not([data-initialized])')
       .forEach((triggerButton) => {
         initDatePicker(triggerButton);
       });

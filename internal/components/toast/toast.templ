@@ -55,8 +55,8 @@ templ Toast(props ...Props) {
 	{{ isBottom := p.Position == PositionBottomRight || p.Position == PositionBottomLeft || p.Position == PositionBottomCenter }}
 	<div
 		id={ p.ID }
-		data-toast
-		data-duration={ strconv.Itoa(p.Duration) }
+		data-tui-toast
+		data-tui-toast-duration={ strconv.Itoa(p.Duration) }
 		class={ utils.TwMerge(
 			"z-50 fixed pointer-events-auto p-4",
 			"opacity-0 transform transition-all duration-300 ease-out",
@@ -93,7 +93,7 @@ templ Toast(props ...Props) {
 templ indicator(p Props) {
 	<div class="absolute top-0 left-0 right-0 h-1">
 		<div
-			data-toast-progress
+			data-tui-toast-progress
 			class={ utils.TwMerge(
 				"absolute inset-0",
 				typeClass(p.Variant),
@@ -132,7 +132,7 @@ templ dismissButton() {
 		Variant: button.VariantGhost,
 		Attributes: templ.Attributes{
 			"aria-label":         "Close",
-			"data-toast-dismiss": "",
+			"data-tui-toast-dismiss": "",
 			"type":               "button",
 		},
 	}) {
@@ -178,26 +178,26 @@ var cssHandle = templ.NewOnceHandle()
 templ ToastCSS() {
 	@cssHandle.Once() {
 		<style nonce={ templ.GetNonce(ctx) }>
-			[data-toast].toast-enter {
+			[data-tui-toast].toast-enter {
 				opacity: 0;
 				/* Initial vertical offset is handled by classes in the component */
 			}
-			[data-toast].toast-enter-active {
+			[data-tui-toast].toast-enter-active {
 				opacity: 1;
 				transform: translateY(0); /* Only handle vertical transition */
 			}
-			[data-toast].toast-leave {
+			[data-tui-toast].toast-leave {
 				opacity: 1;
 				transform: translateY(0); /* Start leave from final vertical position */
 			}
-			[data-toast].toast-leave-active {
+			[data-tui-toast].toast-leave-active {
 				opacity: 0;
 				/* Apply final vertical offset based on position */
 			}
-			[data-toast][class*=" top-"].toast-leave-active {
+			[data-tui-toast][class*=" top-"].toast-leave-active {
 				transform: translateY(1rem); /* Move down */
 			}
-			[data-toast][class*=" bottom-"].toast-leave-active {
+			[data-tui-toast][class*=" bottom-"].toast-leave-active {
 				transform: translateY(-1rem); /* Move up */
 			}
 		</style>

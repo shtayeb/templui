@@ -96,15 +96,15 @@ templ DatePicker(props ...Props) {
 			),
 			Disabled: p.Disabled,
 			Attributes: utils.MergeAttributes(p.Attributes, templ.Attributes{
-				"data-datepicker":     "true",
-				"data-display-format": string(p.Format),
-				"data-locale-tag":     string(p.LocaleTag),
-				"data-placeholder":    p.Placeholder,
+				"data-tui-datepicker":     "true",
+				"data-tui-datepicker-display-format": string(p.Format),
+				"data-tui-datepicker-locale-tag":     string(p.LocaleTag),
+				"data-tui-datepicker-placeholder":    p.Placeholder,
 				"aria-invalid":        utils.If(p.HasError, "true"),
 			}),
 		}) {
 			if p.Placeholder != "" {
-				<span data-datepicker-display class={ "text-left grow text-muted-foreground" }>
+				<span data-tui-datepicker-display class={ "text-left grow text-muted-foreground" }>
 					{ p.Placeholder }
 				</span>
 			}

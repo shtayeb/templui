@@ -62,14 +62,14 @@ templ Carousel(props ...Props) {
 				p.Class,
 			),
 		}
-		data-autoplay={ strconv.FormatBool(p.Autoplay) }
-		data-interval={ fmt.Sprintf("%d", func() int {
+		data-tui-carousel-autoplay={ strconv.FormatBool(p.Autoplay) }
+		data-tui-carousel-interval={ fmt.Sprintf("%d", func() int {
             if p.Interval == 0 {
                 return 5000
             }
             return p.Interval
         }()) }
-		data-loop={ strconv.FormatBool(p.Loop) }
+		data-tui-carousel-loop={ strconv.FormatBool(p.Loop) }
 		{ p.Attributes... }
 	>
 		{ children... }

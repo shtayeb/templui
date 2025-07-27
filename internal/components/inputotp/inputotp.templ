@@ -48,7 +48,7 @@ templ InputOTP(props ...Props) {
 			id={ p.ID + "-container" }
 		}
 		if p.Value != "" {
-			data-value={ p.Value }
+			data-tui-inputotp-value={ p.Value }
 		}
 		class={
 			utils.TwMerge(
@@ -56,7 +56,7 @@ templ InputOTP(props ...Props) {
 				p.Class,
 			),
 		}
-		data-input-otp
+		data-tui-inputotp
 		{ p.Attributes... }
 	>
 		<input
@@ -70,7 +70,7 @@ templ InputOTP(props ...Props) {
 			if p.HasError {
 				aria-invalid="true"
 			}
-			data-input-otp-value-target
+			data-tui-inputotp-value-target
 			required?={ p.Required }
 		/>
 		{ children... }
@@ -144,8 +144,8 @@ templ Slot(props ...SlotProps) {
 			if p.HasError {
 				aria-invalid="true"
 			}
-			data-input-index={ strconv.Itoa(p.Index) }
-			data-input-otp-slot
+			data-tui-inputotp-index={ strconv.Itoa(p.Index) }
+			data-tui-inputotp-slot
 			{ p.Attributes... }
 		/>
 	</div>

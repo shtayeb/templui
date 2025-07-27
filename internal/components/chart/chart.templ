@@ -85,7 +85,7 @@ templ Chart(props ...Props) {
 		}
 		{ p.Attributes... }
 	>
-		<canvas id={ canvasId } data-chart-id={ dataId }></canvas>
+		<canvas id={ canvasId } data-tui-chart-id={ dataId }></canvas>
 	</div>
 	{{
 		chartConfig := Config{

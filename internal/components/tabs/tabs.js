@@ -4,21 +4,21 @@
 
     container.setAttribute("data-initialized", "true");
 
-    const tabsId = container.dataset.tabsId;
+    const tabsId = container.getAttribute("data-tui-tabs-id");
     if (!tabsId) return;
 
     const triggers = Array.from(
       container.querySelectorAll(
-        `[data-tabs-trigger][data-tabs-id="${tabsId}"]`
+        `[data-tui-tabs-trigger][data-tui-tabs-id="${tabsId}"]`
       )
     );
     const contents = Array.from(
       container.querySelectorAll(
-        `[data-tabs-content][data-tabs-id="${tabsId}"]`
+        `[data-tui-tabs-content][data-tui-tabs-id="${tabsId}"]`
       )
     );
     const marker = container.querySelector(
-      `[data-tabs-marker][data-tabs-id="${tabsId}"]`
+      `[data-tui-tabs-marker][data-tui-tabs-id="${tabsId}"]`
     );
 
     function updateMarker(activeTrigger) {
@@ -33,8 +33,8 @@
       let activeTrigger = null;
 
       for (const trigger of triggers) {
-        const isActive = trigger.dataset.tabsValue === value;
-        trigger.dataset.state = isActive ? "active" : "inactive";
+        const isActive = trigger.getAttribute("data-tui-tabs-value") === value;
+        trigger.setAttribute("data-tui-tabs-state", isActive ? "active" : "inactive");
         trigger.classList.toggle("text-foreground", isActive);
         trigger.classList.toggle("bg-background", isActive);
         trigger.classList.toggle("shadow-xs", isActive);
@@ -43,8 +43,8 @@
       }
 
       for (const content of contents) {
-        const isActive = content.dataset.tabsValue === value;
-        content.dataset.state = isActive ? "active" : "inactive";
+        const isActive = content.getAttribute("data-tui-tabs-value") === value;
+        content.setAttribute("data-tui-tabs-state", isActive ? "active" : "inactive");
         content.classList.toggle("hidden", !isActive);
       }
 
@@ -52,24 +52,24 @@
     }
 
     const defaultTrigger =
-      triggers.find((t) => t.dataset.state === "active") || triggers[0];
+      triggers.find((t) => t.getAttribute("data-tui-tabs-state") === "active") || triggers[0];
     if (defaultTrigger) {
-      setActiveTab(defaultTrigger.dataset.tabsValue);
+      setActiveTab(defaultTrigger.getAttribute("data-tui-tabs-value"));
     }
 
     for (const trigger of triggers) {
       trigger.addEventListener("click", () => {
-        setActiveTab(trigger.dataset.tabsValue);
+        setActiveTab(trigger.getAttribute("data-tui-tabs-value"));
       });
     }
   }
 
   function init(root = document) {
-    if (root instanceof Element && root.matches("[data-tabs]")) {
+    if (root instanceof Element && root.matches("[data-tui-tabs]")) {
       initTabs(root);
     }
     for (const tabs of root.querySelectorAll(
-      "[data-tabs]:not([data-initialized])"
+      "[data-tui-tabs]:not([data-initialized])"
     )) {
       initTabs(tabs);
     }

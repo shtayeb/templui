@@ -7,7 +7,7 @@
     button.setAttribute("data-initialized", "true");
 
     button.addEventListener("click", function () {
-      const inputId = button.getAttribute("data-toggle-password");
+      const inputId = button.getAttribute("data-tui-input-toggle-password");
       const input = document.getElementById(inputId);
       if (input) {
         const iconOpen = button.querySelector(".icon-open");
@@ -28,7 +28,7 @@
 
   function init(root = document) {
     const buttons = root.querySelectorAll(
-      "[data-toggle-password]:not([data-initialized])"
+      "[data-tui-input-toggle-password]:not([data-initialized])"
     );
     buttons.forEach((button) => {
       initPasswordToggle(button);

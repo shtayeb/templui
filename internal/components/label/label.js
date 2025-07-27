@@ -5,14 +5,14 @@
 
     if (
       !label.hasAttribute("for") ||
-      !label.hasAttribute("data-disabled-style")
+      !label.hasAttribute("data-tui-label-disabled-style")
     ) {
       return;
     }
 
     const forId = label.getAttribute("for");
     const targetElement = forId ? document.getElementById(forId) : null;
-    const disabledStyle = label.getAttribute("data-disabled-style");
+    const disabledStyle = label.getAttribute("data-tui-label-disabled-style");
 
     if (!disabledStyle) return;
 
@@ -52,12 +52,12 @@
   function init(root = document) {
     if (
       root instanceof Element &&
-      root.matches("label[for][data-disabled-style]")
+      root.matches("label[for][data-tui-label-disabled-style]")
     ) {
       initLabel(root);
     }
     for (const label of root.querySelectorAll(
-      "label[for][data-disabled-style]:not([data-initialized])"
+      "label[for][data-tui-label-disabled-style]:not([data-initialized])"
     )) {
       initLabel(label);
     }

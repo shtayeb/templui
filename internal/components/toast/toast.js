@@ -9,9 +9,9 @@
       
       if (window.toasts.has(toast)) return;
 
-      const duration = parseInt(toast.dataset.duration || "0");
-      const progress = toast.querySelector("[data-toast-progress]");
-      const dismiss = toast.querySelector("[data-toast-dismiss]");
+      const duration = parseInt(toast.getAttribute("data-tui-toast-duration") || "0");
+      const progress = toast.querySelector("[data-tui-toast-progress]");
+      const dismiss = toast.querySelector("[data-tui-toast-dismiss]");
 
       const state = {
         timer: null,
@@ -92,13 +92,13 @@
 
     function init(root = document) {
       const toastsToInit = [];
-      if (root instanceof Element && root.matches("[data-toast]")) {
+      if (root instanceof Element && root.matches("[data-tui-toast]")) {
         if (!root.hasAttribute("data-initialized")) {
           toastsToInit.push(root);
         }
       }
       if (root && typeof root.querySelectorAll === "function") {
-        root.querySelectorAll("[data-toast]:not([data-initialized])").forEach((toast) => {
+        root.querySelectorAll("[data-tui-toast]:not([data-initialized])").forEach((toast) => {
           toastsToInit.push(toast);
         });
       }

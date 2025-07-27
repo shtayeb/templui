@@ -4,9 +4,9 @@
   // Update trigger states
   function updateTriggers(drawerId, isOpen) {
     document
-      .querySelectorAll(`[data-drawer-trigger="${drawerId}"]`)
+      .querySelectorAll(`[data-tui-drawer-trigger="${drawerId}"]`)
       .forEach((trigger) => {
-        trigger.setAttribute("data-open", isOpen);
+        trigger.setAttribute("data-tui-drawer-open", isOpen);
       });
   }
 
@@ -35,8 +35,8 @@
     
     const drawerId = backdrop.id;
     const content = document.getElementById(drawerId + "-content");
-    const position = content?.getAttribute("data-drawer-position") || "right";
-    const isInitiallyOpen = backdrop.hasAttribute("data-initial-open");
+    const position = content?.getAttribute("data-tui-drawer-position") || "right";
+    const isInitiallyOpen = backdrop.hasAttribute("data-tui-drawer-initial-open");
 
     if (!content || !drawerId) return null;
 
@@ -64,7 +64,7 @@
       content.style.opacity = opacity;
       content.style.transform = getTransform(position, open);
 
-      backdrop.setAttribute("data-open", open);
+      backdrop.setAttribute("data-tui-drawer-open", open);
       updateTriggers(drawerId, open);
 
       document.body.style.overflow = open ? "hidden" : "";
@@ -118,13 +118,13 @@
     // Check if click is on a trigger
     function isTriggerClick(target) {
       const triggers = document.querySelectorAll(
-        `[data-drawer-trigger="${drawerId}"]`
+        `[data-tui-drawer-trigger="${drawerId}"]`
       );
       return Array.from(triggers).some((trigger) => trigger.contains(target));
     }
 
     // Setup close buttons
-    content.querySelectorAll("[data-drawer-close]").forEach((btn) => {
+    content.querySelectorAll("[data-tui-drawer-close]").forEach((btn) => {
       btn.addEventListener("click", close);
     });
 
@@ -137,7 +137,7 @@
   // Initialize all drawers and triggers
   function init(root = document) {
     // Find and initialize drawers
-    root.querySelectorAll('[data-component="drawer"]:not([data-initialized])').forEach((backdrop) => {
+    root.querySelectorAll('[data-tui-drawer-component="drawer"]:not([data-initialized])').forEach((backdrop) => {
       const drawer = createDrawer(backdrop);
       if (drawer && backdrop.id) {
         drawers.set(backdrop.id, drawer);
@@ -145,11 +145,11 @@
     });
 
     // Setup trigger clicks
-    root.querySelectorAll("[data-drawer-trigger]").forEach((trigger) => {
+    root.querySelectorAll("[data-tui-drawer-trigger]").forEach((trigger) => {
       if (trigger.dataset.initialized) return;
       trigger.dataset.initialized = "true";
 
-      const drawerId = trigger.getAttribute("data-drawer-trigger");
+      const drawerId = trigger.getAttribute("data-tui-drawer-trigger");
       trigger.addEventListener("click", () => {
         drawers.get(drawerId)?.toggle();
       });

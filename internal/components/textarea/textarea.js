@@ -4,7 +4,7 @@
 
     textarea.setAttribute("data-initialized", "true");
 
-    const autoResize = textarea.dataset.autoResize === "true";
+    const autoResize = textarea.getAttribute("data-tui-textarea-auto-resize") === "true";
     if (!autoResize) return;
 
     const computedStyle = window.getComputedStyle(textarea);
@@ -20,11 +20,11 @@
   }
 
   function init(root = document) {
-    if (root instanceof Element && root.matches("textarea[data-textarea]")) {
+    if (root instanceof Element && root.matches("textarea[data-tui-textarea]")) {
       initTextarea(root);
     }
     for (const textarea of root.querySelectorAll(
-      "textarea[data-textarea]:not([data-initialized])"
+      "textarea[data-tui-textarea]:not([data-initialized])"
     )) {
       initTextarea(textarea);
     }

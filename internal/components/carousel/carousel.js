@@ -16,9 +16,9 @@
     const state = {
       currentIndex: 0,
       slideCount: items.length,
-      autoplay: carousel.dataset.autoplay === "true",
-      interval: parseInt(carousel.dataset.interval || 5000),
-      loop: carousel.dataset.loop === "true",
+      autoplay: carousel.getAttribute("data-tui-carousel-autoplay") === "true",
+      interval: parseInt(carousel.getAttribute("data-tui-carousel-interval") || 5000),
+      loop: carousel.getAttribute("data-tui-carousel-loop") === "true",
       autoplayInterval: null,
       isHovering: false,
       touchStartX: 0,

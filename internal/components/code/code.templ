@@ -35,12 +35,12 @@ templ Code(props ...Props) {
 	<div
 		id={ p.ID }
 		class={ utils.TwMerge("relative code-component", p.Class) }
-		data-code-component
+		data-tui-code-component
 		{ p.Attrs... }
 	>
 		<pre class="overflow-hidden!">
 			<code
-				data-code-block
+				data-tui-code-block
 				class={
 					utils.TwMerge(
 						"language-"+p.Language,
@@ -58,14 +58,14 @@ templ Code(props ...Props) {
 		</pre>
 		if p.ShowCopyButton {
 			<button
-				data-copy-button
+				data-tui-code-copy-button
 				type="button"
 				class="absolute top-2 right-2 hover:bg-gray-500 hover:bg-opacity-30 text-white p-2 rounded"
 			>
-				<span data-icon-check class="hidden">
+				<span data-tui-code-icon-check class="hidden">
 					@icon.Check(icon.Props{Size: 14})
 				</span>
-				<span data-icon-clipboard>
+				<span data-tui-code-icon-clipboard>
 					@icon.Clipboard(icon.Props{Size: 14})
 				</span>
 			</button>

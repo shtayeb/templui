@@ -10,11 +10,11 @@ if (typeof window.popoverState === "undefined") {
 
   // --- Ensure Global Portal Container ---
   let portalContainer = document.querySelector(
-    "[data-popover-portal-container]"
+    "[data-tui-popover-portal-container]"
   );
   if (!portalContainer) {
     portalContainer = document.createElement("div");
-    portalContainer.setAttribute("data-popover-portal-container", "");
+    portalContainer.setAttribute("data-tui-popover-portal-container", "");
     portalContainer.className = "fixed inset-0 z-[9999] pointer-events-none";
     document.body.appendChild(portalContainer);
   }
@@ -101,8 +101,8 @@ if (typeof window.popoverState === "undefined") {
     style.textContent = `
             @keyframes popover-in { 0% { opacity: 0; transform: scale(0.95); } 100% { opacity: 1; transform: scale(1); } }
             @keyframes popover-out { 0% { opacity: 1; transform: scale(1); } 100% { opacity: 0; transform: scale(0.95); } }
-            [data-popover-id].popover-animate-in { animation: popover-in 0.15s cubic-bezier(0.16, 1, 0.3, 1); }
-            [data-popover-id].popover-animate-out { animation: popover-out 0.1s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+            [data-tui-popover-id].popover-animate-in { animation: popover-in 0.15s cubic-bezier(0.16, 1, 0.3, 1); }
+            [data-tui-popover-id].popover-animate-out { animation: popover-out 0.1s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
         `;
     document.head.appendChild(style);
   }
@@ -112,9 +112,9 @@ if (typeof window.popoverState === "undefined") {
   // Update trigger states
   function updateTriggers(popoverId, isOpen) {
     document
-      .querySelectorAll(`[data-popover-trigger="${popoverId}"]`)
+      .querySelectorAll(`[data-tui-popover-trigger="${popoverId}"]`)
       .forEach((trigger) => {
-        trigger.setAttribute("data-open", isOpen);
+        trigger.setAttribute("data-tui-popover-open", isOpen);
       });
   }
 
@@ -122,11 +122,11 @@ if (typeof window.popoverState === "undefined") {
     if (!FloatingUIDOM || !state || !state.trigger || !state.content) return;
     const { computePosition, offset, flip, shift, arrow } = FloatingUIDOM;
     const referenceElement = findReferenceElement(state.trigger);
-    const arrowElement = state.content.querySelector("[data-popover-arrow]");
-    const placement = state.content.dataset.popoverPlacement || "bottom";
+    const arrowElement = state.content.querySelector("[data-tui-popover-arrow]");
+    const placement = state.content.getAttribute("data-tui-popover-placement") || "bottom";
     const offsetValue =
-      parseInt(state.content.dataset.popoverOffset) || (arrowElement ? 8 : 4);
-    const shouldMatchWidth = state.content.dataset.popoverMatchWidth === "true";
+      parseInt(state.content.getAttribute("data-tui-popover-offset")) || (arrowElement ? 8 : 4);
+    const shouldMatchWidth = state.content.getAttribute("data-tui-popover-match-width") === "true";
 
     const middleware = [
       offset(offsetValue),
@@ -163,7 +163,7 @@ if (typeof window.popoverState === "undefined") {
 
   function addGlobalListeners(popoverId, state) {
     removeGlobalListeners(state); // Ensure no duplicates
-    if (state.content.dataset.popoverDisableClickaway !== "true") {
+    if (state.content.getAttribute("data-tui-popover-disable-clickaway") !== "true") {
       const handler = (e) => {
         // Close if click is outside trigger and content
         if (
@@ -177,7 +177,7 @@ if (typeof window.popoverState === "undefined") {
       setTimeout(() => document.addEventListener("click", handler), 0);
       state.eventListeners.clickAway = handler;
     }
-    if (state.content.dataset.popoverDisableEsc !== "true") {
+    if (state.content.getAttribute("data-tui-popover-disable-esc") !== "true") {
       const handler = (e) => {
         if (e.key === "Escape") closePopover(popoverId);
       };
@@ -217,15 +217,15 @@ if (typeof window.popoverState === "undefined") {
     state.trigger = trigger; // Ensure trigger reference is current
     state.content = content; // Ensure content reference is current
 
-    const portal = document.querySelector("[data-popover-portal-container]");
+    const portal = document.querySelector("[data-tui-popover-portal-container]");
     if (portal && content.parentNode !== portal) portal.appendChild(content);
 
     content.style.display = "block";
     content.classList.remove("popover-animate-out");
     content.classList.add("popover-animate-in");
 
-    // Update data-open attributes
-    content.setAttribute("data-open", "true");
+    // Update data-tui-popover-open attributes
+    content.setAttribute("data-tui-popover-open", "true");
     updateTriggers(popoverId, "true");
 
     // Initial position update before autoUpdate starts
@@ -255,8 +255,8 @@ if (typeof window.popoverState === "undefined") {
 
     const content = state.content;
 
-    // Update data-open attributes
-    content.setAttribute("data-open", "false");
+    // Update data-tui-popover-open attributes
+    content.setAttribute("data-tui-popover-open", "false");
     updateTriggers(popoverId, "false");
 
     function hideContent() {
@@ -306,8 +306,8 @@ if (typeof window.popoverState === "undefined") {
     let state = window.popoverState.get(popoverId);
     if (!state) return; // State should exist from initTrigger
 
-    const hoverDelay = parseInt(content.dataset.popoverHoverDelay) || 100;
-    const hoverOutDelay = parseInt(content.dataset.popoverHoverOutDelay) || 200;
+    const hoverDelay = parseInt(content.getAttribute("data-tui-popover-hover-delay")) || 100;
+    const hoverOutDelay = parseInt(content.getAttribute("data-tui-popover-hover-out-delay")) || 200;
 
     const handleTriggerEnter = () => {
       clearTimeout(state.hoverState.leaveTimeout);
@@ -344,7 +344,7 @@ if (typeof window.popoverState === "undefined") {
     if (!trigger || trigger.hasAttribute("data-initialized")) return;
     trigger.setAttribute("data-initialized", "true");
     
-    const popoverId = trigger.getAttribute("data-popover-trigger");
+    const popoverId = trigger.getAttribute("data-tui-popover-trigger");
     const content = document.getElementById(popoverId);
     if (!popoverId || !content) return;
 
@@ -398,7 +398,7 @@ if (typeof window.popoverState === "undefined") {
     if (content) delete content._popoverHoverListeners;
 
     // Attach the correct listener type
-    const triggerType = trigger.dataset.popoverType || "click";
+    const triggerType = trigger.getAttribute("data-tui-popover-type") || "click";
     if (triggerType === "click") {
       attachClickTrigger(trigger, popoverId);
     } else if (triggerType === "hover") {
@@ -411,7 +411,7 @@ if (typeof window.popoverState === "undefined") {
 
   function cleanupPopovers(element) {
     const cleanupTrigger = (trigger) => {
-      const popoverId = trigger.getAttribute("data-popover-trigger");
+      const popoverId = trigger.getAttribute("data-tui-popover-trigger");
       if (popoverId) {
         closePopover(popoverId, true); // Close popover, remove global listeners, stop Floating UI
       }
@@ -454,24 +454,24 @@ if (typeof window.popoverState === "undefined") {
     };
 
     // Cleanup element itself if it's a trigger
-    if (element.matches && element.matches("[data-popover-trigger]")) {
+    if (element.matches && element.matches("[data-tui-popover-trigger]")) {
       cleanupTrigger(element);
     }
     // Cleanup descendants
     if (element.querySelectorAll) {
       element
-        .querySelectorAll("[data-popover-trigger]")
+        .querySelectorAll("[data-tui-popover-trigger]")
         .forEach(cleanupTrigger);
     }
   }
 
   function init(root = document) {
     if (!FloatingUIDOM) return; // Don't init if library isn't ready
-    if (root instanceof Element && root.matches("[data-popover-trigger]")) {
+    if (root instanceof Element && root.matches("[data-tui-popover-trigger]")) {
       initTrigger(root);
     }
     if (root && typeof root.querySelectorAll === "function") {
-      for (const trigger of root.querySelectorAll("[data-popover-trigger]:not([data-initialized])")) {
+      for (const trigger of root.querySelectorAll("[data-tui-popover-trigger]:not([data-initialized])")) {
         initTrigger(trigger);
       }
     }

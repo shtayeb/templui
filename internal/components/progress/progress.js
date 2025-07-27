@@ -3,7 +3,7 @@
     if (!progressBar || progressBar.hasAttribute("data-initialized")) return;
     progressBar.setAttribute("data-initialized", "true");
 
-    const indicator = progressBar.querySelector("[data-progress-indicator]");
+    const indicator = progressBar.querySelector("[data-tui-progress-indicator]");
     if (!indicator) return;
 
     const value = parseFloat(progressBar.getAttribute("aria-valuenow") || "0");
