@@ -72,6 +72,13 @@ templ BaseLayout(title, description string) {
 				}
 			});
 
+			// Active link updater
+			document.body.addEventListener('htmx:afterSettle', () => {
+				document.querySelectorAll('aside a').forEach(a => {
+					a.classList.toggle('bg-accent', a.href === location.href);
+				});
+			});
+
 		</script>
 	</html>
 }
