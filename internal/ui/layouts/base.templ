@@ -72,14 +72,6 @@ templ BaseLayout(title, description string) {
 				}
 			});
 
-			// Optional: Cleanup before swap (for components with event listeners)
-			document.body.addEventListener("htmx:beforeSwap", (e) => {
-				if (window.templUI) {
-					Object.values(window.templUI).forEach(comp => {
-						comp.cleanup?.(e.detail.target);
-					});
-				}
-			});
 		</script>
 	</html>
 }

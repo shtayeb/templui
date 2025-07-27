@@ -216,15 +216,6 @@ var htmxIntegration = `<script>
       });
     }
   });
-
-  // Cleanup before swap (for components with event listeners)
-  document.body.addEventListener("htmx:beforeSwap", (e) => {
-    if (window.templUI) {
-      Object.values(window.templUI).forEach(comp => {
-        comp.cleanup?.(e.detail.target);
-      });
-    }
-  });
 </script>`
 
 var datastarIntegration = `<!-- Event-based approach -->
@@ -234,15 +225,6 @@ var datastarIntegration = `<!-- Event-based approach -->
 
 <script>
   window.initComponents = function(evt) {
-    // Cleanup before new content is loaded
-    if (evt.detail?.type === 'started') {
-        if (window.templUI) {
-          Object.values(window.templUI).forEach(comp => {
-            comp.cleanup?.(document);
-          });
-        }
-    }
-
     // Re-initialize components after finished event
     if (evt.detail?.type === 'finished') {
       // setTimeout is required because Datastar's 'finished' event 
