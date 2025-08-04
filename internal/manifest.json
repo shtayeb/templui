@@ -248,6 +248,13 @@
       "hasJS": true
     },
     {
+      "name": "timepicker",
+      "description": "Time selection interface",
+      "files": ["internal/components/timepicker/timepicker.templ"],
+      "dependencies": ["button", "card", "icon", "popover"],
+      "hasJS": true
+    },
+    {
       "name": "toast",
       "description": "Temporary notification messages",
       "files": ["internal/components/toast/toast.templ"],
