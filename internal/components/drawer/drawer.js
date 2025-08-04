@@ -75,9 +75,8 @@
       setState(true);
 
       // Add event listeners
-      backdrop.addEventListener("click", close);
+      backdrop.addEventListener("click", handleBackdropClick);
       document.addEventListener("keydown", handleEsc);
-      document.addEventListener("click", handleClickAway);
     }
 
     // Close drawer
@@ -85,9 +84,8 @@
       setState(false);
 
       // Remove event listeners
-      backdrop.removeEventListener("click", close);
+      backdrop.removeEventListener("click", handleBackdropClick);
       document.removeEventListener("keydown", handleEsc);
-      document.removeEventListener("click", handleClickAway);
 
       // Hide after animation
       setTimeout(() => {
@@ -108,9 +106,9 @@
       if (e.key === "Escape" && isOpen) close();
     }
 
-    // Handle click away
-    function handleClickAway(e) {
-      if (!content.contains(e.target) && !isTriggerClick(e.target)) {
+    // Handle backdrop click - only close if clicking directly on backdrop
+    function handleBackdropClick(e) {
+      if (e.target === backdrop) {
         close();
       }
     }
