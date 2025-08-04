@@ -18,6 +18,28 @@ templ TimePicker() {
 			{
 				ID:   "examples",
 				Text: "Examples",
+				Children: []modules.TableOfContentsItem{
+					{
+						ID:   "12h-format",
+						Text: "12-hour Format",
+					},
+					{
+						ID:   "with-label",
+						Text: "With Label",
+					},
+					{
+						ID:   "custom-placeholder",
+						Text: "Custom Placeholder",
+					},
+					{
+						ID:   "selected-time",
+						Text: "With Selected Time",
+					},
+					{
+						ID:   "form",
+						Text: "Form Integration",
+					},
+				},
 			},
 			{
 				ID:   "api",
@@ -72,6 +94,7 @@ templ TimePicker() {
 					SectionName:     "12h Format",
 					ShowcaseFile:    showcase.TimePicker12Hour(),
 					PreviewCodeFile: "time_picker_12hour.templ",
+					ID:              "12h-format",
 				})
 				@modules.ExampleWrapper(modules.ExampleWrapperProps{
 					SectionName:     "With Label",
@@ -83,11 +106,13 @@ templ TimePicker() {
 					SectionName:     "With Custom Placeholder",
 					ShowcaseFile:    showcase.TimePickerCustomPlaceholder(),
 					PreviewCodeFile: "time_picker_custom_placeholder.templ",
+					ID:              "custom-placeholder",
 				})
 				@modules.ExampleWrapper(modules.ExampleWrapperProps{
 					SectionName:     "With Selected Time",
 					ShowcaseFile:    showcase.TimePickerSelectedTime(),
 					PreviewCodeFile: "time_picker_selected_time.templ",
+					ID:              "selected-time",
 				})
 				@modules.ExampleWrapper(modules.ExampleWrapperProps{
 					SectionName:     "With Form",
