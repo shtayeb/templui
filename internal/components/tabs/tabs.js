@@ -1,8 +1,8 @@
 (function () {
   function initTabs(container) {
-    if (container.hasAttribute("data-initialized")) return;
+    if (container.hasAttribute("data-tui-tabs-initialized")) return;
 
-    container.setAttribute("data-initialized", "true");
+    container.setAttribute("data-tui-tabs-initialized", "true");
 
     const tabsId = container.getAttribute("data-tui-tabs-id");
     if (!tabsId) return;
@@ -69,7 +69,7 @@
       initTabs(root);
     }
     for (const tabs of root.querySelectorAll(
-      "[data-tui-tabs]:not([data-initialized])"
+      "[data-tui-tabs]:not([data-tui-tabs-initialized])"
     )) {
       initTabs(tabs);
     }

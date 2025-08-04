@@ -9,8 +9,8 @@ if (typeof window.inputOTPState === "undefined") {
   // --- Core Component Logic ---
   function initInputOTP(container) {
     // Prevent re-initialization if state already exists for this container
-    if (!container || container.hasAttribute("data-initialized")) return;
-    container.setAttribute("data-initialized", "true");
+    if (!container || container.hasAttribute("data-tui-inputotp-initialized")) return;
+    container.setAttribute("data-tui-inputotp-initialized", "true");
 
     // Basic elements
     const hiddenInput = container.querySelector(
@@ -218,7 +218,7 @@ if (typeof window.inputOTPState === "undefined") {
     if (root instanceof Element && root.matches("[data-tui-inputotp]")) {
       initInputOTP(root);
     }
-    const containers = root.querySelectorAll("[data-tui-inputotp]:not([data-initialized])");
+    const containers = root.querySelectorAll("[data-tui-inputotp]:not([data-tui-inputotp-initialized])");
     containers.forEach(initInputOTP);
   }
 

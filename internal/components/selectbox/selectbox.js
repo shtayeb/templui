@@ -2,8 +2,8 @@
   let isSelecting = false;
 
   function initSelect(wrapper) {
-    if (!wrapper || wrapper.hasAttribute("data-initialized")) return;
-    wrapper.setAttribute("data-initialized", "true");
+    if (!wrapper || wrapper.hasAttribute("data-tui-selectbox-initialized")) return;
+    wrapper.setAttribute("data-tui-selectbox-initialized", "true");
 
     const triggerButton = wrapper.querySelector("button.select-trigger");
     if (!triggerButton) {
@@ -234,9 +234,9 @@
           const value =
             selectedItem.getAttribute("data-tui-selectbox-value") || "";
           // Only set initial value if not already set
-          if (!hiddenInput.hasAttribute("data-initialized")) {
+          if (!hiddenInput.hasAttribute("data-tui-selectbox-input-initialized")) {
             hiddenInput.value = value;
-            hiddenInput.setAttribute("data-initialized", "true");
+            hiddenInput.setAttribute("data-tui-selectbox-input-initialized", "true");
             hiddenInput.dispatchEvent(new Event("change", { bubbles: true }));
           }
         }
@@ -490,7 +490,7 @@
   }
 
   function init(root = document) {
-    const containers = root.querySelectorAll(".select-container");
+    const containers = root.querySelectorAll(".select-container:not([data-tui-selectbox-initialized])");
     containers.forEach(initSelect);
   }
 

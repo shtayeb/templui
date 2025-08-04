@@ -28,8 +28,8 @@ import "./highlight.js";
   }
 
   function initCode(component) {
-    if (!component || component.hasAttribute("data-initialized")) return;
-    component.setAttribute("data-initialized", "true");
+    if (!component || component.hasAttribute("data-tui-code-initialized")) return;
+    component.setAttribute("data-tui-code-initialized", "true");
 
     const codeBlock = component.querySelector("[data-tui-code-block]");
     const copyButton = component.querySelector("[data-tui-code-copy-button]");
@@ -86,7 +86,7 @@ import "./highlight.js";
     if (root instanceof Element && root.matches("[data-tui-code-component]")) {
       initCode(root);
     }
-    for (const component of root.querySelectorAll("[data-tui-code-component]:not([data-initialized])")) {
+    for (const component of root.querySelectorAll("[data-tui-code-component]:not([data-tui-code-initialized])")) {
       initCode(component);
     }
   }

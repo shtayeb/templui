@@ -1,7 +1,7 @@
 (function () {
   function initCalendar(container) {
-    if (!container || container.hasAttribute("data-initialized")) return;
-    container.setAttribute("data-initialized", "true");
+    if (!container || container.hasAttribute("data-tui-calendar-initialized")) return;
+    container.setAttribute("data-tui-calendar-initialized", "true");
 
     const monthDisplay = container.querySelector(
       "[data-tui-calendar-month-display]"
@@ -251,7 +251,7 @@
       initCalendar(root);
     }
 
-    for (const calendar of root.querySelectorAll("[data-tui-calendar-container]:not([data-initialized])")) {
+    for (const calendar of root.querySelectorAll("[data-tui-calendar-container]:not([data-tui-calendar-initialized])")) {
       initCalendar(calendar);
     }
   }
