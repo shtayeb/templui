@@ -152,7 +152,7 @@
         button.className =
           "inline-flex h-8 w-8 items-center justify-center rounded-md text-sm font-medium focus:outline-none focus:ring-1 focus:ring-ring";
         button.textContent = day;
-        button.dataset.day = day;
+        button.dataset.tuiCalendarDay = day;
         const currentDate = new Date(Date.UTC(currentYear, currentMonth, day));
         const isSelected =
           selectedDate && currentDate.getTime() === selectedDate.getTime();
@@ -198,7 +198,7 @@
     }
 
     function handleDayClick(event) {
-      const day = parseInt(event.target.dataset.day);
+      const day = parseInt(event.target.dataset.tuiCalendarDay);
       if (!day) return;
       const newlySelectedDate = new Date(
         Date.UTC(currentYear, currentMonth, day)

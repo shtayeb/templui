@@ -144,8 +144,8 @@
 
     // Setup trigger clicks
     root.querySelectorAll("[data-tui-drawer-trigger]").forEach((trigger) => {
-      if (trigger.dataset.initialized) return;
-      trigger.dataset.initialized = "true";
+      if (trigger.dataset.tuiDrawerInitialized) return;
+      trigger.dataset.tuiDrawerInitialized = "true";
 
       const drawerId = trigger.getAttribute("data-tui-drawer-trigger");
       trigger.addEventListener("click", () => {

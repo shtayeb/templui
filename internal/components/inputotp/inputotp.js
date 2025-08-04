@@ -149,7 +149,7 @@ if (typeof window.inputOTPState === "undefined") {
         `label[for="${targetId}"]`
       )) {
         // Check if listener already attached to avoid duplicates
-        if (!label.dataset.inputOtpListener) {
+        if (!label.dataset.tuiInputotpListener) {
           const labelClickListener = (e) => {
             e.preventDefault();
             if (slots.length > 0) focusSlot(0);

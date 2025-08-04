@@ -148,8 +148,8 @@
 
     // Setup trigger clicks
     root.querySelectorAll("[data-tui-modal-trigger]").forEach((trigger) => {
-      if (trigger.dataset.initialized) return;
-      trigger.dataset.initialized = "true";
+      if (trigger.dataset.tuiModalInitialized) return;
+      trigger.dataset.tuiModalInitialized = "true";
 
       const modalId = trigger.getAttribute("data-tui-modal-trigger");
       trigger.addEventListener("click", () => {
