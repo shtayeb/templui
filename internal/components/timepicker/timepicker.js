@@ -22,75 +22,43 @@
     return `${hour.toString().padStart(2, "0")}:${minute.toString().padStart(2, "0")}`;
   }
 
-  function createTimeButton(value, label, isSelected) {
-    const button = document.createElement("button");
-    button.type = "button";
-    button.className = `w-full px-2 py-1 text-sm rounded hover:bg-muted transition-colors text-left ${
-      isSelected ? "bg-primary text-primary-foreground" : ""
-    }`;
-    button.textContent = label;
-    button.setAttribute("data-tui-timepicker-time-value", value.toString());
-    return button;
+  function updateHourSelection(hourList, selectedHour, use12Hours) {
+    hourList.querySelectorAll('[data-tui-timepicker-hour]').forEach(button => {
+      const hour = parseInt(button.getAttribute('data-tui-timepicker-hour'));
+      let isSelected = false;
+      
+      if (selectedHour !== null) {
+        if (use12Hours) {
+          // In 12-hour mode, check both AM and PM versions
+          isSelected = (hour === selectedHour) || 
+                      (hour === 0 && selectedHour === 12) || 
+                      (hour === selectedHour - 12 && selectedHour > 12);
+        } else {
+          isSelected = hour === selectedHour;
+        }
+      }
+      
+      button.setAttribute('data-tui-timepicker-selected', isSelected ? 'true' : 'false');
+    });
   }
 
-  function populateHours(container, use12Hours, selectedHour) {
-    container.innerHTML = "";
-    
-    if (use12Hours) {
-      // 12-hour format: 12, 1, 2, ..., 11
-      for (let displayHour = 12; displayHour <= 12; displayHour++) {
-        const value = 0; // 12 AM = 0 hours
-        const label = "12";
-        const isSelected = selectedHour === 0 || selectedHour === 12;
-        const button = createTimeButton(value, label, isSelected);
-        container.appendChild(button);
-        break;
-      }
-      for (let displayHour = 1; displayHour <= 11; displayHour++) {
-        const value = displayHour;
-        const label = displayHour.toString().padStart(2, "0");
-        const isSelected = selectedHour === displayHour || selectedHour === (displayHour + 12);
-        const button = createTimeButton(value, label, isSelected);
-        container.appendChild(button);
-      }
-    } else {
-      // 24-hour format: 00, 01, 02, ..., 23
-      for (let hour = 0; hour < 24; hour++) {
-        const label = hour.toString().padStart(2, "0");
-        const isSelected = selectedHour === hour;
-        const button = createTimeButton(hour, label, isSelected);
-        container.appendChild(button);
-      }
-    }
+  function updateMinuteSelection(minuteList, selectedMinute) {
+    minuteList.querySelectorAll('[data-tui-timepicker-minute]').forEach(button => {
+      const minute = parseInt(button.getAttribute('data-tui-timepicker-minute'));
+      button.setAttribute('data-tui-timepicker-selected', minute === selectedMinute ? 'true' : 'false');
+    });
   }
 
-  function populateMinutes(container, selectedMinute) {
-    container.innerHTML = "";
-    for (let minute = 0; minute < 60; minute++) {
-      const label = minute.toString().padStart(2, "0");
-      const isSelected = selectedMinute === minute;
-      const button = createTimeButton(minute, label, isSelected);
-      container.appendChild(button);
-    }
-  }
-
-  function updatePeriodButtons(popup, hour, amLabel, pmLabel) {
+  function updatePeriodButtons(popup, hour) {
     const amButton = popup.querySelector('[data-tui-timepicker-period="AM"]');
     const pmButton = popup.querySelector('[data-tui-timepicker-period="PM"]');
     
     if (!amButton || !pmButton) return;
 
-    const isAM = hour < 12;
+    const isAM = hour === null || hour < 12;
     
-    amButton.textContent = amLabel;
-    pmButton.textContent = pmLabel;
-    
-    amButton.className = `px-3 py-1 text-sm rounded-md border hover:bg-muted transition-colors ${
-      isAM ? "bg-primary text-primary-foreground" : ""
-    }`;
-    pmButton.className = `px-3 py-1 text-sm rounded-md border hover:bg-muted transition-colors ${
-      !isAM ? "bg-primary text-primary-foreground" : ""
-    }`;
+    amButton.setAttribute('data-tui-timepicker-active', isAM ? 'true' : 'false');
+    pmButton.setAttribute('data-tui-timepicker-active', !isAM ? 'true' : 'false');
   }
 
   function updateTimeDisplay(triggerButton, hour, minute, use12Hours, placeholder) {
@@ -165,19 +133,19 @@
     function refreshDisplay() {
       updateTimeDisplay(triggerButton, currentHour, currentMinute, use12Hours, placeholder);
       updateHiddenInput(popup, currentHour, currentMinute);
-      populateHours(hourList, use12Hours, currentHour);
-      populateMinutes(minuteList, currentMinute);
-      if (use12Hours && currentHour !== null) {
-        updatePeriodButtons(popup, currentHour, amLabel, pmLabel);
+      updateHourSelection(hourList, currentHour, use12Hours);
+      updateMinuteSelection(minuteList, currentMinute);
+      if (use12Hours) {
+        updatePeriodButtons(popup, currentHour);
       }
     }
 
     // Hour selection
     hourList.addEventListener("click", (event) => {
-      const button = event.target.closest("[data-tui-timepicker-time-value]");
+      const button = event.target.closest("[data-tui-timepicker-hour]");
       if (!button) return;
       
-      let selectedHour = parseInt(button.getAttribute("data-tui-timepicker-time-value"), 10);
+      let selectedHour = parseInt(button.getAttribute("data-tui-timepicker-hour"), 10);
       
       // Handle 12-hour format conversion
       if (use12Hours) {
@@ -194,17 +162,17 @@
       }
       
       currentHour = selectedHour;
-      if (currentMinute === null) currentMinute = 0;
+      // Don't auto-set minute to 0, let user choose
       refreshDisplay();
     });
 
     // Minute selection
     minuteList.addEventListener("click", (event) => {
-      const button = event.target.closest("[data-tui-timepicker-time-value]");
+      const button = event.target.closest("[data-tui-timepicker-minute]");
       if (!button) return;
       
-      currentMinute = parseInt(button.getAttribute("data-tui-timepicker-time-value"), 10);
-      if (currentHour === null) currentHour = use12Hours ? 12 : 0;
+      currentMinute = parseInt(button.getAttribute("data-tui-timepicker-minute"), 10);
+      // Don't auto-set hour, let user choose
       refreshDisplay();
     });
 
@@ -215,8 +183,8 @@
         if (!periodButton) return;
         
         const period = periodButton.getAttribute("data-tui-timepicker-period");
-        if (currentHour === null) currentHour = 12;
-        if (currentMinute === null) currentMinute = 0;
+        // Only change period if hour is already selected
+        if (currentHour === null) return;
         
         if (period === "AM") {
           if (currentHour >= 12) {
