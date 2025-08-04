@@ -66,8 +66,8 @@
   }
 
   function initDatePicker(triggerButton) {
-    if (!triggerButton || triggerButton.hasAttribute("data-initialized")) return;
-    triggerButton.setAttribute("data-initialized", "true");
+    if (!triggerButton || triggerButton.hasAttribute("data-tui-datepicker-initialized")) return;
+    triggerButton.setAttribute("data-tui-datepicker-initialized", "true");
 
     const datePickerID = triggerButton.id;
     const displaySpan = triggerButton.querySelector(
@@ -205,7 +205,7 @@
       initDatePicker(root);
     }
     root
-      .querySelectorAll('[data-tui-datepicker="true"]:not([data-initialized])')
+      .querySelectorAll('[data-tui-datepicker="true"]:not([data-tui-datepicker-initialized])')
       .forEach((triggerButton) => {
         initDatePicker(triggerButton);
       });

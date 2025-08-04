@@ -4,8 +4,8 @@
     window.toasts = new Map();
 
     function initToast(toast) {
-      if (!toast || toast.hasAttribute("data-initialized")) return;
-      toast.setAttribute("data-initialized", "true");
+      if (!toast || toast.hasAttribute("data-tui-toast-initialized")) return;
+      toast.setAttribute("data-tui-toast-initialized", "true");
       
       if (window.toasts.has(toast)) return;
 
@@ -98,7 +98,7 @@
         }
       }
       if (root && typeof root.querySelectorAll === "function") {
-        root.querySelectorAll("[data-tui-toast]:not([data-initialized])").forEach((toast) => {
+        root.querySelectorAll("[data-tui-toast]:not([data-tui-toast-initialized])").forEach((toast) => {
           toastsToInit.push(toast);
         });
       }

@@ -1,7 +1,7 @@
 (function () {
   function initializeTagsInput(container) {
-    if (!container || container.hasAttribute("data-initialized")) return;
-    container.setAttribute("data-initialized", "true");
+    if (!container || container.hasAttribute("data-tui-tagsinput-initialized")) return;
+    container.setAttribute("data-tui-tagsinput-initialized", "true");
     
     // Use data attributes instead of CSS classes for JavaScript functionality
     const textInput = container.querySelector("[data-tui-tagsinput-text-input]");
@@ -144,7 +144,7 @@
   }
 
   function init(root = document) {
-    const allTagsInputs = root.querySelectorAll("[data-tui-tagsinput]:not([data-initialized])");
+    const allTagsInputs = root.querySelectorAll("[data-tui-tagsinput]:not([data-tui-tagsinput-initialized])");
     allTagsInputs.forEach(initializeTagsInput);
   }
 

@@ -1,10 +1,10 @@
 (function () {
   function initPasswordToggle(button) {
-    if (button.hasAttribute("data-initialized")) {
+    if (button.hasAttribute("data-tui-input-initialized")) {
       return;
     }
 
-    button.setAttribute("data-initialized", "true");
+    button.setAttribute("data-tui-input-initialized", "true");
 
     button.addEventListener("click", function () {
       const inputId = button.getAttribute("data-tui-input-toggle-password");
@@ -28,7 +28,7 @@
 
   function init(root = document) {
     const buttons = root.querySelectorAll(
-      "[data-tui-input-toggle-password]:not([data-initialized])"
+      "[data-tui-input-toggle-password]:not([data-tui-input-initialized])"
     );
     buttons.forEach((button) => {
       initPasswordToggle(button);

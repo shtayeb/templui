@@ -1,7 +1,7 @@
 (function () {
   function initAvatar(avatar) {
-    if (!avatar || avatar.hasAttribute("data-initialized")) return;
-    avatar.setAttribute("data-initialized", "true");
+    if (!avatar || avatar.hasAttribute("data-tui-avatar-initialized")) return;
+    avatar.setAttribute("data-tui-avatar-initialized", "true");
     
     const image = avatar.querySelector("[data-tui-avatar-image]");
     const fallback = avatar.querySelector("[data-tui-avatar-fallback]");
@@ -48,7 +48,7 @@
     if (root instanceof Element && root.matches("[data-tui-avatar]")) {
       initAvatar(root);
     }
-    for (const avatar of root.querySelectorAll("[data-tui-avatar]:not([data-initialized])")) {
+    for (const avatar of root.querySelectorAll("[data-tui-avatar]:not([data-tui-avatar-initialized])")) {
       initAvatar(avatar);
     }
   }
