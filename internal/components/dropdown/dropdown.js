@@ -9,7 +9,7 @@
 
     const popoverContent = item.closest("[data-tui-popover-id]");
     if (popoverContent) {
-      const popoverId = popoverContent.dataset.popoverId;
+      const popoverId = popoverContent.dataset.tuiPopoverId;
       if (window.closePopover) {
         window.closePopover(popoverId, true);
       } else {
