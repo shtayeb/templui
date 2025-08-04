@@ -4,8 +4,8 @@ if (typeof window.ratingState === "undefined") {
 
 (function () {
   function initRating(ratingElement) {
-    if (!ratingElement || ratingElement.hasAttribute("data-initialized")) return;
-    ratingElement.setAttribute("data-initialized", "true");
+    if (!ratingElement || ratingElement.hasAttribute("data-tui-rating-initialized")) return;
+    ratingElement.setAttribute("data-tui-rating-initialized", "true");
 
     const existingState = window.ratingState.get(ratingElement);
     if (existingState) {
@@ -226,7 +226,7 @@ if (typeof window.ratingState === "undefined") {
       initRating(root); // initRating handles already initialized check internally
     }
     if (root && typeof root.querySelectorAll === "function") {
-      root.querySelectorAll("[data-tui-rating-component]:not([data-initialized])").forEach(initRating);
+      root.querySelectorAll("[data-tui-rating-component]:not([data-tui-rating-initialized])").forEach(initRating);
     }
   }
 

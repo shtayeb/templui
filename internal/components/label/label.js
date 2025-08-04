@@ -1,7 +1,7 @@
 (function () {
   function initLabel(label) {
-    if (!label || label.hasAttribute("data-initialized")) return;
-    label.setAttribute("data-initialized", "true");
+    if (!label || label.hasAttribute("data-tui-label-initialized")) return;
+    label.setAttribute("data-tui-label-initialized", "true");
 
     if (
       !label.hasAttribute("for") ||
@@ -57,7 +57,7 @@
       initLabel(root);
     }
     for (const label of root.querySelectorAll(
-      "label[for][data-tui-label-disabled-style]:not([data-initialized])"
+      "label[for][data-tui-label-disabled-style]:not([data-tui-label-initialized])"
     )) {
       initLabel(label);
     }

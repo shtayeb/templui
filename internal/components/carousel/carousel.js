@@ -1,7 +1,7 @@
 (function () {
   function initCarousel(carousel) {
-    if (!carousel || carousel.hasAttribute("data-initialized")) return;
-    carousel.setAttribute("data-initialized", "true");
+    if (!carousel || carousel.hasAttribute("data-tui-carousel-initialized")) return;
+    carousel.setAttribute("data-tui-carousel-initialized", "true");
     
     const track = carousel.querySelector(".carousel-track");
     const items = Array.from(track?.querySelectorAll(".carousel-item") || []);
@@ -181,7 +181,7 @@
     if (root instanceof Element && root.matches(".carousel-component")) {
       initCarousel(root);
     }
-    for (const carousel of root.querySelectorAll(".carousel-component:not([data-initialized])")) {
+    for (const carousel of root.querySelectorAll(".carousel-component:not([data-tui-carousel-initialized])")) {
       initCarousel(carousel);
     }
   }

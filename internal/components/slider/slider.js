@@ -1,8 +1,8 @@
 (function () {
   function initSlider(sliderInput) {
-    if (sliderInput.hasAttribute("data-initialized")) return;
+    if (sliderInput.hasAttribute("data-tui-slider-initialized")) return;
 
-    sliderInput.setAttribute("data-initialized", "true");
+    sliderInput.setAttribute("data-tui-slider-initialized", "true");
 
     const sliderId = sliderInput.id;
     if (!sliderId) return;
@@ -29,7 +29,7 @@
       initSlider(root);
     }
     for (const slider of root.querySelectorAll(
-      'input[type="range"][data-tui-slider-input]:not([data-initialized])'
+      'input[type="range"][data-tui-slider-input]:not([data-tui-slider-initialized])'
     )) {
       initSlider(slider);
     }

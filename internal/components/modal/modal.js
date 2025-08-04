@@ -13,8 +13,8 @@
 
   // Create modal instance
   function createModal(modal) {
-    if (!modal || modal.hasAttribute("data-initialized")) return null;
-    modal.setAttribute("data-initialized", "true");
+    if (!modal || modal.hasAttribute("data-tui-modal-initialized")) return null;
+    modal.setAttribute("data-tui-modal-initialized", "true");
     
     const modalId = modal.id;
     const content = modal.querySelector("[data-tui-modal-content]");
@@ -139,7 +139,7 @@
   // Initialize all modals and triggers
   function init(root = document) {
     // Find and initialize modals
-    root.querySelectorAll("[data-tui-modal]:not([data-initialized])").forEach((modal) => {
+    root.querySelectorAll("[data-tui-modal]:not([data-tui-modal-initialized])").forEach((modal) => {
       const modalInstance = createModal(modal);
       if (modalInstance && modal.id) {
         modals.set(modal.id, modalInstance);

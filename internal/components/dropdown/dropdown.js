@@ -22,10 +22,10 @@
   function init(root = document) {
     // Select items with 'data-tui-dropdown-item' but not 'data-tui-dropdown-submenu-trigger'
     const items = root.querySelectorAll(
-      "[data-tui-dropdown-item]:not([data-tui-dropdown-submenu-trigger]):not([data-initialized])"
+      "[data-tui-dropdown-item]:not([data-tui-dropdown-submenu-trigger]):not([data-tui-dropdown-initialized])"
     );
     items.forEach((item) => {
-      item.setAttribute("data-initialized", "true");
+      item.setAttribute("data-tui-dropdown-initialized", "true");
       item.removeEventListener("click", handleDropdownItemClick);
       item.addEventListener("click", handleDropdownItemClick);
     });

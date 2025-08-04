@@ -1,8 +1,8 @@
 (function () {
   function initTextarea(textarea) {
-    if (textarea.hasAttribute("data-initialized")) return;
+    if (textarea.hasAttribute("data-tui-textarea-initialized")) return;
 
-    textarea.setAttribute("data-initialized", "true");
+    textarea.setAttribute("data-tui-textarea-initialized", "true");
 
     const autoResize = textarea.getAttribute("data-tui-textarea-auto-resize") === "true";
     if (!autoResize) return;
@@ -24,7 +24,7 @@
       initTextarea(root);
     }
     for (const textarea of root.querySelectorAll(
-      "textarea[data-tui-textarea]:not([data-initialized])"
+      "textarea[data-tui-textarea]:not([data-tui-textarea-initialized])"
     )) {
       initTextarea(textarea);
     }

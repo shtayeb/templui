@@ -162,7 +162,7 @@ func main() {
 	mux.Handle("GET /docs/components/tabs", htmxHandler(pages.Tabs()))
 	mux.Handle("GET /docs/components/tags-input", htmxHandler(pages.TagsInput()))
 	mux.Handle("GET /docs/components/textarea", htmxHandler(pages.Textarea()))
-	// mux.Handle("GET /docs/components/time-picker", templ.Handler(pages.TimePicker()))
+	mux.Handle("GET /docs/components/time-picker", htmxHandler(pages.TimePicker()))
 	mux.Handle("GET /docs/components/toast", htmxHandler(pages.Toast()))
 	mux.Handle("GET /docs/components/toggle", htmxHandler(pages.Toggle()))
 	mux.Handle("GET /docs/components/tooltip", htmxHandler(pages.Tooltip()))

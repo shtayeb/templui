@@ -341,8 +341,8 @@ if (typeof window.popoverState === "undefined") {
   }
 
   function initTrigger(trigger) {
-    if (!trigger || trigger.hasAttribute("data-initialized")) return;
-    trigger.setAttribute("data-initialized", "true");
+    if (!trigger || trigger.hasAttribute("data-tui-popover-initialized")) return;
+    trigger.setAttribute("data-tui-popover-initialized", "true");
     
     const popoverId = trigger.getAttribute("data-tui-popover-trigger");
     const content = document.getElementById(popoverId);
@@ -471,7 +471,7 @@ if (typeof window.popoverState === "undefined") {
       initTrigger(root);
     }
     if (root && typeof root.querySelectorAll === "function") {
-      for (const trigger of root.querySelectorAll("[data-tui-popover-trigger]:not([data-initialized])")) {
+      for (const trigger of root.querySelectorAll("[data-tui-popover-trigger]:not([data-tui-popover-initialized])")) {
         initTrigger(trigger);
       }
     }

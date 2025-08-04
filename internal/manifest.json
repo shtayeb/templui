@@ -198,7 +198,7 @@
       "name": "selectbox",
       "description": "Dropdown selection menu",
       "files": ["internal/components/selectbox/selectbox.templ"],
-      "dependencies": ["button", "icon", "popover"],
+      "dependencies": ["button", "icon", "popover", "input"],
       "hasJS": true
     },
     {
@@ -245,6 +245,13 @@
       "description": "Multi-line text input",
       "files": ["internal/components/textarea/textarea.templ"],
       "dependencies": [],
+      "hasJS": true
+    },
+    {
+      "name": "timepicker",
+      "description": "Time selection interface",
+      "files": ["internal/components/timepicker/timepicker.templ"],
+      "dependencies": ["button", "card", "icon", "popover"],
       "hasJS": true
     },
     {

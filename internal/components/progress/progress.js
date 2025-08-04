@@ -1,7 +1,7 @@
 (function () {
   function updateProgressWidth(progressBar) {
-    if (!progressBar || progressBar.hasAttribute("data-initialized")) return;
-    progressBar.setAttribute("data-initialized", "true");
+    if (!progressBar || progressBar.hasAttribute("data-tui-progress-initialized")) return;
+    progressBar.setAttribute("data-tui-progress-initialized", "true");
 
     const indicator = progressBar.querySelector("[data-tui-progress-indicator]");
     if (!indicator) return;
@@ -23,7 +23,7 @@
       updateProgressWidth(root);
     }
     if (root && typeof root.querySelectorAll === "function") {
-      for (const progressBar of root.querySelectorAll('[role="progressbar"]:not([data-initialized])')) {
+      for (const progressBar of root.querySelectorAll('[role="progressbar"]:not([data-tui-progress-initialized])')) {
         updateProgressWidth(progressBar);
       }
     }

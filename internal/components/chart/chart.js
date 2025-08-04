@@ -19,8 +19,8 @@ window.chartInstances = window.chartInstances || {};
       if (!canvas || !canvas.id || !canvas.hasAttribute("data-tui-chart-id"))
         return;
       
-      if (canvas.hasAttribute("data-initialized")) return;
-      canvas.setAttribute("data-initialized", "true");
+      if (canvas.hasAttribute("data-tui-chart-initialized")) return;
+      canvas.setAttribute("data-tui-chart-initialized", "true");
 
       if (window.chartInstances[canvas.id]) {
         cleanupChart(canvas);
@@ -164,7 +164,7 @@ window.chartInstances = window.chartInstances || {};
     function init(root = document) {
       if (typeof Chart === "undefined") return;
 
-      for (const canvas of root.querySelectorAll("canvas[data-tui-chart-id]:not([data-initialized])")) {
+      for (const canvas of root.querySelectorAll("canvas[data-tui-chart-id]:not([data-tui-chart-initialized])")) {
         initChart(canvas);
       }
     }

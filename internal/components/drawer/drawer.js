@@ -30,8 +30,8 @@
 
   // Create drawer instance
   function createDrawer(backdrop) {
-    if (!backdrop || backdrop.hasAttribute("data-initialized")) return null;
-    backdrop.setAttribute("data-initialized", "true");
+    if (!backdrop || backdrop.hasAttribute("data-tui-drawer-initialized")) return null;
+    backdrop.setAttribute("data-tui-drawer-initialized", "true");
     
     const drawerId = backdrop.id;
     const content = document.getElementById(drawerId + "-content");
@@ -137,7 +137,7 @@
   // Initialize all drawers and triggers
   function init(root = document) {
     // Find and initialize drawers
-    root.querySelectorAll('[data-tui-drawer-component="drawer"]:not([data-initialized])').forEach((backdrop) => {
+    root.querySelectorAll('[data-tui-drawer-component="drawer"]:not([data-tui-drawer-initialized])').forEach((backdrop) => {
       const drawer = createDrawer(backdrop);
       if (drawer && backdrop.id) {
         drawers.set(backdrop.id, drawer);
