@@ -82,6 +82,7 @@ minify-js-components:
 		internal/components/tabs/tabs.js \
 		internal/components/tagsinput/tagsinput.js \
 		internal/components/textarea/textarea.js \
+		internal/components/timepicker/timepicker.js \
 		internal/components/toast/toast.js \
 		--minify \
 		--watch \
