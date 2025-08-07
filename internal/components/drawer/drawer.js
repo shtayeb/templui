@@ -30,13 +30,17 @@
 
   // Create drawer instance
   function createDrawer(backdrop) {
-    if (!backdrop || backdrop.hasAttribute("data-tui-drawer-initialized")) return null;
+    if (!backdrop || backdrop.hasAttribute("data-tui-drawer-initialized"))
+      return null;
     backdrop.setAttribute("data-tui-drawer-initialized", "true");
-    
+
     const drawerId = backdrop.id;
     const content = document.getElementById(drawerId + "-content");
-    const position = content?.getAttribute("data-tui-drawer-position") || "right";
-    const isInitiallyOpen = backdrop.hasAttribute("data-tui-drawer-initial-open");
+    const position =
+      content?.getAttribute("data-tui-drawer-position") || "right";
+    const isInitiallyOpen = backdrop.hasAttribute(
+      "data-tui-drawer-initial-open",
+    );
 
     if (!content || !drawerId) return null;
 
@@ -116,7 +120,7 @@
     // Check if click is on a trigger
     function isTriggerClick(target) {
       const triggers = document.querySelectorAll(
-        `[data-tui-drawer-trigger="${drawerId}"]`
+        `[data-tui-drawer-trigger="${drawerId}"]`,
       );
       return Array.from(triggers).some((trigger) => trigger.contains(target));
     }
@@ -135,12 +139,16 @@
   // Initialize all drawers and triggers
   function init(root = document) {
     // Find and initialize drawers
-    root.querySelectorAll('[data-tui-drawer-component="drawer"]:not([data-tui-drawer-initialized])').forEach((backdrop) => {
-      const drawer = createDrawer(backdrop);
-      if (drawer && backdrop.id) {
-        drawers.set(backdrop.id, drawer);
-      }
-    });
+    root
+      .querySelectorAll(
+        '[data-tui-drawer-component="drawer"]:not([data-tui-drawer-initialized])',
+      )
+      .forEach((backdrop) => {
+        const drawer = createDrawer(backdrop);
+        if (drawer && backdrop.id) {
+          drawers.set(backdrop.id, drawer);
+        }
+      });
 
     // Setup trigger clicks
     root.querySelectorAll("[data-tui-drawer-trigger]").forEach((trigger) => {
