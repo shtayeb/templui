@@ -33,6 +33,7 @@
     }
 
     const localeTag = container.getAttribute("data-tui-calendar-locale-tag") || "en-US";
+    const startOfWeek = parseInt(container.getAttribute("data-tui-calendar-start-of-week")) || 1; // 1 -> Monday
     let monthNames;
     try {
       monthNames = Array.from({ length: 12 }, (_, i) =>
@@ -68,7 +69,7 @@
       // Use days 0-6 (Sun-Sat standard). Intl provides names in the locale's typical order.
       dayNames = Array.from({ length: 7 }, (_, i) =>
         new Intl.DateTimeFormat(localeTag, { weekday: "short", timeZone: "UTC" }).format(
-          new Date(Date.UTC(2000, 0, i+2)) // +2 because Date.UTC(2000, 0, 0) actually returns 1999.12.31, which is a Friday
+          new Date(Date.UTC(2000, 0, i+2+startOfWeek)) // +2 because Date.UTC(2000, 0, 0) actually returns 1999.12.31, which is a Friday
         )
       );
     } catch (e) {
@@ -127,9 +128,9 @@
       daysContainer.innerHTML = "";
       const firstDayOfMonth = new Date(Date.UTC(currentYear, currentMonth, 1));
       const firstDayUTCDay = firstDayOfMonth.getUTCDay(); // 0=Sun
-      let startOffset = firstDayUTCDay; // Simple Sunday start offset
+      let startOffset = (((firstDayUTCDay - startOfWeek) % 7) + 7) % 7; // Always want a positive number
       // NOTE: A robust implementation might need to adjust offset based on locale's actual first day of week.
-      // Intl doesn't directly provide this easily yet. Keep Sunday start for simplicity.
+      // Intl doesn't directly provide this easily yet. In the meantime, allow user to pick.
 
       const daysInMonth = new Date(
         Date.UTC(currentYear, currentMonth + 1, 0)

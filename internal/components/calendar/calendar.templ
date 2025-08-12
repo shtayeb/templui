@@ -20,14 +20,27 @@ var (
 	LocaleTagSpanish    = LocaleTag("es-ES")
 )
 
+type Day int
+
+var (
+	Sunday    = Day(0)
+	Monday    = Day(1)
+	Tuesday   = Day(2)
+	Wednesday = Day(3)
+	Thursday  = Day(4)
+	Friday    = Day(5)
+	Saturday  = Day(6)
+)
+
 type Props struct {
 	ID           string
 	Class        string
 	LocaleTag    LocaleTag
 	Value        *time.Time
 	Name         string
-	InitialMonth int // Optional: 0-11 (Default: current or from Value). Controls the initially displayed month view.
-	InitialYear  int // Optional: (Default: current or from Value). Controls the initially displayed year view.
+	InitialMonth int  // Optional: 0-11 (Default: current or from Value). Controls the initially displayed month view.
+	InitialYear  int  // Optional: (Default: current or from Value). Controls the initially displayed year view.
+	StartOfWeek  *Day // Optional: 0-6 [Sun-Sat] (Default: 1).
 }
 
 templ Calendar(props ...Props) {
@@ -45,6 +58,11 @@ templ Calendar(props ...Props) {
 	}
 	if p.LocaleTag == "" {
 		p.LocaleTag = LocaleDefaultTag
+	}
+
+	initialStartOfWeek := Monday
+	if p.StartOfWeek != nil {
+		initialStartOfWeek = *p.StartOfWeek
 	}
 
 	initialView := time.Now()
@@ -86,6 +104,7 @@ templ Calendar(props ...Props) {
 			data-tui-calendar-initial-month={ strconv.Itoa(initialMonth) }
 			data-tui-calendar-initial-year={ strconv.Itoa(initialYear) }
 			data-tui-calendar-selected-date={ initialSelectedISO }
+			data-tui-calendar-start-of-week={ int(initialStartOfWeek) }
 		>
 			<!-- Calendar Header -->
 			<div class="flex items-center justify-between mb-4">
