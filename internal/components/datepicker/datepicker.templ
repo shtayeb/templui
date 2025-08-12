@@ -37,8 +37,9 @@ type Props struct {
 	Class       string
 	Attributes  templ.Attributes
 	Value       time.Time
-	Format      Format    // Controls the display format using Intl dateStyle options.
-	LocaleTag   LocaleTag // BCP 47 Locale Tag (e.g., "en-US", "es-ES"). Determines language and regional format defaults.
+	Format      Format        // Controls the display format using Intl dateStyle options.
+	LocaleTag   LocaleTag     // BCP 47 Locale Tag (e.g., "en-US", "es-ES"). Determines language and regional format defaults.
+	StartOfWeek *calendar.Day // Optional: 0-6 [Sun-Sat] (Default: 1).
 	Placeholder string
 	Disabled    bool
 	Required    bool
@@ -96,11 +97,11 @@ templ DatePicker(props ...Props) {
 			),
 			Disabled: p.Disabled,
 			Attributes: utils.MergeAttributes(p.Attributes, templ.Attributes{
-				"data-tui-datepicker":     "true",
+				"data-tui-datepicker":                "true",
 				"data-tui-datepicker-display-format": string(p.Format),
 				"data-tui-datepicker-locale-tag":     string(p.LocaleTag),
 				"data-tui-datepicker-placeholder":    p.Placeholder,
-				"aria-invalid":        utils.If(p.HasError, "true"),
+				"aria-invalid":                       utils.If(p.HasError, "true"),
 			}),
 		}) {
 			if p.Placeholder != "" {
@@ -125,10 +126,11 @@ templ DatePicker(props ...Props) {
 				Class: "p-3",
 			}) {
 				@calendar.Calendar(calendar.Props{
-					ID:        p.ID + "-calendar-instance",     // Pass ID for calendar instance
-					Name:      p.Name,                          // Pass Name for hidden input
-					LocaleTag: calendar.LocaleTag(p.LocaleTag), // Pass locale tag to calendar
-					Value:     valuePtr,                        // Pass pointer to value
+					ID:          p.ID + "-calendar-instance",     // Pass ID for calendar instance
+					Name:        p.Name,                          // Pass Name for hidden input
+					LocaleTag:   calendar.LocaleTag(p.LocaleTag), // Pass locale tag to calendar
+					StartOfWeek: p.StartOfWeek,                   // Pass start of week to calendar
+					Value:       valuePtr,                        // Pass pointer to value
 				})
 			}
 		}
