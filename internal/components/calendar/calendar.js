@@ -67,7 +67,7 @@
     try {
       // Use days 0-6 (Sun-Sat standard). Intl provides names in the locale's typical order.
       dayNames = Array.from({ length: 7 }, (_, i) =>
-        new Intl.DateTimeFormat(localeTag, { weekday: "short" }).format(
+        new Intl.DateTimeFormat(localeTag, { weekday: "short", timeZone: "UTC" }).format(
           new Date(Date.UTC(2000, 0, i+2))
         )
       );
