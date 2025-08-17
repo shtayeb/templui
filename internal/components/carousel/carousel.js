@@ -35,11 +35,11 @@
       indicators.forEach((indicator, i) => {
         if (i < state.slideCount) {
           if (i === state.currentIndex) {
-            indicator.classList.add("bg-white");
-            indicator.classList.remove("bg-white/50");
+            indicator.classList.add("bg-primary");
+            indicator.classList.remove("bg-foreground/30");
           } else {
-            indicator.classList.remove("bg-white");
-            indicator.classList.add("bg-white/50");
+            indicator.classList.remove("bg-primary");
+            indicator.classList.add("bg-foreground/30");
           }
           indicator.style.display = "";
         } else {
