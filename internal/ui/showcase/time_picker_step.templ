@@ -1,0 +1,14 @@
+package showcase
+
+import (
+	"github.com/templui/templui/internal/components/timepicker"
+)
+
+templ TimePickerStep() {
+	<div class="w-full max-w-sm">
+		@timepicker.TimePicker(timepicker.Props{
+			Step:        15,
+			Placeholder: "Select time (15 min intervals)",
+		})
+	</div>
+}

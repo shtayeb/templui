@@ -22,7 +22,37 @@
     return `${hour.toString().padStart(2, "0")}:${minute.toString().padStart(2, "0")}`;
   }
 
-  function updateHourSelection(hourList, selectedHour, use12Hours) {
+  function isTimeInRange(hour, minute, minTime, maxTime) {
+    if (!minTime && !maxTime) return true;
+    
+    const timeInMinutes = hour * 60 + minute;
+    
+    if (minTime) {
+      const minInMinutes = minTime.hour * 60 + minTime.minute;
+      if (timeInMinutes < minInMinutes) return false;
+    }
+    
+    if (maxTime) {
+      const maxInMinutes = maxTime.hour * 60 + maxTime.minute;
+      if (timeInMinutes > maxInMinutes) return false;
+    }
+    
+    return true;
+  }
+  
+  function isHourValid(hour, currentMinute, minTime, maxTime) {
+    if (!minTime && !maxTime) return true;
+    
+    // Check if any minute in this hour would be valid
+    for (let minute = 0; minute < 60; minute++) {
+      if (isTimeInRange(hour, minute, minTime, maxTime)) {
+        return true;
+      }
+    }
+    return false;
+  }
+  
+  function updateHourSelection(hourList, selectedHour, use12Hours, currentMinute, minTime, maxTime) {
     hourList.querySelectorAll('[data-tui-timepicker-hour]').forEach(button => {
       const hour = parseInt(button.getAttribute('data-tui-timepicker-hour'));
       let isSelected = false;
@@ -38,14 +68,35 @@
         }
       }
       
+      // Check if hour is within valid range
+      const actualHour = use12Hours && hour === 0 ? (selectedHour >= 12 ? 12 : 0) : hour;
+      const isValid = isHourValid(actualHour, currentMinute, minTime, maxTime);
+      
       button.setAttribute('data-tui-timepicker-selected', isSelected ? 'true' : 'false');
+      button.disabled = !isValid;
+      if (!isValid) {
+        button.classList.add('opacity-50', 'cursor-not-allowed');
+      } else {
+        button.classList.remove('opacity-50', 'cursor-not-allowed');
+      }
     });
   }
 
-  function updateMinuteSelection(minuteList, selectedMinute) {
+  function updateMinuteSelection(minuteList, selectedMinute, currentHour, minTime, maxTime) {
     minuteList.querySelectorAll('[data-tui-timepicker-minute]').forEach(button => {
       const minute = parseInt(button.getAttribute('data-tui-timepicker-minute'));
-      button.setAttribute('data-tui-timepicker-selected', minute === selectedMinute ? 'true' : 'false');
+      const isSelected = minute === selectedMinute;
+      
+      // Check if this minute is valid for the current hour
+      const isValid = currentHour === null || isTimeInRange(currentHour, minute, minTime, maxTime);
+      
+      button.setAttribute('data-tui-timepicker-selected', isSelected ? 'true' : 'false');
+      button.disabled = !isValid;
+      if (!isValid) {
+        button.classList.add('opacity-50', 'cursor-not-allowed');
+      } else {
+        button.classList.remove('opacity-50', 'cursor-not-allowed');
+      }
     });
   }
 
@@ -96,9 +147,16 @@
     const amLabel = triggerButton.getAttribute("data-tui-timepicker-am-label") || "AM";
     const pmLabel = triggerButton.getAttribute("data-tui-timepicker-pm-label") || "PM";
     const placeholder = triggerButton.getAttribute("data-tui-timepicker-placeholder") || "Select time";
+    const step = parseInt(triggerButton.getAttribute("data-tui-timepicker-step") || "1", 10);
+    const minTimeString = triggerButton.getAttribute("data-tui-timepicker-min-time") || "";
+    const maxTimeString = triggerButton.getAttribute("data-tui-timepicker-max-time") || "";
 
     let currentHour = null;
     let currentMinute = null;
+    
+    // Parse min and max time constraints
+    const minTime = minTimeString ? parseTimeString(minTimeString) : null;
+    const maxTime = maxTimeString ? parseTimeString(maxTimeString) : null;
 
     // Find hidden input (now outside the popover)
     const hiddenInputId = timePickerID + "-hidden";
@@ -154,7 +212,7 @@
     // Hour selection
     hourList.addEventListener("click", (event) => {
       const button = event.target.closest("[data-tui-timepicker-hour]");
-      if (!button) return;
+      if (!button || button.disabled) return;
       
       let selectedHour = parseInt(button.getAttribute("data-tui-timepicker-hour"), 10);
       
@@ -172,18 +230,42 @@
         }
       }
       
+      // Validate the selection
+      if (!isHourValid(selectedHour, currentMinute, minTime, maxTime)) {
+        return;
+      }
+      
       currentHour = selectedHour;
-      // Don't auto-set minute to 0, let user choose
+      
+      // If current minute is invalid with new hour, find nearest valid minute
+      if (currentMinute !== null && !isTimeInRange(currentHour, currentMinute, minTime, maxTime)) {
+        // Find nearest valid minute based on step
+        let validMinute = null;
+        for (let m = 0; m < 60; m += step) {
+          if (isTimeInRange(currentHour, m, minTime, maxTime)) {
+            validMinute = m;
+            break;
+          }
+        }
+        currentMinute = validMinute;
+      }
+      
       refreshDisplay();
     });
 
     // Minute selection
     minuteList.addEventListener("click", (event) => {
       const button = event.target.closest("[data-tui-timepicker-minute]");
-      if (!button) return;
+      if (!button || button.disabled) return;
       
-      currentMinute = parseInt(button.getAttribute("data-tui-timepicker-minute"), 10);
-      // Don't auto-set hour, let user choose
+      const selectedMinute = parseInt(button.getAttribute("data-tui-timepicker-minute"), 10);
+      
+      // Validate the selection if hour is already selected
+      if (currentHour !== null && !isTimeInRange(currentHour, selectedMinute, minTime, maxTime)) {
+        return;
+      }
+      
+      currentMinute = selectedMinute;
       refreshDisplay();
     });
 
@@ -197,14 +279,34 @@
         // Only change period if hour is already selected
         if (currentHour === null) return;
         
+        let newHour = currentHour;
         if (period === "AM") {
           if (currentHour >= 12) {
-            currentHour = currentHour === 12 ? 0 : currentHour - 12;
+            newHour = currentHour === 12 ? 0 : currentHour - 12;
           }
         } else if (period === "PM") {
           if (currentHour < 12) {
-            currentHour = currentHour === 0 ? 12 : currentHour + 12;
+            newHour = currentHour === 0 ? 12 : currentHour + 12;
           }
+        }
+        
+        // Validate the new hour
+        if (!isHourValid(newHour, currentMinute, minTime, maxTime)) {
+          return;
+        }
+        
+        currentHour = newHour;
+        
+        // If current minute is invalid with new hour, find nearest valid minute
+        if (currentMinute !== null && !isTimeInRange(currentHour, currentMinute, minTime, maxTime)) {
+          let validMinute = null;
+          for (let m = 0; m < 60; m += step) {
+            if (isTimeInRange(currentHour, m, minTime, maxTime)) {
+              validMinute = m;
+              break;
+            }
+          }
+          currentMinute = validMinute;
         }
         
         refreshDisplay();

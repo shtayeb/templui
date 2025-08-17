@@ -21,7 +21,10 @@
       loop: carousel.getAttribute("data-tui-carousel-loop") === "true",
       autoplayInterval: null,
       isHovering: false,
-      touchStartX: 0,
+      isDragging: false,
+      startX: 0,
+      currentX: 0,
+      dragStartTime: 0,
     };
 
     function updateTrackPosition() {
@@ -32,11 +35,11 @@
       indicators.forEach((indicator, i) => {
         if (i < state.slideCount) {
           if (i === state.currentIndex) {
-            indicator.classList.add("bg-white");
-            indicator.classList.remove("bg-white/50");
+            indicator.classList.add("bg-primary");
+            indicator.classList.remove("bg-foreground/30");
           } else {
-            indicator.classList.remove("bg-white");
-            indicator.classList.add("bg-white/50");
+            indicator.classList.remove("bg-primary");
+            indicator.classList.add("bg-foreground/30");
           }
           indicator.style.display = "";
         } else {
@@ -127,28 +130,86 @@
       }
     }
 
+    // Unified drag/swipe support for mouse and touch
     if (track) {
-      track.addEventListener(
-        "touchstart",
-        (e) => {
-          state.touchStartX = e.touches[0].clientX;
-        },
-        { passive: true }
-      );
-
-      track.addEventListener(
-        "touchend",
-        (e) => {
-          const touchEndX = e.changedTouches[0].clientX;
-          const diff = state.touchStartX - touchEndX;
-          const sensitivity = 50;
-
-          if (Math.abs(diff) > sensitivity) {
-            diff > 0 ? goToNext() : goToPrev();
+      // Set cursor style
+      track.style.cursor = "grab";
+      
+      function startDrag(e) {
+        state.isDragging = true;
+        state.dragStartTime = Date.now();
+        state.startX = e.clientX || e.touches?.[0]?.clientX || 0;
+        state.currentX = state.startX;
+        
+        track.style.cursor = "grabbing";
+        track.style.userSelect = "none";
+        track.style.transition = "none";
+        
+        // Stop autoplay during drag
+        if (state.autoplay) {
+          stopAutoplay();
+        }
+      }
+      
+      function drag(e) {
+        if (!state.isDragging) return;
+        
+        e.preventDefault();
+        state.currentX = e.clientX || e.touches?.[0]?.clientX || 0;
+        const diff = state.currentX - state.startX;
+        const currentOffset = -state.currentIndex * 100;
+        const dragOffset = (diff / track.offsetWidth) * 100;
+        
+        track.style.transform = `translateX(${currentOffset + dragOffset}%)`;
+      }
+      
+      function endDrag(e) {
+        if (!state.isDragging) return;
+        
+        state.isDragging = false;
+        track.style.cursor = "grab";
+        track.style.userSelect = "";
+        track.style.transition = "";
+        
+        const endX = e.clientX || e.changedTouches?.[0]?.clientX || state.currentX;
+        const diff = state.startX - endX;
+        const threshold = 50; // Minimum drag distance in pixels
+        const velocity = Math.abs(diff) / (Date.now() - state.dragStartTime);
+        
+        // Determine if we should change slide based on distance or velocity
+        if (Math.abs(diff) > threshold || velocity > 0.5) {
+          if (diff > 0) {
+            goToNext();
+          } else {
+            goToPrev();
           }
-        },
-        { passive: true }
-      );
+        } else {
+          // Snap back to current slide
+          updateTrackPosition();
+        }
+        
+        // Restart autoplay if it was active
+        if (state.autoplay && !state.isHovering) {
+          startAutoplay();
+        }
+      }
+      
+      // Mouse events
+      track.addEventListener("mousedown", startDrag);
+      window.addEventListener("mousemove", drag);
+      window.addEventListener("mouseup", endDrag);
+      
+      // Touch events
+      track.addEventListener("touchstart", startDrag, { passive: false });
+      track.addEventListener("touchmove", drag, { passive: false });
+      track.addEventListener("touchend", endDrag, { passive: false });
+      
+      // Cancel drag on mouse leave
+      track.addEventListener("mouseleave", () => {
+        if (state.isDragging) {
+          endDrag({ clientX: state.currentX });
+        }
+      });
     }
 
     indicators.forEach((indicator, index) => {
