@@ -75,14 +75,15 @@
     );
     const calendarInstanceId = datePickerID + "-calendar-instance";
     const calendarInstance = document.getElementById(calendarInstanceId);
-    const calendarHiddenInputId = calendarInstanceId + "-hidden";
-    const calendarHiddenInput = document.getElementById(calendarHiddenInputId);
+    // Hidden input is now outside popover, next to the trigger
+    const hiddenInputId = datePickerID + "-hidden";
+    const datePickerHiddenInput = document.getElementById(hiddenInputId);
 
     // Fallback to find calendar relatively
     let calendar = calendarInstance;
-    let hiddenInput = calendarHiddenInput;
+    let hiddenInput = datePickerHiddenInput;
 
-    if (!calendarInstance || !calendarHiddenInput) {
+    if (!calendarInstance || !datePickerHiddenInput) {
       const popoverContentId = triggerButton.getAttribute("aria-controls");
       const popoverContent = popoverContentId
         ? document.getElementById(popoverContentId)
@@ -90,13 +91,12 @@
       if (popoverContent) {
         if (!calendar)
           calendar = popoverContent.querySelector("[data-tui-calendar-container]");
-        if (!hiddenInput) {
-          const wrapper = popoverContent.querySelector(
-            "[data-tui-calendar-wrapper]"
-          );
-          hiddenInput = wrapper
-            ? wrapper.querySelector("[data-tui-calendar-hidden-input]")
-            : null;
+      }
+      // Try to find hidden input as a sibling of the trigger button
+      if (!hiddenInput) {
+        const parent = triggerButton.parentElement;
+        if (parent) {
+          hiddenInput = parent.querySelector("[data-tui-datepicker-hidden-input]");
         }
       }
     }

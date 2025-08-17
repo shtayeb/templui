@@ -75,8 +75,7 @@
     }
   }
 
-  function updateHiddenInput(popup, hour, minute) {
-    const hiddenInput = popup.querySelector("[data-tui-timepicker-hidden-input]");
+  function updateHiddenInput(hiddenInput, hour, minute) {
     if (!hiddenInput) return;
 
     if (hour !== null && minute !== null) {
@@ -101,6 +100,18 @@
     let currentHour = null;
     let currentMinute = null;
 
+    // Find hidden input (now outside the popover)
+    const hiddenInputId = timePickerID + "-hidden";
+    let hiddenInput = document.getElementById(hiddenInputId);
+    
+    // Fallback: look for it as a sibling
+    if (!hiddenInput) {
+      const parent = triggerButton.parentElement;
+      if (parent) {
+        hiddenInput = parent.querySelector("[data-tui-timepicker-hidden-input]");
+      }
+    }
+
     // Find popup and its elements
     const popupContent = document.getElementById(popupId);
     if (!popupContent) {
@@ -113,15 +124,15 @@
     const minuteList = popup?.querySelector("[data-tui-timepicker-minute-list]");
     const doneButton = popup?.querySelector("[data-tui-timepicker-done]");
 
-    if (!popup || !hourList || !minuteList || !doneButton) {
+    if (!popup || !hourList || !minuteList || !doneButton || !hiddenInput) {
       console.error("TimePicker init error: Missing required elements.", {
-        timePickerID, popup, hourList, minuteList, doneButton
+        timePickerID, popup, hourList, minuteList, doneButton, hiddenInput
       });
       return;
     }
 
     // Initialize with existing value if any
-    const initialValue = popup.getAttribute("data-tui-timepicker-value");
+    const initialValue = hiddenInput.value || popup.getAttribute("data-tui-timepicker-value");
     if (initialValue) {
       const parsed = parseTimeString(initialValue);
       if (parsed) {
@@ -132,7 +143,7 @@
 
     function refreshDisplay() {
       updateTimeDisplay(triggerButton, currentHour, currentMinute, use12Hours, placeholder);
-      updateHiddenInput(popup, currentHour, currentMinute);
+      updateHiddenInput(hiddenInput, currentHour, currentMinute);
       updateHourSelection(hourList, currentHour, use12Hours);
       updateMinuteSelection(minuteList, currentMinute);
       if (use12Hours) {
@@ -215,11 +226,12 @@
     refreshDisplay();
 
     // Form reset support
-    const form = triggerButton.closest("form");
+    const form = hiddenInput.closest("form") || triggerButton.closest("form");
     if (form) {
       form.addEventListener("reset", () => {
         currentHour = null;
         currentMinute = null;
+        hiddenInput.value = "";
         refreshDisplay();
       });
     }

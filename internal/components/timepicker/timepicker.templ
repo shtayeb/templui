@@ -54,7 +54,16 @@ templ TimePicker(props ...Props) {
 			valueString = p.Value.Format("15:04")
 		}
 	}}
-	@popover.Trigger(popover.TriggerProps{For: contentID}) {
+	<div class="relative inline-block w-full">
+		<input
+			type="hidden"
+			name={ p.Name }
+			value={ valueString }
+			required?={ p.Required }
+			id={ p.ID + "-hidden" }
+			data-tui-timepicker-hidden-input="true"
+		/>
+		@popover.Trigger(popover.TriggerProps{For: contentID}) {
 		@button.Button(button.Props{
 			ID:      p.ID,
 			Variant: button.VariantOutline,
@@ -106,18 +115,11 @@ templ TimePicker(props ...Props) {
 				<div
 					data-tui-timepicker-popup="true"
 					data-tui-timepicker-input-name={ p.Name }
+					data-tui-timepicker-parent-id={ p.ID }
 					if valueString != "" {
 						data-tui-timepicker-value={ valueString }
 					}
 				>
-					// Hidden input for form submission
-					<input
-						type="hidden"
-						name={ p.Name }
-						value={ valueString }
-						required?={ p.Required }
-						data-tui-timepicker-hidden-input="true"
-					/>
 					// Time selection grid
 					<div class="grid grid-cols-2 gap-3 mb-4">
 						// Hour selection
@@ -219,4 +221,5 @@ templ TimePicker(props ...Props) {
 			}
 		}
 	}
+	</div>
 }

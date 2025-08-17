@@ -13,20 +13,30 @@
     const prevButton = container.querySelector("[data-tui-calendar-prev]");
     const nextButton = container.querySelector("[data-tui-calendar-next]");
     const wrapper = container.closest("[data-tui-calendar-wrapper]");
-    const hiddenInput = wrapper
+    // Try to find hidden input in wrapper or in parent document (for datepicker)
+    let hiddenInput = wrapper
       ? wrapper.querySelector("[data-tui-calendar-hidden-input]")
       : null;
+    
+    // If not found in wrapper, it might be a datepicker - look for it outside
+    if (!hiddenInput) {
+      const calendarId = container.id;
+      if (calendarId) {
+        // Extract parent ID from calendar instance ID (e.g., "xyz-calendar-instance" -> "xyz")
+        const parentId = calendarId.replace("-calendar-instance", "");
+        hiddenInput = document.getElementById(parentId + "-hidden");
+      }
+    }
 
     if (
       !monthDisplay ||
       !weekdaysContainer ||
       !daysContainer ||
       !prevButton ||
-      !nextButton ||
-      !hiddenInput
+      !nextButton
     ) {
       console.error(
-        "Calendar init error: Missing required elements (or hidden input relative to wrapper).",
+        "Calendar init error: Missing required elements.",
         container
       );
       return;
@@ -208,8 +218,10 @@
       selectedDate = newlySelectedDate;
 
       const isoFormattedValue = newlySelectedDate.toISOString().split("T")[0];
-      hiddenInput.value = isoFormattedValue;
-      hiddenInput.dispatchEvent(new Event("change", { bubbles: true }));
+      if (hiddenInput) {
+        hiddenInput.value = isoFormattedValue;
+        hiddenInput.dispatchEvent(new Event("change", { bubbles: true }));
+      }
 
       container.dispatchEvent(
         new CustomEvent("calendar-date-selected", {
@@ -230,8 +242,8 @@
     renderCalendar();
 
     // Form reset support
-    const form = container.closest('form');
-    if (form) {
+    const form = hiddenInput ? hiddenInput.closest('form') : container.closest('form');
+    if (form && hiddenInput) {
       form.addEventListener('reset', () => {
         // Clear selected date
         selectedDate = null;
