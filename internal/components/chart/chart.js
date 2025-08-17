@@ -158,6 +158,7 @@ window.chartInstances = window.chartInstances || {};
         window.chartInstances[canvas.id].destroy();
       } finally {
         delete window.chartInstances[canvas.id];
+        canvas.removeAttribute("data-tui-chart-initialized");
       }
     }
 
