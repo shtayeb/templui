@@ -71,11 +71,21 @@ templ DatePicker(props ...Props) {
 
 		var contentID = p.ID + "-content"
 		var valuePtr *time.Time
+		var initialSelectedISO string
 		if !p.Value.IsZero() {
 			valuePtr = &p.Value
+			initialSelectedISO = p.Value.Format("2006-01-02")
 		}
 	}}
-	@popover.Trigger(popover.TriggerProps{For: contentID}) {
+	<div class="relative inline-block w-full">
+		<input
+			type="hidden"
+			name={ p.Name }
+			value={ initialSelectedISO }
+			id={ p.ID + "-hidden" }
+			data-tui-datepicker-hidden-input
+		/>
+		@popover.Trigger(popover.TriggerProps{For: contentID}) {
 		@button.Button(button.Props{
 			ID:      p.ID,
 			Variant: button.VariantOutline,
@@ -126,13 +136,14 @@ templ DatePicker(props ...Props) {
 				Class: "p-3",
 			}) {
 				@calendar.Calendar(calendar.Props{
-					ID:          p.ID + "-calendar-instance",     // Pass ID for calendar instance
-					Name:        p.Name,                          // Pass Name for hidden input
-					LocaleTag:   calendar.LocaleTag(p.LocaleTag), // Pass locale tag to calendar
-					StartOfWeek: p.StartOfWeek,                   // Pass start of week to calendar
-					Value:       valuePtr,                        // Pass pointer to value
+					ID:               p.ID + "-calendar-instance",     // Pass ID for calendar instance
+					LocaleTag:        calendar.LocaleTag(p.LocaleTag), // Pass locale tag to calendar
+					StartOfWeek:      p.StartOfWeek,                   // Pass start of week to calendar
+					Value:            valuePtr,                        // Pass pointer to value
+					RenderHiddenInput: false,                          // Don't render hidden input inside popover
 				})
 			}
 		}
 	}
+	</div>
 }
