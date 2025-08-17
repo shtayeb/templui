@@ -56,8 +56,9 @@ func handleLoadModalHtmx(w http.ResponseWriter, r *http.Request) {
 func htmxHandler(component templ.Component) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if middleware.IsHtmxRequest(r) {
-			// For HTMX requests, render only the content fragment
-			templ.Handler(component, templ.WithFragments("content")).ServeHTTP(w, r)
+			// For HTMX requests, render both content and toc fragments
+			// The toc fragment has hx-swap-oob attribute for out-of-band swap
+			templ.Handler(component, templ.WithFragments("content", "toc")).ServeHTTP(w, r)
 		} else {
 			// For regular requests, render the full page
 			templ.Handler(component).ServeHTTP(w, r)
@@ -70,27 +71,10 @@ func main() {
 	config.LoadConfig()
 	SetupAssetsRoutes(mux)
 
-	// Simple www to non-www redirect
-	redirectWWW := func(next http.Handler) http.Handler {
-		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			if after, ok := strings.CutPrefix(r.Host, "www."); ok {
-				target := "https://" + after + r.URL.Path
-				if r.URL.RawQuery != "" {
-					target += "?" + r.URL.RawQuery
-				}
-				http.Redirect(w, r, target, http.StatusMovedPermanently)
-				return
-			}
-			next.ServeHTTP(w, r)
-		})
-	}
-
-	wrappedMux := redirectWWW(
-		middleware.WithURLPathValue(
-			middleware.CacheControlMiddleware(
-				middleware.GitHubStarsMiddleware(
-					mux,
-				),
+	wrappedMux := middleware.WithURLPathValue(
+		middleware.CacheControlMiddleware(
+			middleware.GitHubStarsMiddleware(
+				mux,
 			),
 		),
 	)

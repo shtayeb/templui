@@ -120,6 +120,13 @@ templ Calendar() {
 								Description: "Initial year to display. Defaults to current year or Value's year.",
 								Required:    false,
 							},
+							{
+								Name:        "StartOfWeek",
+								Type:        "*Day",
+								Default:     "nil",
+								Description: "Optional start of week (0-6, Sun-Sat). When nil, defaults to Monday (1). Use calendar.Sunday through calendar.Saturday constants.",
+								Required:    false,
+							},
 						},
 					})
 				</div>

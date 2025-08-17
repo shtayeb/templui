@@ -36,6 +36,14 @@ templ TimePicker() {
 						Text: "With Selected Time",
 					},
 					{
+						ID:   "step",
+						Text: "With Step Intervals",
+					},
+					{
+						ID:   "min-max",
+						Text: "With Min/Max Range",
+					},
+					{
 						ID:   "form",
 						Text: "Form Integration",
 					},
@@ -116,6 +124,18 @@ templ TimePicker() {
 					ID:              "selected-time",
 				})
 				@modules.ExampleWrapper(modules.ExampleWrapperProps{
+					SectionName:     "With Step Intervals",
+					ShowcaseFile:    showcase.TimePickerStep(),
+					PreviewCodeFile: "time_picker_step.templ",
+					ID:              "step",
+				})
+				@modules.ExampleWrapper(modules.ExampleWrapperProps{
+					SectionName:     "With Min/Max Range",
+					ShowcaseFile:    showcase.TimePickerMinMax(),
+					PreviewCodeFile: "time_picker_min_max.templ",
+					ID:              "min-max",
+				})
+				@modules.ExampleWrapper(modules.ExampleWrapperProps{
 					SectionName:     "With Form",
 					ShowcaseFile:    showcase.TimePickerForm(),
 					PreviewCodeFile: "time_picker_form.templ",
@@ -165,6 +185,27 @@ templ TimePicker() {
 								Type:        "time.Time",
 								Default:     "",
 								Description: "Selected time value.",
+								Required:    false,
+							},
+							{
+								Name:        "MinTime",
+								Type:        "time.Time",
+								Default:     "",
+								Description: "Minimum selectable time. Times before this will be disabled.",
+								Required:    false,
+							},
+							{
+								Name:        "MaxTime",
+								Type:        "time.Time",
+								Default:     "",
+								Description: "Maximum selectable time. Times after this will be disabled.",
+								Required:    false,
+							},
+							{
+								Name:        "Step",
+								Type:        "int",
+								Default:     "1",
+								Description: "Minute intervals for selection (e.g., 5, 10, 15, 30). Must be a divisor of 60.",
 								Required:    false,
 							},
 							{

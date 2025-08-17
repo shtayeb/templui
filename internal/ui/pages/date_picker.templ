@@ -59,7 +59,7 @@ templ DatePicker() {
 	) {
 		@modules.PageWrapper(modules.PageWrapperProps{
 			Name:        "Date Picker",
-			Description: templ.Raw("Calendar interface for selecting and formatting dates. Uses <a href='/docs/components/popover' class='text-primary underline underline-offset-2 hover:opacity-80 transition-opacity'>Popover</a> for the popup."),
+			Description: templ.Raw("Calendar interface for selecting and formatting dates. Uses <a href='/docs/components/calendar' class='text-primary underline underline-offset-2 hover:opacity-80 transition-opacity'>Calendar</a> for date selection and <a href='/docs/components/popover' class='text-primary underline underline-offset-2 hover:opacity-80 transition-opacity'>Popover</a> for the popup."),
 			Tailwind:    true,
 			VanillaJS:   true,
 			Breadcrumbs: modules.Breadcrumbs{
@@ -177,6 +177,12 @@ templ DatePicker() {
 								Type:        "LocaleTag",
 								Default:     "en-US",
 								Description: "BCP 47 Locale Tag for language and regional format",
+							},
+							{
+								Name:        "StartOfWeek",
+								Type:        "*calendar.Day",
+								Default:     "nil",
+								Description: "Optional start of week passed to Calendar component. When nil, Calendar defaults to Monday. Use calendar.Sunday through calendar.Saturday constants.",
 							},
 							{
 								Name:        "Placeholder",

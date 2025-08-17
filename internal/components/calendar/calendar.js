@@ -13,26 +13,37 @@
     const prevButton = container.querySelector("[data-tui-calendar-prev]");
     const nextButton = container.querySelector("[data-tui-calendar-next]");
     const wrapper = container.closest("[data-tui-calendar-wrapper]");
-    const hiddenInput = wrapper
+    // Try to find hidden input in wrapper or in parent document (for datepicker)
+    let hiddenInput = wrapper
       ? wrapper.querySelector("[data-tui-calendar-hidden-input]")
       : null;
+    
+    // If not found in wrapper, it might be a datepicker - look for it outside
+    if (!hiddenInput) {
+      const calendarId = container.id;
+      if (calendarId) {
+        // Extract parent ID from calendar instance ID (e.g., "xyz-calendar-instance" -> "xyz")
+        const parentId = calendarId.replace("-calendar-instance", "");
+        hiddenInput = document.getElementById(parentId + "-hidden");
+      }
+    }
 
     if (
       !monthDisplay ||
       !weekdaysContainer ||
       !daysContainer ||
       !prevButton ||
-      !nextButton ||
-      !hiddenInput
+      !nextButton
     ) {
       console.error(
-        "Calendar init error: Missing required elements (or hidden input relative to wrapper).",
+        "Calendar init error: Missing required elements.",
         container
       );
       return;
     }
 
     const localeTag = container.getAttribute("data-tui-calendar-locale-tag") || "en-US";
+    const startOfWeek = parseInt(container.getAttribute("data-tui-calendar-start-of-week")) || 1; // 1 -> Monday
     let monthNames;
     try {
       monthNames = Array.from({ length: 12 }, (_, i) =>
@@ -67,8 +78,8 @@
     try {
       // Use days 0-6 (Sun-Sat standard). Intl provides names in the locale's typical order.
       dayNames = Array.from({ length: 7 }, (_, i) =>
-        new Intl.DateTimeFormat(localeTag, { weekday: "short" }).format(
-          new Date(Date.UTC(2000, 0, i))
+        new Intl.DateTimeFormat(localeTag, { weekday: "short", timeZone: "UTC" }).format(
+          new Date(Date.UTC(2000, 0, i+2+startOfWeek)) // +2 because Date.UTC(2000, 0, 0) actually returns 1999.12.31, which is a Friday
         )
       );
     } catch (e) {
@@ -127,9 +138,9 @@
       daysContainer.innerHTML = "";
       const firstDayOfMonth = new Date(Date.UTC(currentYear, currentMonth, 1));
       const firstDayUTCDay = firstDayOfMonth.getUTCDay(); // 0=Sun
-      let startOffset = firstDayUTCDay; // Simple Sunday start offset
+      let startOffset = (((firstDayUTCDay - startOfWeek) % 7) + 7) % 7; // Always want a positive number
       // NOTE: A robust implementation might need to adjust offset based on locale's actual first day of week.
-      // Intl doesn't directly provide this easily yet. Keep Sunday start for simplicity.
+      // Intl doesn't directly provide this easily yet. In the meantime, allow user to pick.
 
       const daysInMonth = new Date(
         Date.UTC(currentYear, currentMonth + 1, 0)
@@ -207,8 +218,10 @@
       selectedDate = newlySelectedDate;
 
       const isoFormattedValue = newlySelectedDate.toISOString().split("T")[0];
-      hiddenInput.value = isoFormattedValue;
-      hiddenInput.dispatchEvent(new Event("change", { bubbles: true }));
+      if (hiddenInput) {
+        hiddenInput.value = isoFormattedValue;
+        hiddenInput.dispatchEvent(new Event("change", { bubbles: true }));
+      }
 
       container.dispatchEvent(
         new CustomEvent("calendar-date-selected", {
@@ -229,8 +242,8 @@
     renderCalendar();
 
     // Form reset support
-    const form = container.closest('form');
-    if (form) {
+    const form = hiddenInput ? hiddenInput.closest('form') : container.closest('form');
+    if (form && hiddenInput) {
       form.addEventListener('reset', () => {
         // Clear selected date
         selectedDate = null;
