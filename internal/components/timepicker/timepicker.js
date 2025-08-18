@@ -272,12 +272,12 @@
     });
   });
   
-  // Initialize timepickers
-  function init() {
-    document.querySelectorAll('[data-tui-timepicker="true"]').forEach(trigger => {
-      if (trigger.hasAttribute('data-tui-timepicker-state-initialized')) return;
-      trigger.setAttribute('data-tui-timepicker-state-initialized', 'true');
+  // MutationObserver for initial rendering
+  new MutationObserver(() => {
+    document.querySelectorAll('[data-tui-timepicker="true"]:not([data-rendered])').forEach(trigger => {
+      trigger.setAttribute('data-rendered', 'true');
       
+      // Read initial value from hidden input
       const elements = getElements(trigger);
       const initialValue = elements?.hiddenInput?.value || 
                           elements?.popup?.getAttribute('data-tui-timepicker-value');
@@ -291,19 +291,5 @@
       
       updateDisplay(trigger);
     });
-  }
-  
-  // Initial setup
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', init);
-  } else {
-    init();
-  }
-  
-  // Watch for dynamic content
-  let timeout;
-  new MutationObserver(() => {
-    clearTimeout(timeout);
-    timeout = setTimeout(init, 10);
   }).observe(document.body, { childList: true, subtree: true });
 })();

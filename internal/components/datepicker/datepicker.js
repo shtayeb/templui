@@ -1,218 +1,126 @@
 (function () {
+  'use strict';
+  
+  // Utility functions
   function parseISODate(isoString) {
-    if (!isoString || typeof isoString !== "string") return null;
+    if (!isoString) return null;
     const parts = isoString.match(/^(\d{4})-(\d{2})-(\d{2})$/);
     if (!parts) return null;
+    
     const year = parseInt(parts[1], 10);
-    const month = parseInt(parts[2], 10) - 1; // JS month is 0-indexed
+    const month = parseInt(parts[2], 10) - 1;
     const day = parseInt(parts[3], 10);
     const date = new Date(Date.UTC(year, month, day));
-    if (
-      date.getUTCFullYear() === year &&
-      date.getUTCMonth() === month &&
-      date.getUTCDate() === day
-    ) {
+    
+    if (date.getUTCFullYear() === year && 
+        date.getUTCMonth() === month && 
+        date.getUTCDate() === day) {
       return date;
     }
     return null;
   }
-
-  function formatDateWithIntl(date, format, localeTag) {
+  
+  function formatDate(date, format, locale) {
     if (!date || isNaN(date.getTime())) return "";
-
-    // Always use UTC for formatting to avoid timezone shifts
-    let options = { timeZone: "UTC" };
-    switch (format) {
-      case "locale-short":
-        options.dateStyle = "short";
-        break;
-      case "locale-long":
-        options.dateStyle = "long";
-        break;
-      case "locale-full":
-        options.dateStyle = "full";
-        break;
-      case "locale-medium": // Default to medium
-      default:
-        options.dateStyle = "medium";
-        break;
-    }
-
+    
+    const options = { timeZone: "UTC" };
+    const formatMap = {
+      "locale-short": "short",
+      "locale-long": "long",
+      "locale-full": "full",
+      "locale-medium": "medium"
+    };
+    
+    options.dateStyle = formatMap[format] || "medium";
+    
     try {
-      // Explicitly pass the options object with timeZone: 'UTC'
-      return new Intl.DateTimeFormat(localeTag, options).format(date);
+      return new Intl.DateTimeFormat(locale, options).format(date);
     } catch (e) {
-      console.error(
-        `Error formatting date with Intl (locale: ${localeTag}, format: ${format}, timezone: UTC):`,
-        e
-      );
-      // Fallback to locale default medium on error, still using UTC
-      try {
-        const fallbackOptions = { dateStyle: "medium", timeZone: "UTC" };
-        return new Intl.DateTimeFormat(localeTag, fallbackOptions).format(date);
-      } catch (fallbackError) {
-        console.error(
-          `Error formatting date with fallback Intl (locale: ${localeTag}, timezone: UTC):`,
-          fallbackError
-        );
-        // Absolute fallback: Format the UTC date parts manually if Intl fails completely
-        const year = date.getUTCFullYear();
-        // getUTCMonth is 0-indexed, add 1 for display
-        const month = (date.getUTCMonth() + 1).toString().padStart(2, "0");
-        const day = date.getUTCDate().toString().padStart(2, "0");
-        return `${year}-${month}-${day}`; // Simple ISO format as absolute fallback
-      }
+      // Fallback to ISO format
+      const year = date.getUTCFullYear();
+      const month = (date.getUTCMonth() + 1).toString().padStart(2, "0");
+      const day = date.getUTCDate().toString().padStart(2, "0");
+      return `${year}-${month}-${day}`;
     }
   }
-
-  function initDatePicker(triggerButton) {
-    if (!triggerButton || triggerButton.hasAttribute("data-tui-datepicker-initialized")) return;
-    triggerButton.setAttribute("data-tui-datepicker-initialized", "true");
-
-    const datePickerID = triggerButton.id;
-    const displaySpan = triggerButton.querySelector(
-      "[data-tui-datepicker-display]"
-    );
-    const calendarInstanceId = datePickerID + "-calendar-instance";
-    const calendarInstance = document.getElementById(calendarInstanceId);
-    // Hidden input is now outside popover, next to the trigger
-    const hiddenInputId = datePickerID + "-hidden";
-    const datePickerHiddenInput = document.getElementById(hiddenInputId);
-
-    // Fallback to find calendar relatively
-    let calendar = calendarInstance;
-    let hiddenInput = datePickerHiddenInput;
-
-    if (!calendarInstance || !datePickerHiddenInput) {
-      const popoverContentId = triggerButton.getAttribute("aria-controls");
-      const popoverContent = popoverContentId
-        ? document.getElementById(popoverContentId)
-        : null;
-      if (popoverContent) {
-        if (!calendar)
-          calendar = popoverContent.querySelector("[data-tui-calendar-container]");
-      }
-      // Try to find hidden input as a sibling of the trigger button
-      if (!hiddenInput) {
-        const parent = triggerButton.parentElement;
-        if (parent) {
-          hiddenInput = parent.querySelector("[data-tui-datepicker-hidden-input]");
-        }
-      }
-    }
-
-    if (!displaySpan || !calendar || !hiddenInput) {
-      console.error("DatePicker init error: Missing required elements.", {
-        datePickerID,
-        displaySpan,
-        calendar,
-        hiddenInput,
-      });
-      return;
-    }
-
-    const displayFormat =
-      triggerButton.getAttribute("data-tui-datepicker-display-format") || "locale-medium";
-    const localeTag = triggerButton.getAttribute("data-tui-datepicker-locale-tag") || "en-US";
-    const placeholder = triggerButton.getAttribute("data-tui-datepicker-placeholder") || "Select a date";
-
-    const onCalendarSelect = (event) => {
-      if (
-        !event.detail ||
-        !event.detail.date ||
-        !(event.detail.date instanceof Date)
-      )
+  
+  // Find elements
+  function findElements(trigger) {
+    const calendarId = trigger.id + "-calendar-instance";
+    const calendar = document.getElementById(calendarId);
+    const hiddenInput = document.getElementById(trigger.id + "-hidden") || 
+                       trigger.parentElement?.querySelector("[data-tui-datepicker-hidden-input]");
+    const display = trigger.querySelector("[data-tui-datepicker-display]");
+    
+    return { calendar, hiddenInput, display };
+  }
+  
+  // Update display
+  function updateDisplay(trigger) {
+    const elements = findElements(trigger);
+    if (!elements.display || !elements.hiddenInput) return;
+    
+    const format = trigger.getAttribute("data-tui-datepicker-display-format") || "locale-medium";
+    const locale = trigger.getAttribute("data-tui-datepicker-locale-tag") || "en-US";
+    const placeholder = trigger.getAttribute("data-tui-datepicker-placeholder") || "Select a date";
+    
+    if (elements.hiddenInput.value) {
+      const date = parseISODate(elements.hiddenInput.value);
+      if (date) {
+        elements.display.textContent = formatDate(date, format, locale);
+        elements.display.classList.remove("text-muted-foreground");
         return;
-      const selectedDate = event.detail.date;
-      const displayFormattedValue = formatDateWithIntl(
-        selectedDate,
-        displayFormat,
-        localeTag
-      );
-      displaySpan.textContent = displayFormattedValue;
-      displaySpan.classList.remove("text-muted-foreground");
-
-      // Find and click the popover trigger to close it
-      const popoverTrigger = triggerButton
-        .closest("[data-tui-popover]")
-        ?.querySelector("[data-tui-popover-trigger]");
-      if (popoverTrigger instanceof HTMLElement) {
-        popoverTrigger.click();
-      } else {
-        triggerButton.click(); // Fallback: click the button itself (might not work if inside popover)
       }
-    };
-
-    const updateDisplay = () => {
-      if (hiddenInput && hiddenInput.value) {
-        const initialDate = parseISODate(hiddenInput.value);
-        if (initialDate) {
-          const correctlyFormatted = formatDateWithIntl(
-            initialDate,
-            displayFormat,
-            localeTag
-          );
-          if (displaySpan.textContent.trim() !== correctlyFormatted) {
-            displaySpan.textContent = correctlyFormatted;
-            displaySpan.classList.remove("text-muted-foreground");
-          }
-        } else {
-          // Handle case where hidden input has invalid value
-          displaySpan.textContent = placeholder;
-          displaySpan.classList.add("text-muted-foreground");
-        }
-      } else {
-        // Ensure placeholder is shown if no value
-        displaySpan.textContent = placeholder;
-        displaySpan.classList.add("text-muted-foreground");
-      }
-    };
-
-    // Attach listener to the specific calendar instance
-    calendar.addEventListener("calendar-date-selected", onCalendarSelect);
-
-    updateDisplay(); // Initial display update
-
-    triggerButton._datePickerInitialized = true;
-
-    // Store cleanup function on the button itself
-    triggerButton._datePickerCleanup = () => {
-      if (calendar) {
-        calendar.removeEventListener(
-          "calendar-date-selected",
-          onCalendarSelect
-        );
-      }
-    };
-
-    // Form reset support
-    const form = triggerButton.closest('form');
-    if (form) {
-      form.addEventListener('reset', () => {
-        // Clear hidden input
-        if (hiddenInput) {
-          hiddenInput.value = '';
-        }
-        // Reset display to placeholder
-        displaySpan.textContent = placeholder;
-        displaySpan.classList.add('text-muted-foreground');
-      });
     }
+    
+    elements.display.textContent = placeholder;
+    elements.display.classList.add("text-muted-foreground");
   }
-
-  function init(root = document) {
-    if (root instanceof Element && root.matches('[data-tui-datepicker="true"]')) {
-      initDatePicker(root);
+  
+  // Handle calendar date selection
+  document.addEventListener("calendar-date-selected", (e) => {
+    // Find the datepicker trigger associated with this calendar
+    const calendar = e.target;
+    if (!calendar || !calendar.id.endsWith("-calendar-instance")) return;
+    
+    const triggerId = calendar.id.replace("-calendar-instance", "");
+    const trigger = document.getElementById(triggerId);
+    if (!trigger || !trigger.hasAttribute("data-tui-datepicker")) return;
+    
+    const elements = findElements(trigger);
+    if (!elements.display || !e.detail?.date) return;
+    
+    const format = trigger.getAttribute("data-tui-datepicker-display-format") || "locale-medium";
+    const locale = trigger.getAttribute("data-tui-datepicker-locale-tag") || "en-US";
+    
+    elements.display.textContent = formatDate(e.detail.date, format, locale);
+    elements.display.classList.remove("text-muted-foreground");
+    
+    // Close the popover
+    if (window.closePopover) {
+      const popoverId = trigger.getAttribute("aria-controls") || (trigger.id + "-content");
+      window.closePopover(popoverId);
     }
-    root
-      .querySelectorAll('[data-tui-datepicker="true"]:not([data-tui-datepicker-initialized])')
-      .forEach((triggerButton) => {
-        initDatePicker(triggerButton);
-      });
-  }
-
-  window.templUI = window.templUI || {};
-  window.templUI.datePicker = { init: init };
-
-  document.addEventListener("DOMContentLoaded", () => init());
+  });
+  
+  // Form reset handling
+  document.addEventListener("reset", (e) => {
+    if (!e.target.matches("form")) return;
+    
+    e.target.querySelectorAll('[data-tui-datepicker="true"]').forEach(trigger => {
+      const elements = findElements(trigger);
+      if (elements.hiddenInput) {
+        elements.hiddenInput.value = "";
+      }
+      updateDisplay(trigger);
+    });
+  });
+  
+  // MutationObserver for initial display update
+  new MutationObserver(() => {
+    document.querySelectorAll('[data-tui-datepicker="true"]:not([data-rendered])').forEach(trigger => {
+      trigger.setAttribute('data-rendered', 'true');
+      updateDisplay(trigger);
+    });
+  }).observe(document.body, { childList: true, subtree: true });
 })();
