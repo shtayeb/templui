@@ -1,522 +1,322 @@
 (function () {
-  let isSelecting = false;
-
-  function checkVisibility(element) {
-    const style = window.getComputedStyle(element);
-    return (
-      style.display !== "none" &&
-      style.visibility !== "hidden" &&
-      style.opacity !== "0"
-    )
-  };
-
-  function initSelect(wrapper) {
-    if (!wrapper || wrapper.hasAttribute("data-tui-selectbox-initialized")) return;
-    wrapper.setAttribute("data-tui-selectbox-initialized", "true");
-
-    const triggerButton = wrapper.querySelector("button.select-trigger");
-    if (!triggerButton) {
-      console.error(
-        "Select box: Trigger button (.select-trigger) not found in wrapper",
-        wrapper,
-      );
+  'use strict';
+  
+  // Helper to update display value
+  function updateDisplayValue(trigger) {
+    const valueEl = trigger.querySelector('.select-value');
+    const hiddenInput = trigger.querySelector('input[type="hidden"]');
+    const contentId = trigger.getAttribute('data-tui-selectbox-content-id');
+    const content = document.getElementById(contentId);
+    if (!valueEl || !content) return;
+    
+    const isMultiple = trigger.getAttribute('data-tui-selectbox-multiple') === 'true';
+    const showPills = trigger.getAttribute('data-tui-selectbox-show-pills') === 'true';
+    const placeholder = valueEl.getAttribute('data-placeholder') || 'Select...';
+    
+    const selectedItems = content.querySelectorAll('.select-item[data-tui-selectbox-selected="true"]');
+    
+    if (selectedItems.length === 0) {
+      valueEl.textContent = placeholder;
+      valueEl.classList.add('text-muted-foreground');
+      if (hiddenInput) hiddenInput.value = '';
       return;
     }
-
-    const contentID = triggerButton.getAttribute(
-      "data-tui-selectbox-content-id",
-    );
-    const content = contentID ? document.getElementById(contentID) : null;
-    const valueEl = triggerButton.querySelector(".select-value");
-    const hiddenInput = triggerButton.querySelector('input[type="hidden"]');
-    if (!content || !valueEl || !hiddenInput) {
-      console.error(
-        "Select box: Missing required elements for initialization.",
-        {
-          wrapper,
-          contentID,
-          contentExists: !!content,
-          valueElExists: !!valueEl,
-          hiddenInputExists: !!hiddenInput,
-        },
+    
+    valueEl.classList.remove('text-muted-foreground');
+    
+    if (isMultiple) {
+      if (showPills) {
+        // Create pills container
+        valueEl.innerHTML = '';
+        const pillsContainer = document.createElement('div');
+        pillsContainer.className = 'flex flex-wrap gap-1 items-center min-h-[1.5rem]';
+        
+        let shouldUseCount = false;
+        const pills = [];
+        
+        Array.from(selectedItems).forEach(selectedItem => {
+          const pill = document.createElement('span');
+          pill.className = 'inline-flex items-center gap-1 px-2 py-0.5 text-xs rounded-md bg-primary text-primary-foreground';
+          
+          const text = document.createElement('span');
+          text.textContent = selectedItem.querySelector('.select-item-text')?.textContent || '';
+          pill.appendChild(text);
+          
+          // Add remove button for pills
+          const removeBtn = document.createElement('button');
+          removeBtn.className = 'ml-0.5 hover:text-destructive focus:outline-none';
+          removeBtn.type = 'button';
+          removeBtn.innerHTML = '×';
+          removeBtn.setAttribute('data-tui-selectbox-pill-remove', '');
+          removeBtn.setAttribute('data-tui-selectbox-value', selectedItem.getAttribute('data-tui-selectbox-value'));
+          pill.appendChild(removeBtn);
+          
+          pills.push(pill);
+        });
+        
+        // Try adding pills and check overflow
+        pills.forEach(pill => pillsContainer.appendChild(pill));
+        valueEl.appendChild(pillsContainer);
+        
+        // Check overflow after render
+        requestAnimationFrame(() => {
+          const containerWidth = valueEl.offsetWidth;
+          const contentWidth = pillsContainer.scrollWidth;
+          
+          // If pills overflow and we have more than 3 items, switch to count
+          if (contentWidth > containerWidth - 10 && selectedItems.length > 3) {
+            const countText = trigger.getAttribute('data-tui-selectbox-selected-count-text') || '{n} items selected';
+            valueEl.textContent = countText.replace('{n}', selectedItems.length);
+          }
+        });
+      } else {
+        const countText = trigger.getAttribute('data-tui-selectbox-selected-count-text') || '{n} items selected';
+        valueEl.textContent = countText.replace('{n}', selectedItems.length);
+      }
+      
+      // Update hidden input with CSV
+      const values = Array.from(selectedItems).map(item => 
+        item.getAttribute('data-tui-selectbox-value') || ''
       );
+      if (hiddenInput) hiddenInput.value = values.join(',');
+    } else {
+      // Single selection
+      const selectedItem = selectedItems[0];
+      const text = selectedItem.querySelector('.select-item-text')?.textContent || '';
+      valueEl.textContent = text;
+      
+      if (hiddenInput) {
+        hiddenInput.value = selectedItem.getAttribute('data-tui-selectbox-value') || '';
+      }
+    }
+  }
+  
+  // Helper to filter items based on search
+  function filterItems(searchInput) {
+    const searchTerm = searchInput.value.toLowerCase().trim();
+    const content = searchInput.closest('[data-tui-popover-id]');
+    if (!content) return;
+    
+    content.querySelectorAll('.select-item').forEach(item => {
+      const text = item.querySelector('.select-item-text')?.textContent.toLowerCase() || '';
+      const value = item.getAttribute('data-tui-selectbox-value')?.toLowerCase() || '';
+      const visible = !searchTerm || text.includes(searchTerm) || value.includes(searchTerm);
+      item.style.display = visible ? '' : 'none';
+    });
+  }
+  
+  // Helper to select/deselect item
+  function toggleItem(item) {
+    if (item.getAttribute('data-tui-selectbox-disabled') === 'true') return;
+    
+    const content = item.closest('[data-tui-popover-id]');
+    const contentId = content?.id;
+    const trigger = document.querySelector(`[data-tui-selectbox-content-id="${contentId}"]`);
+    if (!trigger) return;
+    
+    const isMultiple = trigger.getAttribute('data-tui-selectbox-multiple') === 'true';
+    const isSelected = item.getAttribute('data-tui-selectbox-selected') === 'true';
+    
+    if (!isMultiple) {
+      // Single selection - deselect all others
+      content.querySelectorAll('.select-item').forEach(el => {
+        el.setAttribute('data-tui-selectbox-selected', 'false');
+        el.classList.remove('bg-accent', 'text-accent-foreground');
+        const check = el.querySelector('.select-check');
+        if (check) check.classList.replace('opacity-100', 'opacity-0');
+      });
+    }
+    
+    // Toggle this item
+    item.setAttribute('data-tui-selectbox-selected', (!isSelected).toString());
+    
+    if (!isSelected) {
+      item.classList.add('bg-accent', 'text-accent-foreground');
+      const check = item.querySelector('.select-check');
+      if (check) check.classList.replace('opacity-0', 'opacity-100');
+    } else {
+      item.classList.remove('bg-accent', 'text-accent-foreground');
+      const check = item.querySelector('.select-check');
+      if (check) check.classList.replace('opacity-100', 'opacity-0');
+    }
+    
+    // Update display
+    updateDisplayValue(trigger);
+    
+    // Trigger change event
+    const hiddenInput = trigger.querySelector('input[type="hidden"]');
+    if (hiddenInput) {
+      hiddenInput.dispatchEvent(new Event('change', { bubbles: true }));
+    }
+    
+    // Close on single selection
+    if (!isMultiple && window.closePopover) {
+      window.closePopover(contentId);
+      setTimeout(() => trigger.focus(), 50);
+    }
+  }
+  
+  // Click handler
+  document.addEventListener('click', (e) => {
+    // Handle pill remove clicks
+    if (e.target.matches('[data-tui-selectbox-pill-remove]')) {
+      e.stopPropagation();
+      const value = e.target.getAttribute('data-tui-selectbox-value');
+      const trigger = e.target.closest('button.select-trigger');
+      const contentId = trigger?.getAttribute('data-tui-selectbox-content-id');
+      const content = document.getElementById(contentId);
+      const item = content?.querySelector(`.select-item[data-tui-selectbox-value="${value}"]`);
+      if (item) toggleItem(item);
       return;
     }
-
-    const isMultiple =
-      triggerButton.getAttribute("data-tui-selectbox-multiple") === "true";
-    const showPills =
-      triggerButton.getAttribute("data-tui-selectbox-show-pills") === "true";
-    const searchInput = content.querySelector("[data-tui-selectbox-search]");
-    const form = wrapper.closest("form");
-
-    // Remove existing event listeners
-    document.removeEventListener("click", handleTriggerClickFocusSearch);
-    triggerButton.removeEventListener("keydown", handleTriggerKeydownOpenContent);
-    triggerButton.removeEventListener("keydown", handleTriggerKeydownFocusSearch);
-    content.removeEventListener("keydown", handleContentKeydownNavigation);
-    content.removeEventListener("click", handleContentClickSelect);
-    content.removeEventListener("keydown", handleContentKeydownSelect);
-    content.removeEventListener("mouseover", handleContentMouseoverStyle);
-    content.removeEventListener("mouseleave", handleContentMouseleaveResetStyle);
-    if (searchInput) {
-      searchInput.removeEventListener("input", handleSearchInputOnInput);
+    
+    // Handle item clicks
+    const item = e.target.closest('.select-item');
+    if (item) {
+      e.preventDefault();
+      toggleItem(item);
+      return;
     }
-    if (form) {
-      form.removeEventListener("reset", handleFormReset);
-    }
-
-    // EventListener Functions
-    function handleTriggerKeydownOpenContent(event) {
-      if (
-        event.key.length === 1 ||
-        event.key === "Backspace" ||
-        event.key === "Delete"
-      ) {
-        event.preventDefault();
-        document.getElementById(contentID).click();
+    
+    // Focus search when trigger clicked
+    const trigger = e.target.closest('button.select-trigger');
+    if (trigger) {
+      const contentId = trigger.getAttribute('data-tui-selectbox-content-id');
+      const content = document.getElementById(contentId);
+      const searchInput = content?.querySelector('[data-tui-selectbox-search]');
+      if (searchInput) {
         setTimeout(() => {
+          if (content.style.display !== 'none') searchInput.focus();
+        }, 50);
+      }
+    }
+  });
+  
+  // Keyboard navigation
+  document.addEventListener('keydown', (e) => {
+    const activeElement = document.activeElement;
+    
+    // Handle typing on trigger to open and search
+    if (activeElement?.matches('button.select-trigger')) {
+      if (e.key.length === 1 || e.key === 'Backspace') {
+        e.preventDefault();
+        const contentId = activeElement.getAttribute('data-tui-selectbox-content-id');
+        activeElement.click(); // Open popover
+        
+        setTimeout(() => {
+          const searchInput = document.getElementById(contentId)?.querySelector('[data-tui-selectbox-search]');
           if (searchInput) {
             searchInput.focus();
-            if (event.key !== "Backspace" && event.key !== "Delete") {
-              searchInput.value = event.key;
-            }
+            if (e.key !== 'Backspace') searchInput.value = e.key;
           }
-        }, 0);
+        }, 50);
       }
     }
-
-    function handleTriggerClickFocusSearch(event) {
-      if (triggerButton.contains(event.target)) {
-        setTimeout(() => checkVisibility(content) && searchInput.focus(), 50);
-      }
-    }
-
-    function handleTriggerKeydownFocusSearch(event) {
-      if (event.key === "Enter" || event.key === " ") {
-        setTimeout(() => checkVisibility(content) && searchInput.focus(), 50);
-      }
-    }
-
-    function handleSearchInputOnInput(event) {
-      const searchTerm = event.target.value.toLowerCase().trim();
-      const items = content.querySelectorAll(".select-item");
-
-      items.forEach((item) => {
-        const itemText =
-          item
-            .querySelector(".select-item-text")
-            ?.textContent.toLowerCase() || "";
-        const itemValue =
-          item.getAttribute("data-tui-selectbox-value")?.toLowerCase() || "";
-        const isVisible =
-          searchTerm === "" ||
-          itemText.includes(searchTerm) ||
-          itemValue.includes(searchTerm);
-
-        item.style.display = isVisible ? "" : "none";
-      });
-    }
-
-    function handleContentKeydownNavigation(event) {
-      if (event.key === "ArrowDown" || event.key === "ArrowUp") {
-        event.preventDefault();
-        const visibleItems = Array.from(
-          content.querySelectorAll(".select-item"),
-        ).filter((item) => item.style.display !== "none");
-
+    
+    // Handle arrow navigation in content
+    const content = activeElement?.closest('[data-tui-popover-id]');
+    if (content?.querySelector('.select-item')) {
+      if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+        e.preventDefault();
+        
+        const visibleItems = Array.from(content.querySelectorAll('.select-item'))
+          .filter(item => item.style.display !== 'none');
+        
         if (visibleItems.length === 0) return;
-
-        const currentFocused = content.querySelector(".select-item:focus");
+        
+        const currentFocused = content.querySelector('.select-item:focus');
         let nextIndex = 0;
-
+        
         if (currentFocused) {
           const currentIndex = visibleItems.indexOf(currentFocused);
-          if (event.key === "ArrowDown") {
-            nextIndex = (currentIndex + 1) % visibleItems.length;
-          } else {
-            nextIndex =
-              (currentIndex - 1 + visibleItems.length) % visibleItems.length;
-          }
+          nextIndex = e.key === 'ArrowDown' 
+            ? (currentIndex + 1) % visibleItems.length
+            : (currentIndex - 1 + visibleItems.length) % visibleItems.length;
         }
-
+        
         visibleItems[nextIndex].focus();
-      } else if (event.key === "Enter") {
-        event.preventDefault();
-        const focusedItem = content.querySelector(".select-item:focus");
-        if (focusedItem) {
-          selectItem(focusedItem);
-        }
-      } else if (event.key === "Escape") {
-        event.preventDefault();
-        const focusedItem = content.querySelector(".select-item:focus");
-        if (focusedItem) {
-          // If focus is on an item, move to search input
-          searchInput.focus();
-        } else if (document.activeElement === searchInput) {
-          // If focus is on search input, close popover and return to trigger
-          if (window.closePopover) {
-            window.closePopover(contentID, true);
-            setTimeout(() => {
-              triggerButton.focus();
-            }, 50);
-          }
+      } else if (e.key === 'Enter' && activeElement?.matches('.select-item')) {
+        e.preventDefault();
+        toggleItem(activeElement);
+      } else if (e.key === 'Escape') {
+        const searchInput = content.querySelector('[data-tui-selectbox-search]');
+        if (activeElement?.matches('.select-item')) {
+          searchInput?.focus();
+        } else if (activeElement === searchInput && window.closePopover) {
+          window.closePopover(content.id);
+          const trigger = document.querySelector(`[data-tui-selectbox-content-id="${content.id}"]`);
+          setTimeout(() => trigger?.focus(), 50);
         }
       }
     }
-
-    function handleContentClickSelect(event) {
-      const item = event.target.closest(".select-item");
-      if (item) selectItem(item);
+  });
+  
+  // Search input handler
+  document.addEventListener('input', (e) => {
+    if (e.target.matches('[data-tui-selectbox-search]')) {
+      filterItems(e.target);
     }
-
-    function handleContentKeydownSelect(event) {
-      const item = event.target.closest(".select-item");
-      if (item && (event.key === "Enter" || event.key === " ")) {
-        event.preventDefault();
-        selectItem(item);
+  });
+  
+  // Hover effects
+  document.addEventListener('mouseover', (e) => {
+    const item = e.target.closest('.select-item');
+    if (!item || item.getAttribute('data-tui-selectbox-disabled') === 'true') return;
+    
+    const content = item.closest('[data-tui-popover-id]');
+    if (!content) return;
+    
+    // Reset all items
+    content.querySelectorAll('.select-item').forEach(el => {
+      if (el.getAttribute('data-tui-selectbox-selected') !== 'true') {
+        el.classList.remove('bg-accent', 'text-accent-foreground');
       }
+    });
+    
+    // Highlight hovered item if not selected
+    if (item.getAttribute('data-tui-selectbox-selected') !== 'true') {
+      item.classList.add('bg-accent', 'text-accent-foreground');
     }
-
-    function handleContentMouseoverStyle(event) {
-      const item = event.target.closest(".select-item");
-      if (!item || item.getAttribute("data-tui-selectbox-disabled") === "true")
-        return;
-      // Reset all others first
-      content.querySelectorAll(".select-item").forEach((el) => {
-        el.classList.remove("bg-accent", "text-accent-foreground", "bg-muted");
-      });
-      // Apply hover style only if not selected
-      if (item.getAttribute("data-tui-selectbox-selected") !== "true") {
-        item.classList.add("bg-accent", "text-accent-foreground");
-      }
-    }
-
-    // Reset visual state of items
-    function handleContentMouseleaveResetStyle() {
-      content.querySelectorAll(".select-item").forEach((item) => {
-        if (item.getAttribute("data-tui-selectbox-selected") === "true") {
-          item.classList.add("bg-accent", "text-accent-foreground");
-          item.classList.remove("bg-muted");
-        } else {
-          item.classList.remove(
-            "bg-accent",
-            "text-accent-foreground",
-            "bg-muted",
-          );
-        }
-      });
-    }
-
-    function handleFormReset(){
-      // Clear all selections
-      content.querySelectorAll(".select-item").forEach((item) => {
-        item.setAttribute("data-tui-selectbox-selected", "false");
-        const check = item.querySelector(".select-check");
-        if (check) check.classList.replace("opacity-100", "opacity-0");
-        item.classList.remove("bg-accent", "text-accent-foreground");
-      });
-
-      // Reset display value to placeholder
-      const placeholder =
-        valueEl.getAttribute("data-placeholder") ||
-        triggerButton
-          .querySelector(".select-value")
-          ?.getAttribute("data-placeholder") ||
-        "Select...";
-      valueEl.textContent = placeholder;
-      valueEl.classList.add("text-muted-foreground");
-
-      // Clear hidden input
-      hiddenInput.value = "";
-
-      // Clear search input if exists
-      if (searchInput) {
-        searchInput.value = "";
-        // Show all items again
-        content.querySelectorAll(".select-item").forEach((item) => {
-          item.style.display = "";
+  });
+  
+  // Form reset
+  document.addEventListener('reset', (e) => {
+    if (!e.target.matches('form')) return;
+    
+    e.target.querySelectorAll('.select-container').forEach(wrapper => {
+      const trigger = wrapper.querySelector('button.select-trigger');
+      const contentId = trigger?.getAttribute('data-tui-selectbox-content-id');
+      const content = document.getElementById(contentId);
+      
+      if (content) {
+        // Clear selections
+        content.querySelectorAll('.select-item').forEach(item => {
+          item.setAttribute('data-tui-selectbox-selected', 'false');
+          item.classList.remove('bg-accent', 'text-accent-foreground');
+          const check = item.querySelector('.select-check');
+          if (check) check.classList.replace('opacity-100', 'opacity-0');
         });
-      }
-    }
-
-    // Add keyboard event handler for trigger button
-    triggerButton.addEventListener("keydown", handleTriggerKeydownOpenContent);
-
-    if (searchInput) {
-      // Focus when opened by click
-      document.addEventListener("click", handleTriggerClickFocusSearch);
-      // Focus when opened by Enter key
-      triggerButton.addEventListener("keydown", handleTriggerKeydownFocusSearch);
-      searchInput.addEventListener("input", handleSearchInputOnInput);
-    }
-
-    // Keyboard navigation event listener
-    content.addEventListener("keydown", handleContentKeydownNavigation);
-
-    // Initialize display value if an item is pre-selected
-    const selectedItems = content.querySelectorAll(
-      '.select-item[data-tui-selectbox-selected="true"]',
-    );
-    if (selectedItems.length > 0) {
-      if (isMultiple) {
-        if (showPills) {
-          valueEl.innerHTML = "";
-          const pillsContainer = document.createElement("div");
-          pillsContainer.className =
-            "flex flex-nowrap overflow-hidden max-w-full whitespace-nowrap gap-1";
-          Array.from(selectedItems).forEach((selectedItem) => {
-            const pill = document.createElement("div");
-            pill.className =
-              "flex items-center gap-1 px-2 py-1 text-xs rounded-md bg-primary text-primary-foreground";
-            const pillText = document.createElement("span");
-            pillText.textContent =
-              selectedItem.querySelector(".select-item-text").textContent;
-            const closeButton = document.createElement("button");
-            closeButton.className = "hover:text-destructive focus:outline-none";
-            closeButton.innerHTML = "x";
-            closeButton.onclick = (e) => {
-              e.stopPropagation();
-              selectItem(selectedItem);
-            };
-            pill.appendChild(pillText);
-            pill.appendChild(closeButton);
-            pillsContainer.appendChild(pill);
-          });
-          valueEl.appendChild(pillsContainer);
-          valueEl.classList.remove("text-muted-foreground");
-
-          // Pills overflow control
-          setTimeout(() => {
-            const pillsWidth = pillsContainer.scrollWidth;
-            const valueWidth = valueEl.clientWidth;
-            if (pillsWidth > valueWidth) {
-              const selectedCountText =
-                triggerButton.getAttribute(
-                  "data-tui-selectbox-selected-count-text",
-                ) || `${selectedItems.length} items selected`;
-              const msg = selectedCountText.replace(
-                "{n}",
-                selectedItems.length,
-              );
-              valueEl.innerHTML = msg;
-              valueEl.classList.remove("text-muted-foreground");
-            }
-          }, 0);
-        } else {
-          valueEl.textContent = `${selectedItems.length} items selected`;
-          valueEl.classList.remove("text-muted-foreground");
-        }
-        // Store selected values as CSV
-        const selectedValues = Array.from(selectedItems).map((item) =>
-          item.getAttribute("data-tui-selectbox-value"),
-        );
-        hiddenInput.value = selectedValues.join(",");
-      } else {
-        // For single selection, show the selected item's text
-        const selectedItem = selectedItems[0];
-        const itemText = selectedItem.querySelector(".select-item-text");
-        if (itemText) {
-          valueEl.textContent = itemText.textContent;
-          valueEl.classList.remove("text-muted-foreground");
-        }
-        if (hiddenInput) {
-          const value = selectedItem.getAttribute("data-tui-selectbox-value") || "";
-
-          // Only set initial value if not already set
-          if (!hiddenInput.hasAttribute("data-tui-selectbox-input-initialized")) {
-            hiddenInput.value = value;
-            hiddenInput.setAttribute("data-tui-selectbox-input-initialized", "true");
-            hiddenInput.dispatchEvent(new Event("change", { bubbles: true }));
-          }
+        
+        // Clear search
+        const searchInput = content.querySelector('[data-tui-selectbox-search]');
+        if (searchInput) {
+          searchInput.value = '';
+          filterItems(searchInput);
         }
       }
-    }
-
-    // Select an item
-    function selectItem(item) {
-      if (
-        !item ||
-        item.getAttribute("data-tui-selectbox-disabled") === "true" ||
-        isSelecting
-      )
-        return;
-
-      isSelecting = true;
-
-      const value = item.getAttribute("data-tui-selectbox-value");
-      const itemText = item.querySelector(".select-item-text");
-
-      if (isMultiple) {
-        // Toggle selection for multiple mode
-        const isSelected =
-          item.getAttribute("data-tui-selectbox-selected") === "true";
-        item.setAttribute(
-          "data-tui-selectbox-selected",
-          (!isSelected).toString(),
-        );
-
-        if (!isSelected) {
-          item.classList.add("bg-accent", "text-accent-foreground");
-          const check = item.querySelector(".select-check");
-          if (check) check.classList.replace("opacity-0", "opacity-100");
-        } else {
-          item.classList.remove("bg-accent", "text-accent-foreground");
-          const check = item.querySelector(".select-check");
-          if (check) check.classList.replace("opacity-100", "opacity-0");
-        }
-
-        // Update display value
-        const selectedItems = content.querySelectorAll(
-          '.select-item[data-tui-selectbox-selected="true"]',
-        );
-        if (selectedItems.length > 0) {
-          if (showPills) {
-            // Clear existing content
-            valueEl.innerHTML = "";
-
-            // Create pills container
-            const pillsContainer = document.createElement("div");
-            pillsContainer.className =
-              "flex flex-nowrap overflow-hidden max-w-full whitespace-nowrap gap-1";
-
-            // Add pills for each selected item
-            Array.from(selectedItems).forEach((selectedItem) => {
-              const pill = document.createElement("div");
-              pill.className =
-                "flex items-center gap-1 px-2 py-0.5 text-xs rounded-full bg-accent text-accent-foreground";
-
-              const pillText = document.createElement("span");
-              pillText.textContent =
-                selectedItem.querySelector(".select-item-text").textContent;
-
-              const closeButton = document.createElement("button");
-              closeButton.className =
-                "hover:text-destructive focus:outline-none";
-              closeButton.innerHTML = "×";
-              closeButton.onclick = (e) => {
-                e.stopPropagation();
-                selectItem(selectedItem);
-              };
-
-              pill.appendChild(pillText);
-              pill.appendChild(closeButton);
-              pillsContainer.appendChild(pill);
-            });
-
-            valueEl.appendChild(pillsContainer);
-            valueEl.classList.remove("text-muted-foreground");
-
-            // Pills overflow kontrolü
-            setTimeout(() => {
-              const pillsWidth = pillsContainer.scrollWidth;
-              const valueWidth = valueEl.clientWidth;
-              if (pillsWidth > valueWidth) {
-                const selectedCountText =
-                  triggerButton.getAttribute(
-                    "data-tui-selectbox-selected-count-text",
-                  ) || `${selectedItems.length} items selected`;
-                const msg = selectedCountText.replace(
-                  "{n}",
-                  selectedItems.length,
-                );
-                valueEl.innerHTML = msg;
-                valueEl.classList.remove("text-muted-foreground");
-              }
-            }, 0);
-          } else {
-            valueEl.textContent = `${selectedItems.length} items selected`;
-            valueEl.classList.remove("text-muted-foreground");
-          }
-        } else {
-          valueEl.textContent =
-            valueEl.getAttribute("data-tui-selectbox-placeholder") || "";
-          valueEl.classList.add("text-muted-foreground");
-        }
-
-        // Update hidden input with CSV of selected values
-        const selectedValues = Array.from(selectedItems).map((item) =>
-          item.getAttribute("data-tui-selectbox-value"),
-        );
-        hiddenInput.value = selectedValues.join(",");
-        hiddenInput.dispatchEvent(new Event("change", { bubbles: true }));
-      } else {
-        // Single selection mode
-        // Reset all items in this content
-        content.querySelectorAll(".select-item").forEach((el) => {
-          el.setAttribute("data-tui-selectbox-selected", "false");
-          el.classList.remove(
-            "bg-accent",
-            "text-accent-foreground",
-            "bg-muted",
-          );
-          const check = el.querySelector(".select-check");
-          if (check) check.classList.replace("opacity-100", "opacity-0");
-        });
-
-        // Mark new selection
-        item.setAttribute("data-tui-selectbox-selected", "true");
-        item.classList.add("bg-accent", "text-accent-foreground");
-        const check = item.querySelector(".select-check");
-        if (check) check.classList.replace("opacity-0", "opacity-100");
-
-        // Update display value
-        if (valueEl && itemText) {
-          valueEl.textContent = itemText.textContent;
-          valueEl.classList.remove("text-muted-foreground");
-        }
-
-        // Update hidden input & trigger change event
-        if (hiddenInput && value !== null) {
-          const oldValue = hiddenInput.value;
-          hiddenInput.value = value;
-
-          // Only trigger change if value actually changed
-          if (oldValue !== value) {
-            hiddenInput.dispatchEvent(new Event("change", { bubbles: true }));
-          }
-        }
-
-        // Close the popover using the correct contentID
-        if (window.closePopover) {
-          window.closePopover(contentID, true);
-          // Return focus to trigger
-          setTimeout(() => {
-            triggerButton.focus();
-          }, 50);
-        } else {
-          console.warn("closePopover function not found");
-        }
+      
+      if (trigger) updateDisplayValue(trigger);
+    });
+  });
+  
+  // MutationObserver for initial setup
+  new MutationObserver(() => {
+    document.querySelectorAll('.select-container').forEach(wrapper => {
+      const trigger = wrapper.querySelector('button.select-trigger');
+      if (trigger && !trigger.hasAttribute('data-tui-selectbox-setup')) {
+        trigger.setAttribute('data-tui-selectbox-setup', 'true');
+        updateDisplayValue(trigger);
       }
-
-      setTimeout(() => {
-        isSelecting = false;
-      }, 100);
-    }
-
-
-    // Event Listeners for Items (delegated from content for robustness)
-    content.addEventListener("click", handleContentClickSelect);
-    content.addEventListener("keydown", handleContentKeydownSelect);
-    // Event: Mouse hover on items (delegated)
-    content.addEventListener("mouseover", handleContentMouseoverStyle);
-    // Reset hover styles when mouse leaves the content area
-    content.addEventListener("mouseleave", handleContentMouseleaveResetStyle);
-
-    // Form reset support
-    if (form) {
-      form.addEventListener("reset", handleFormReset);
-    }
-  }
-
-  function init(root = document) {
-    const containers = root.querySelectorAll(".select-container:not([data-tui-selectbox-initialized])");
-    containers.forEach(initSelect);
-  }
-
-  window.templUI = window.templUI || {};
-  window.templUI.selectbox = { init: init };
-
-  document.addEventListener("DOMContentLoaded", () => init());
+    });
+  }).observe(document.body, { childList: true, subtree: true });
 })();
-
