@@ -166,6 +166,12 @@ import "./floating_ui_core.js";
     // Handle trigger clicks
     const trigger = e.target.closest("[data-tui-popover-trigger]");
     if (trigger && trigger.getAttribute("data-tui-popover-type") !== "hover") {
+      // Check for disabled elements
+      const disabledChild = trigger.querySelector(':disabled, [disabled], [aria-disabled="true"]');
+      if (disabledChild) {
+        return; // Don't open popover if a child is disabled
+      }
+      
       e.stopPropagation();
       const popoverId = trigger.getAttribute("data-tui-popover-trigger");
       const isOpen = trigger.getAttribute("data-tui-popover-open") === "true";
@@ -298,6 +304,30 @@ import "./floating_ui_core.js";
         }
       });
     }
+  });
+  
+  // Auto-update cursor based on disabled state
+  function updateTriggerStates() {
+    document.querySelectorAll('[data-tui-popover-trigger]').forEach(trigger => {
+      const hasDisabled = trigger.querySelector(':disabled, [disabled], [aria-disabled="true"]');
+      if (hasDisabled) {
+        trigger.classList.add('cursor-not-allowed', 'opacity-50');
+        trigger.classList.remove('cursor-pointer');
+      } else {
+        trigger.classList.remove('cursor-not-allowed', 'opacity-50');
+        trigger.classList.add('cursor-pointer');
+      }
+    });
+  }
+  
+  // Initial update and observe for changes
+  document.addEventListener('DOMContentLoaded', updateTriggerStates);
+  
+  new MutationObserver(updateTriggerStates).observe(document.body, { 
+    subtree: true, 
+    attributes: true, 
+    attributeFilter: ['disabled', 'aria-disabled'],
+    childList: true
   });
   
   // Expose for other components
