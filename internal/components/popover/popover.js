@@ -83,9 +83,6 @@ import "./floating_ui_core.js";
     const content = document.getElementById(popoverId);
     if (!content) return;
     
-    // Close other popovers
-    closeAllPopovers(popoverId);
-    
     // Move to portal
     const portal = document.querySelector("[data-tui-popover-portal-container]");
     if (portal && content.parentNode !== portal) {
