@@ -42,6 +42,7 @@ type Props struct {
 	Target     string
 	Disabled   bool
 	Type       Type
+	Form       string
 }
 
 templ Button(props ...Props) {
@@ -98,6 +99,9 @@ templ Button(props ...Props) {
 			}
 			if p.Type != "" {
 				type={ string(p.Type) }
+			}
+			if p.Form != "" {
+				form={ p.Form }
 			}
 			disabled?={ p.Disabled }
 			{ p.Attributes... }
