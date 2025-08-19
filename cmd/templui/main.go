@@ -1099,9 +1099,9 @@ func addScriptTemplateToFiles(config Config, comp ComponentDef, jsFileName strin
 			continue
 		}
 
-		// Create the Script() template with correct templ syntax
+		// Create the Script() template with correct templ syntax and nonce support
 		scriptTemplate := fmt.Sprintf(`templ Script() {
-	<script defer src="%s"></script>
+	<script defer nonce={ templ.GetNonce(ctx) } src="%s"></script>
 }`, webPath)
 
 		// Add Script() template at the end
