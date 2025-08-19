@@ -14,6 +14,7 @@ type Props struct {
 	Disabled   bool
 	Required   bool
 	Checked    bool
+	Form       string
 	Icon       templ.Component
 }
 
@@ -35,6 +36,9 @@ templ Checkbox(props ...Props) {
 			}
 			if p.Value != "" {
 				value={ p.Value }
+			}
+			if p.Form != "" {
+				form={ p.Form }
 			}
 			type="checkbox"
 			class={
