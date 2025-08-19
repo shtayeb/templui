@@ -1,7 +1,7 @@
 package textarea
 
 import (
-	"github.com/axzilla/templui/internal/utils"
+	"github.com/templui/templui/internal/utils"
 	"strconv"
 )
 
@@ -30,7 +30,7 @@ templ Textarea(props ...Props) {
 	}
 	<textarea
 		id={ p.ID }
-		data-textarea
+		data-tui-textarea
 		if p.Name != "" {
 			name={ p.Name }
 		}
@@ -47,7 +47,7 @@ templ Textarea(props ...Props) {
 			aria-invalid="true"
 		}
 		if p.AutoResize {
-			data-auto-resize="true"
+			data-tui-textarea-auto-resize="true"
 		}
 		class={
 			utils.TwMerge(

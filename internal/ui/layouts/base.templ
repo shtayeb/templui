@@ -2,21 +2,19 @@ package layouts
 
 import (
 	"fmt"
-	"github.com/axzilla/templui/internal/config"
-	"github.com/axzilla/templui/internal/ctxkeys"
-	"github.com/axzilla/templui/internal/ui/modules"
+	"github.com/templui/templui/internal/config"
+	"github.com/templui/templui/internal/ctxkeys"
+	"github.com/templui/templui/internal/ui/modules"
 )
-
 
 templ BaseLayout(title, description string) {
 	<!DOCTYPE html>
 	<html lang="en">
 		<head>
+			// Google
+			<meta name="google-site-verification" content="lcKF60IRUofKfZpOIYKOD7xyvrL220KpjmGjJcflde4"/>
 			// SEO
 			@modules.SEO(title, description, ctx.Value(ctxkeys.URLPathValue).(string))
-			// Charset & Viewport
-			<meta charset="UTF-8"/>
-			<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 			// Preload fonts to prevent flickering
 			<link rel="preload" href="/assets/fonts/geist/geist-variable.woff2" as="font" type="font/woff2" crossorigin="anonymous"/>
 			<link rel="preload" href="/assets/fonts/geist/geist-mono-variable.woff2" as="font" type="font/woff2" crossorigin="anonymous"/>
@@ -31,8 +29,6 @@ templ BaseLayout(title, description string) {
 			}
 			// Shiki Highlighter Script
 			@modules.CodeHighlightingScript()
-			// Favicon
-			<link rel="icon" href="/assets/img/favicon.svg" type="image/x-icon"/>
 			// Tailwind CSS
 			<link href="/assets/css/output.css" rel="stylesheet"/>
 			// Custom CSS
@@ -58,30 +54,17 @@ templ BaseLayout(title, description string) {
 		</body>
 		// HTMX
 		<script nonce={ templ.GetNonce(ctx) }>
-			// Re-initialize templUI components after HTMX swaps
-			document.body.addEventListener("htmx:afterSwap", (e) => {
-				if (window.templUI) {
-					Object.values(window.templUI).forEach(comp => {
-						comp.init?.(e.detail.elt);
-					});
-				}
+			// Active link updater
+			document.body.addEventListener('htmx:afterSettle', () => {
+				document.querySelectorAll('aside a').forEach(a => {
+					a.classList.toggle('bg-accent', a.href === location.href);
+				});
 			});
 
-			// Re-initialize components after out-of-band swaps
-			document.body.addEventListener("htmx:oobAfterSwap", (e) => {
-				if (window.templUI) {
-					Object.values(window.templUI).forEach(comp => {
-						comp.init?.(e.detail.target);
-					});
-				}
-			});
-
-			// Optional: Cleanup before swap (for components with event listeners)
-			document.body.addEventListener("htmx:beforeSwap", (e) => {
-				if (window.templUI) {
-					Object.values(window.templUI).forEach(comp => {
-						comp.cleanup?.(e.detail.target);
-					});
+			// Scroll to top after content swap
+			document.body.addEventListener('htmx:afterSwap', (e) => {
+				if (e.detail.target.id === 'main-content') {
+					e.detail.target.scrollTop = 0;
 				}
 			});
 		</script>

@@ -1,6 +1,6 @@
 package layouts
 
-import "github.com/axzilla/templui/internal/ui/modules"
+import "github.com/templui/templui/internal/ui/modules"
 
 templ DocsLayout(title, description string, tocItems []modules.TableOfContentsItem) {
 	@BaseLayout(title, description) {
@@ -14,20 +14,24 @@ templ DocsLayout(title, description string, tocItems []modules.TableOfContentsIt
 						@modules.Sidebar()
 					</div>
 				</div>
-				<main class="flex-1 overflow-y-auto">
-					<div class="pt-8 pb-8 px-4">
-						<div class="max-w-3xl mx-auto">
-							{ children... }
+				<main class="flex-1 overflow-y-auto" id="main-content">
+					@templ.Fragment("content") {
+						<div class="pt-8 pb-8 px-4">
+							<div class="max-w-3xl mx-auto">
+								{ children... }
+							</div>
 						</div>
-					</div>
-					@modules.Footer()
+						@modules.Footer()
+					}
 				</main>
 				<div class="hidden lg:block w-64 overflow-y-auto">
-					<div class="pt-8 pb-8 pr-6 pl-4">
-						@modules.TableOfContents(modules.TableOfContentsProps{
-							Items: tocItems,
-						})
-					</div>
+					@templ.Fragment("toc") {
+						<div class="pt-8 pb-8 pr-6 pl-4" id="toc-container" hx-swap-oob="innerHTML">
+							@modules.TableOfContents(modules.TableOfContentsProps{
+								Items: tocItems,
+							})
+						</div>
+					}
 				</div>
 			</div>
 		</div>

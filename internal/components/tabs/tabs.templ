@@ -2,7 +2,7 @@ package tabs
 
 import (
 	"context"
-	"github.com/axzilla/templui/internal/utils"
+	"github.com/templui/templui/internal/utils"
 )
 
 type Props struct {
@@ -105,10 +105,10 @@ templ Trigger(props ...TriggerProps) {
 				p.Class,
 			),
 		}
-		data-tabs-trigger
-		data-tabs-id={ tabsID }
-		data-tabs-value={ p.Value }
-		data-state={ utils.IfElse(p.IsActive, "active", "inactive") }
+		data-tui-tabs-trigger
+		data-tui-tabs-id={ tabsID }
+		data-tui-tabs-value={ p.Value }
+		data-tui-tabs-state={ utils.IfElse(p.IsActive, "active", "inactive") }
 		{ p.Attributes... }
 	>
 		{ children... }
@@ -139,10 +139,10 @@ templ Content(props ...ContentProps) {
 				p.Class,
 			),
 		}
-		data-tabs-content
-		data-tabs-id={ tabsID }
-		data-tabs-value={ p.Value }
-		data-state={ utils.IfElse(p.IsActive, "active", "inactive") }
+		data-tui-tabs-content
+		data-tui-tabs-id={ tabsID }
+		data-tui-tabs-value={ p.Value }
+		data-tui-tabs-state={ utils.IfElse(p.IsActive, "active", "inactive") }
 		{ p.Attributes... }
 	>
 		{ children... }

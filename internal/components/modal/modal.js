@@ -1,172 +1,124 @@
 (function () {
-  const modals = new Map();
+  'use strict';
+  
   let openModalId = null;
-
-  // Update trigger states
-  function updateTriggers(modalId, isOpen) {
-    document
-      .querySelectorAll(`[data-modal-trigger="${modalId}"]`)
-      .forEach((trigger) => {
-        trigger.setAttribute("data-open", isOpen);
-      });
-  }
-
-  // Create modal instance
-  function createModal(modal) {
-    if (!modal || modal.hasAttribute("data-initialized")) return null;
-    modal.setAttribute("data-initialized", "true");
+  
+  // Open modal
+  function openModal(modalId) {
+    // Close any open modal first
+    if (openModalId) closeModal(openModalId);
     
-    const modalId = modal.id;
-    const content = modal.querySelector("[data-modal-content]");
-    const isInitiallyOpen = modal.hasAttribute("data-initial-open");
-
-    if (!content || !modalId) return null;
-
-    let isOpen = isInitiallyOpen;
-
-    // Set state
-    function setState(open) {
-      isOpen = open;
-      modal.style.display = open ? "flex" : "none";
-      modal.setAttribute("data-open", open);
-      updateTriggers(modalId, open);
-
-      if (open) {
-        openModalId = modalId;
-        document.body.style.overflow = "hidden";
-
-        // Animation classes
-        modal.classList.remove("opacity-0");
-        modal.classList.add("opacity-100");
-        content.classList.remove("scale-95", "opacity-0");
-        content.classList.add("scale-100", "opacity-100");
-
-        // Focus first element
-        setTimeout(() => {
-          const focusable = content.querySelector(
-            'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
-          );
-          focusable?.focus();
-        }, 50);
-      } else {
+    const modal = document.getElementById(modalId);
+    const content = modal?.querySelector('[data-tui-modal-content]');
+    if (!modal || !content) return;
+    
+    openModalId = modalId;
+    modal.style.display = 'flex';
+    modal.setAttribute('data-tui-modal-open', 'true');
+    document.body.style.overflow = 'hidden';
+    
+    // Update triggers
+    document.querySelectorAll(`[data-tui-modal-trigger="${modalId}"]`).forEach(trigger => {
+      trigger.setAttribute('data-tui-modal-trigger-open', 'true');
+    });
+    
+    // Animation
+    requestAnimationFrame(() => {
+      modal.classList.remove('opacity-0');
+      modal.classList.add('opacity-100');
+      content.classList.remove('scale-95', 'opacity-0');
+      content.classList.add('scale-100', 'opacity-100');
+    });
+    
+    // Focus first focusable element
+    setTimeout(() => {
+      const focusable = content.querySelector('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])');
+      focusable?.focus();
+    }, 50);
+  }
+  
+  // Close modal
+  function closeModal(modalId) {
+    const modal = document.getElementById(modalId);
+    const content = modal?.querySelector('[data-tui-modal-content]');
+    if (!modal) return;
+    
+    modal.setAttribute('data-tui-modal-open', 'false');
+    
+    // Update triggers
+    document.querySelectorAll(`[data-tui-modal-trigger="${modalId}"]`).forEach(trigger => {
+      trigger.setAttribute('data-tui-modal-trigger-open', 'false');
+    });
+    
+    // Animation
+    modal.classList.remove('opacity-100');
+    modal.classList.add('opacity-0');
+    content?.classList.remove('scale-100', 'opacity-100');
+    content?.classList.add('scale-95', 'opacity-0');
+    
+    // Hide after animation
+    setTimeout(() => {
+      if (modal.getAttribute('data-tui-modal-open') === 'false') {
+        modal.style.display = 'none';
         if (openModalId === modalId) {
           openModalId = null;
-          document.body.style.overflow = "";
+          document.body.style.overflow = '';
         }
-
-        // Animation classes
-        modal.classList.remove("opacity-100");
-        modal.classList.add("opacity-0");
-        content.classList.remove("scale-100", "opacity-100");
-        content.classList.add("scale-95", "opacity-0");
       }
-    }
-
-    // Open modal
-    function open() {
-      // Close any other open modal
-      if (openModalId && openModalId !== modalId) {
-        modals.get(openModalId)?.close(true);
+    }, 300);
+  }
+  
+  // Event delegation
+  document.addEventListener('click', (e) => {
+    // Handle trigger clicks
+    const trigger = e.target.closest('[data-tui-modal-trigger]');
+    if (trigger && !trigger.hasAttribute('disabled') && !trigger.classList.contains('opacity-50')) {
+      const modalId = trigger.getAttribute('data-tui-modal-trigger');
+      const modal = document.getElementById(modalId);
+      if (modal?.getAttribute('data-tui-modal-open') === 'true') {
+        closeModal(modalId);
+      } else {
+        openModal(modalId);
       }
-
-      modal.style.display = "flex";
-      modal.offsetHeight; // Force reflow
-      setState(true);
-
-      // Add event listeners
-      document.addEventListener("keydown", handleEsc);
-      document.addEventListener("click", handleClickAway);
+      return;
     }
-
-    // Close modal
-    function close(immediate = false) {
-      setState(false);
-
-      // Remove event listeners
-      document.removeEventListener("keydown", handleEsc);
-      document.removeEventListener("click", handleClickAway);
-
-      // Hide after animation
-      if (!immediate) {
-        setTimeout(() => {
-          if (!isOpen) modal.style.display = "none";
-        }, 300);
-      }
+    
+    // Handle close button clicks
+    const closeBtn = e.target.closest('[data-tui-modal-close]');
+    if (closeBtn) {
+      const modal = closeBtn.closest('[data-tui-modal]');
+      if (modal?.id) closeModal(modal.id);
+      return;
     }
-
-    // Toggle modal
-    function toggle() {
-      isOpen ? close() : open();
-    }
-
-    // Handle escape key
-    function handleEsc(e) {
-      if (
-        e.key === "Escape" &&
-        isOpen &&
-        modal.getAttribute("data-disable-esc") !== "true"
-      ) {
-        close();
-      }
-    }
-
+    
     // Handle click away
-    function handleClickAway(e) {
-      if (modal.getAttribute("data-disable-click-away") === "true") return;
-
-      if (!content.contains(e.target) && !isTriggerClick(e.target)) {
-        close();
+    if (openModalId) {
+      const modal = document.getElementById(openModalId);
+      const content = modal?.querySelector('[data-tui-modal-content]');
+      if (modal?.getAttribute('data-tui-modal-disable-click-away') !== 'true' &&
+          !content?.contains(e.target) && 
+          !e.target.closest('[data-tui-modal-trigger]')) {
+        closeModal(openModalId);
       }
     }
-
-    // Check if click is on a trigger
-    function isTriggerClick(target) {
-      const trigger = target.closest("[data-modal-trigger]");
-      return trigger && trigger.getAttribute("data-modal-trigger") === modalId;
+  });
+  
+  // ESC key handler
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && openModalId) {
+      const modal = document.getElementById(openModalId);
+      if (modal?.getAttribute('data-tui-modal-disable-esc') !== 'true') {
+        closeModal(openModalId);
+      }
     }
-
-    // Setup close buttons
-    modal.querySelectorAll("[data-modal-close]").forEach((btn) => {
-      btn.addEventListener("click", close);
-    });
-
-    // Set initial state
-    setState(isInitiallyOpen);
-
-    return { open, close, toggle };
-  }
-
-  // Initialize all modals and triggers
-  function init(root = document) {
-    // Find and initialize modals
-    root.querySelectorAll("[data-modal]:not([data-initialized])").forEach((modal) => {
-      const modalInstance = createModal(modal);
-      if (modalInstance && modal.id) {
-        modals.set(modal.id, modalInstance);
+  });
+  
+  // MutationObserver for initial open state
+  new MutationObserver(() => {
+    document.querySelectorAll('[data-tui-modal][data-tui-modal-initial-open]').forEach(modal => {
+      if (modal.id && modal.getAttribute('data-tui-modal-open') !== 'true') {
+        openModal(modal.id);
       }
     });
-
-    // Setup trigger clicks
-    root.querySelectorAll("[data-modal-trigger]").forEach((trigger) => {
-      if (trigger.dataset.initialized) return;
-      trigger.dataset.initialized = "true";
-
-      const modalId = trigger.getAttribute("data-modal-trigger");
-      trigger.addEventListener("click", () => {
-        if (
-          !trigger.hasAttribute("disabled") &&
-          !trigger.classList.contains("opacity-50")
-        ) {
-          modals.get(modalId)?.toggle();
-        }
-      });
-    });
-  }
-
-  // Export
-  window.templUI = window.templUI || {};
-  window.templUI.modal = { init: init };
-
-  // Auto-initialize
-  document.addEventListener("DOMContentLoaded", () => init());
+  }).observe(document.body, { childList: true, subtree: true });
 })();

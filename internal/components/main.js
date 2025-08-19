@@ -18,4 +18,5 @@ import "./slider/slider.js";
 import "./tabs/tabs.js";
 import "./tagsinput/tagsinput.js";
 import "./textarea/textarea.js";
+import "./timepicker/timepicker.js";
 import "./toast/toast.js";

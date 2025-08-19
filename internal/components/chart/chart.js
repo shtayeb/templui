@@ -1,9 +1,9 @@
 import "./chartjs.js";
 
-window.chartInstances = window.chartInstances || {};
-
 (function () {
-  if (!window.chartScriptInitialized) {
+  'use strict';
+  
+  const chartInstances = new Map();
     function getThemeColors() {
       const style = getComputedStyle(document.documentElement);
       return {
@@ -16,17 +16,14 @@ window.chartInstances = window.chartInstances || {};
     }
 
     function initChart(canvas) {
-      if (!canvas || !canvas.id || !canvas.hasAttribute("data-chart-id"))
+      if (!canvas || !canvas.id || !canvas.hasAttribute("data-tui-chart-id"))
         return;
       
-      if (canvas.hasAttribute("data-initialized")) return;
-      canvas.setAttribute("data-initialized", "true");
-
-      if (window.chartInstances[canvas.id]) {
+      if (chartInstances.has(canvas.id)) {
         cleanupChart(canvas);
       }
 
-      const dataId = canvas.getAttribute("data-chart-id");
+      const dataId = canvas.getAttribute("data-tui-chart-id");
       const dataElement = document.getElementById(dataId);
       if (!dataElement) return;
 
@@ -148,60 +145,55 @@ window.chartInstances = window.chartInstances || {};
         };
 
         // eslint-disable-next-line no-undef
-        window.chartInstances[canvas.id] = new Chart(canvas, finalChartConfig);
+        chartInstances.set(canvas.id, new Chart(canvas, finalChartConfig));
       } catch {}
     }
 
     function cleanupChart(canvas) {
-      if (!canvas || !canvas.id || !window.chartInstances[canvas.id]) return;
+      if (!canvas || !canvas.id || !chartInstances.has(canvas.id)) return;
       try {
-        window.chartInstances[canvas.id].destroy();
+        chartInstances.get(canvas.id).destroy();
       } finally {
-        delete window.chartInstances[canvas.id];
-      }
-    }
-
-    function init(root = document) {
-      if (typeof Chart === "undefined") return;
-
-      for (const canvas of root.querySelectorAll("canvas[data-chart-id]:not([data-initialized])")) {
-        initChart(canvas);
+        chartInstances.delete(canvas.id);
       }
     }
 
     function waitForChartAndInit() {
       if (typeof Chart !== "undefined") {
-        init();
+        document.querySelectorAll("canvas[data-tui-chart-id]").forEach(initChart);
+        setupObservers();
       } else {
         setTimeout(waitForChartAndInit, 100);
       }
     }
 
-    window.templUI = window.templUI || {};
-    window.templUI.chart = { init: init, cleanup: cleanupChart };
-
     document.addEventListener("DOMContentLoaded", waitForChartAndInit);
 
-    const observer = new MutationObserver(() => {
-      let timeout;
-      clearTimeout(timeout);
-      timeout = setTimeout(() => {
-        for (const canvas of document.querySelectorAll(
-          "canvas[data-chart-id]"
-        )) {
-          if (window.chartInstances[canvas.id]) {
-            cleanupChart(canvas);
+    function setupObservers() {
+      // Observe theme changes
+      let themeTimeout;
+      new MutationObserver(() => {
+        clearTimeout(themeTimeout);
+        themeTimeout = setTimeout(() => {
+          document.querySelectorAll("canvas[data-tui-chart-id]").forEach((canvas) => {
+            if (chartInstances.has(canvas.id)) {
+              cleanupChart(canvas);
+              initChart(canvas);
+            }
+          });
+        }, 50);
+      }).observe(document.documentElement, {
+        attributes: true,
+        attributeFilter: ["class", "style"],
+      });
+      
+      // Observe for new charts
+      new MutationObserver(() => {
+        document.querySelectorAll("canvas[data-tui-chart-id]").forEach((canvas) => {
+          if (!chartInstances.has(canvas.id)) {
             initChart(canvas);
           }
-        }
-      }, 50);
-    });
-
-    observer.observe(document.documentElement, {
-      attributes: true,
-      attributeFilter: ["class", "style"],
-    });
-
-    window.chartScriptInitialized = true;
-  }
+        });
+      }).observe(document.body, { childList: true, subtree: true });
+    }
 })();

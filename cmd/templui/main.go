@@ -8,6 +8,7 @@ import (
 	"io"
 	"net/http"
 	"os"
+	"os/exec"
 	"path/filepath"
 	"regexp"
 	"strings"
@@ -19,11 +20,11 @@ const (
 	manifestPath   = "internal/manifest.json" // Path to the manifest within the repository
 	// Base URL for fetching raw file content.
 	// Needs adjustment if the repository location changes.
-	rawContentBaseURL = "https://raw.githubusercontent.com/axzilla/templui/"
+	rawContentBaseURL = "https://raw.githubusercontent.com/templui/templui/"
 )
 
 // version of the tool (can be set during build with ldflags).
-var version = "v0.83.1"
+var version = "v0.87.1"
 
 // getDefaultRef returns the current stable version
 // Uses the same version as the CLI tool itself for consistency
@@ -335,6 +336,27 @@ func main() {
 		return
 	}
 
+	// Handle the 'upgrade' command.
+	if strings.HasPrefix(commandArg, "upgrade") {
+		var ref string
+
+		if strings.Contains(commandArg, "@") {
+			parts := strings.SplitN(commandArg, "@", 2)
+			if len(parts) == 2 && parts[0] == "upgrade" && parts[1] != "" {
+				ref = parts[1]
+				fmt.Printf("Updating templUI cli using specified ref: %s\n", ref)
+			} else {
+				fmt.Printf("Error: Invalid format '%s'. Use 'upgrade' or 'upgrade@<ref>'.\n", commandArg)
+				return
+			}
+		}
+
+		if err := updateCLI(ref); err != nil {
+			fmt.Printf("Error upgrading templUI cli: %v\n", err)
+		}
+		return
+	}
+
 	// Fallback for unknown commands.
 	fmt.Printf("Error: Unknown command '%s'\n", commandArg)
 	showHelp(nil, getDefaultRef())
@@ -347,8 +369,9 @@ func showHelp(manifest *Manifest, refUsedForHelp string) {
 	fmt.Println("  templui init[@<ref>]                - Initialize config and install utils from <ref>")
 	fmt.Println("  templui -f init[@<ref>]             - Force reinitialize and repair incomplete config")
 	fmt.Println("  templui add[@<ref>] <comp>...       - Add component(s) from specified <ref>")
-	fmt.Println("  templui add[@<ref>] *               - Add all components from specified <ref>")
-	fmt.Println("  templui list[@<ref>]               - List available components and utils from <ref>")
+	fmt.Println("  templui add[@<ref>] \"*\"           - Add all components from specified <ref>")
+	fmt.Println("  templui list[@<ref>]                - List available components and utils from <ref>")
+	fmt.Println("  templui upgrade[@<ref>]             - Upgrades the cli to <ref> or latest if no <ref> was given")
 	fmt.Println("  templui -v, --version               - Show installer version")
 	fmt.Println("  templui -h, --help                  - Show this help message")
 	fmt.Println("\n<ref> can be a branch name, tag name, or commit hash.")
@@ -404,10 +427,10 @@ func initConfig(ref string, force bool) {
 			// Check if existing config has missing fields
 			_, err := loadConfig()
 			if err != nil {
-				fmt.Println("Config file exists but has issues. Use 'templui init --force' to repair missing fields and reinstall utils.")
+				fmt.Println("Config file exists but has issues. Use 'templui -f init' to repair missing fields and reinstall utils.")
 				return
 			}
-			fmt.Println("Config file already exists and is complete. Use 'templui init --force' to reinstall utils if needed.")
+			fmt.Println("Config file already exists and is complete. Use 'templui -f init' to reinstall utils if needed.")
 			// Don't reinstall utils unless forced
 			return
 		} else {
@@ -1147,6 +1170,22 @@ func listComponents(ref string) error {
 	return nil
 }
 
+// updateCLI attempts to install a new version of the templUI cli based on the passed in ref.
+func updateCLI(ref string) error {
+	if ref == "" {
+		ref = "latest"
+	}
+	cmd := exec.Command("go", "install", fmt.Sprintf("github.com/templui/templui/cmd/templui@%s", ref))
+	output, err := cmd.Output()
+	if err != nil {
+		return err
+	}
+
+	fmt.Print(string(output))
+	fmt.Printf("Updated templUI to ref '%s'\n", ref)
+	return nil
+}
+
 // readFileVersion reads the version ref from the comment in the first line of a file.
 func readFileVersion(filePath string) (string, error) {
 	file, err := os.Open(filePath)
@@ -1200,15 +1239,15 @@ func askForOverwrite(filePath, oldRef, newRef string) bool {
 // replaceImports replaces internal templUI import paths with the user's configured module name and paths.
 func replaceImports(data []byte, config Config, context string) []byte {
 	content := string(data)
-	// Pattern to find "github.com/axzilla/templui/internal/..." imports.
+	// Pattern to find "github.com/templui/templui/internal/..." imports.
 	// It captures the part after "internal/", e.g., "components/icon" or "utils".
-	internalImportPattern := `"github.com/axzilla/templui/internal/([^"]+)"`
+	internalImportPattern := `"github.com/templui/templui/internal/([^"]+)"`
 	re := regexp.MustCompile(internalImportPattern)
 
 	modified := false // Flag to track if any replacement occurred
 
 	newContent := re.ReplaceAllStringFunc(content, func(originalFullImport string) string {
-		// originalFullImport is like: "github.com/axzilla/templui/internal/components/icon" (with quotes)
+		// originalFullImport is like: "github.com/templui/templui/internal/components/icon" (with quotes)
 		// submatches[0] is originalFullImport
 		// submatches[1] is the captured group, e.g., "components/icon" or "utils"
 		submatches := re.FindStringSubmatch(originalFullImport)

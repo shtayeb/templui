@@ -1,9 +1,9 @@
 package pages
 
 import (
-	"github.com/axzilla/templui/internal/ui/layouts"
-	"github.com/axzilla/templui/internal/ui/modules"
-	"github.com/axzilla/templui/internal/ui/showcase"
+	"github.com/templui/templui/internal/ui/layouts"
+	"github.com/templui/templui/internal/ui/modules"
+	"github.com/templui/templui/internal/ui/showcase"
 )
 
 templ Tooltip() {
@@ -155,7 +155,7 @@ templ Tooltip() {
 								Type:        "string",
 								Default:     "",
 								Description: "ID of the tooltip content this trigger controls.",
-								Required:    false,
+								Required:    true,
 							},
 						},
 					})
@@ -170,7 +170,7 @@ templ Tooltip() {
 								Type:        "string",
 								Default:     "",
 								Description: "Unique identifier for the content element.",
-								Required:    false,
+								Required:    true,
 							},
 							{
 								Name:        "Class",

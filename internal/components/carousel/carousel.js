@@ -1,193 +1,236 @@
-(function () {
-  function initCarousel(carousel) {
-    if (!carousel || carousel.hasAttribute("data-initialized")) return;
-    carousel.setAttribute("data-initialized", "true");
+(function() {
+  'use strict';
+  
+  const autoplays = new Map();
+  let dragState = null;
+  
+  // Click handling for navigation
+  document.addEventListener('click', (e) => {
+    const prevBtn = e.target.closest('[data-tui-carousel-prev]');
+    if (prevBtn) {
+      const carousel = prevBtn.closest('[data-tui-carousel]');
+      if (carousel) navigate(carousel, -1);
+      return;
+    }
     
-    const track = carousel.querySelector(".carousel-track");
-    const items = Array.from(track?.querySelectorAll(".carousel-item") || []);
-    if (items.length === 0) return;
-
-    const indicators = Array.from(
-      carousel.querySelectorAll(".carousel-indicator")
-    );
-    const prevBtn = carousel.querySelector(".carousel-prev");
-    const nextBtn = carousel.querySelector(".carousel-next");
-
-    const state = {
-      currentIndex: 0,
-      slideCount: items.length,
-      autoplay: carousel.dataset.autoplay === "true",
-      interval: parseInt(carousel.dataset.interval || 5000),
-      loop: carousel.dataset.loop === "true",
-      autoplayInterval: null,
-      isHovering: false,
-      touchStartX: 0,
+    const nextBtn = e.target.closest('[data-tui-carousel-next]');
+    if (nextBtn) {
+      const carousel = nextBtn.closest('[data-tui-carousel]');
+      if (carousel) navigate(carousel, 1);
+      return;
+    }
+    
+    const indicator = e.target.closest('[data-tui-carousel-indicator]');
+    if (indicator) {
+      const carousel = indicator.closest('[data-tui-carousel]');
+      const index = parseInt(indicator.dataset.tuiCarouselIndicator);
+      if (carousel && !isNaN(index)) {
+        updateCarousel(carousel, index);
+      }
+    }
+  });
+  
+  // Drag/swipe handling
+  function startDrag(e) {
+    const track = e.target.closest('[data-tui-carousel-track]');
+    if (!track) return;
+    
+    const carousel = track.closest('[data-tui-carousel]');
+    if (!carousel) return;
+    
+    e.preventDefault();
+    const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+    
+    dragState = {
+      carousel,
+      track,
+      startX: clientX,
+      currentX: clientX,
+      startTime: Date.now()
     };
-
-    function updateTrackPosition() {
-      track.style.transform = `translateX(-${state.currentIndex * 100}%)`;
+    
+    track.style.cursor = 'grabbing';
+    track.style.transition = 'none';
+    stopAutoplay(carousel);
+  }
+  
+  function doDrag(e) {
+    if (!dragState) return;
+    
+    const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+    dragState.currentX = clientX;
+    
+    const diff = clientX - dragState.startX;
+    const currentIndex = parseInt(dragState.carousel.dataset.tuiCarouselCurrent || '0');
+    const offset = -currentIndex * 100 + (diff / dragState.track.offsetWidth) * 100;
+    
+    dragState.track.style.transform = `translateX(${offset}%)`;
+  }
+  
+  function endDrag(e) {
+    if (!dragState) return;
+    
+    const { carousel, track, startX, startTime } = dragState;
+    const clientX = e.changedTouches ? e.changedTouches[0].clientX : (e.clientX || dragState.currentX);
+    
+    track.style.cursor = '';
+    track.style.transition = '';
+    
+    const diff = startX - clientX;
+    const velocity = Math.abs(diff) / (Date.now() - startTime);
+    
+    if (Math.abs(diff) > 50 || velocity > 0.5) {
+      navigate(carousel, diff > 0 ? 1 : -1);
+    } else {
+      const currentIndex = parseInt(carousel.dataset.tuiCarouselCurrent || '0');
+      updateCarousel(carousel, currentIndex);
     }
-
-    function updateIndicators() {
-      indicators.forEach((indicator, i) => {
-        if (i < state.slideCount) {
-          if (i === state.currentIndex) {
-            indicator.classList.add("bg-white");
-            indicator.classList.remove("bg-white/50");
-          } else {
-            indicator.classList.remove("bg-white");
-            indicator.classList.add("bg-white/50");
-          }
-          indicator.style.display = "";
-        } else {
-          indicator.style.display = "none";
-        }
-      });
+    
+    dragState = null;
+    
+    if (carousel.dataset.tuiCarouselAutoplay === 'true' && !carousel.matches(':hover')) {
+      startAutoplay(carousel);
     }
-
-    function updateButtons() {
-      if (prevBtn) {
-        prevBtn.disabled = !state.loop && state.currentIndex === 0;
-        prevBtn.classList.toggle("opacity-50", prevBtn.disabled);
-        prevBtn.classList.toggle("cursor-not-allowed", prevBtn.disabled);
-      }
-
-      if (nextBtn) {
-        nextBtn.disabled =
-          !state.loop && state.currentIndex === state.slideCount - 1;
-        nextBtn.classList.toggle("opacity-50", nextBtn.disabled);
-        nextBtn.classList.toggle("cursor-not-allowed", nextBtn.disabled);
-      }
+  }
+  
+  document.addEventListener('mousedown', startDrag);
+  document.addEventListener('mousemove', doDrag);
+  document.addEventListener('mouseup', endDrag);
+  document.addEventListener('mouseleave', (e) => {
+    if (e.target === document.documentElement) endDrag(e);
+  });
+  
+  document.addEventListener('touchstart', startDrag, { passive: false });
+  document.addEventListener('touchmove', doDrag, { passive: false });
+  document.addEventListener('touchend', endDrag, { passive: false });
+  
+  // Navigation logic
+  function navigate(carousel, direction) {
+    const current = parseInt(carousel.dataset.tuiCarouselCurrent || '0');
+    const items = carousel.querySelectorAll('[data-tui-carousel-item]');
+    const count = items.length;
+    
+    if (count === 0) return;
+    
+    let next = current + direction;
+    
+    if (carousel.dataset.tuiCarouselLoop === 'true') {
+      next = ((next % count) + count) % count;
+    } else {
+      next = Math.max(0, Math.min(next, count - 1));
     }
-
-    function startAutoplay() {
-      if (state.autoplayInterval) {
-        clearInterval(state.autoplayInterval);
-      }
-
-      if (state.autoplay) {
-        state.autoplayInterval = setInterval(() => {
-          if (!state.isHovering) {
-            goToNext();
-          }
-        }, state.interval);
-      }
-    }
-
-    function stopAutoplay() {
-      if (state.autoplayInterval) {
-        clearInterval(state.autoplayInterval);
-        state.autoplayInterval = null;
-      }
-    }
-
-    function goToNext() {
-      let nextIndex = state.currentIndex + 1;
-      if (nextIndex >= state.slideCount) {
-        if (state.loop) {
-          nextIndex = 0;
-        } else {
-          return;
-        }
-      }
-      goToSlide(nextIndex);
-    }
-
-    function goToPrev() {
-      let prevIndex = state.currentIndex - 1;
-      if (prevIndex < 0) {
-        if (state.loop) {
-          prevIndex = state.slideCount - 1;
-        } else {
-          return;
-        }
-      }
-      goToSlide(prevIndex);
-    }
-
-    function goToSlide(index) {
-      if (index < 0 || index >= state.slideCount) {
-        if (state.loop) {
-          index = (index + state.slideCount) % state.slideCount;
-        } else {
-          return;
-        }
-      }
-
-      if (index === state.currentIndex) return;
-
-      state.currentIndex = index;
-      updateTrackPosition();
-      updateIndicators();
-      updateButtons();
-
-      if (state.autoplay && !state.isHovering) {
-        stopAutoplay();
-        startAutoplay();
-      }
-    }
-
+    
+    updateCarousel(carousel, next);
+  }
+  
+  function updateCarousel(carousel, index) {
+    const track = carousel.querySelector('[data-tui-carousel-track]');
+    const indicators = carousel.querySelectorAll('[data-tui-carousel-indicator]');
+    const prevBtn = carousel.querySelector('[data-tui-carousel-prev]');
+    const nextBtn = carousel.querySelector('[data-tui-carousel-next]');
+    const items = carousel.querySelectorAll('[data-tui-carousel-item]');
+    const count = items.length;
+    
+    carousel.dataset.tuiCarouselCurrent = index;
+    
     if (track) {
-      track.addEventListener(
-        "touchstart",
-        (e) => {
-          state.touchStartX = e.touches[0].clientX;
-        },
-        { passive: true }
-      );
-
-      track.addEventListener(
-        "touchend",
-        (e) => {
-          const touchEndX = e.changedTouches[0].clientX;
-          const diff = state.touchStartX - touchEndX;
-          const sensitivity = 50;
-
-          if (Math.abs(diff) > sensitivity) {
-            diff > 0 ? goToNext() : goToPrev();
-          }
-        },
-        { passive: true }
-      );
+      track.style.transform = `translateX(-${index * 100}%)`;
     }
-
-    indicators.forEach((indicator, index) => {
-      if (index < state.slideCount) {
-        indicator.addEventListener("click", () => goToSlide(index));
+    
+    indicators.forEach((ind, i) => {
+      ind.dataset.tuiCarouselActive = (i === index) ? 'true' : 'false';
+      ind.classList.toggle('bg-primary', i === index);
+      ind.classList.toggle('bg-foreground/30', i !== index);
+    });
+    
+    const isLoop = carousel.dataset.tuiCarouselLoop === 'true';
+    
+    if (prevBtn) {
+      prevBtn.disabled = !isLoop && index === 0;
+      prevBtn.classList.toggle('opacity-50', prevBtn.disabled);
+    }
+    
+    if (nextBtn) {
+      nextBtn.disabled = !isLoop && index === count - 1;
+      nextBtn.classList.toggle('opacity-50', nextBtn.disabled);
+    }
+  }
+  
+  // Autoplay functionality
+  function startAutoplay(carousel) {
+    if (carousel.dataset.tuiCarouselAutoplay !== 'true') return;
+    
+    stopAutoplay(carousel);
+    
+    const interval = parseInt(carousel.dataset.tuiCarouselInterval || '5000');
+    const id = setInterval(() => {
+      if (!document.contains(carousel)) {
+        stopAutoplay(carousel);
+        return;
+      }
+      
+      if (carousel.matches(':hover') || dragState?.carousel === carousel) {
+        return;
+      }
+      
+      navigate(carousel, 1);
+    }, interval);
+    
+    autoplays.set(carousel, id);
+  }
+  
+  function stopAutoplay(carousel) {
+    const id = autoplays.get(carousel);
+    if (id) {
+      clearInterval(id);
+      autoplays.delete(carousel);
+    }
+  }
+  
+  // Intersection Observer for visibility management
+  const observedCarousels = new WeakSet();
+  const carouselObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      const carousel = entry.target;
+      
+      // Initialize display on first observation
+      if (!carousel.hasAttribute('data-tui-carousel-initialized')) {
+        carousel.setAttribute('data-tui-carousel-initialized', 'true');
+        const index = parseInt(carousel.dataset.tuiCarouselCurrent || '0');
+        updateCarousel(carousel, index);
+      }
+      
+      // Handle autoplay if enabled
+      if (carousel.dataset.tuiCarouselAutoplay === 'true') {
+        if (entry.isIntersecting) {
+          startAutoplay(carousel);
+        } else {
+          stopAutoplay(carousel);
+        }
       }
     });
-
-    if (prevBtn) prevBtn.addEventListener("click", goToPrev);
-    if (nextBtn) nextBtn.addEventListener("click", goToNext);
-
-    carousel.addEventListener("mouseenter", () => {
-      state.isHovering = true;
-      if (state.autoplay) stopAutoplay();
+  });
+  
+  // Observe all carousels for visibility and initialization
+  function observeCarousels() {
+    document.querySelectorAll('[data-tui-carousel]').forEach(carousel => {
+      if (!observedCarousels.has(carousel)) {
+        observedCarousels.add(carousel);
+        carouselObserver.observe(carousel);
+      }
     });
-
-    carousel.addEventListener("mouseleave", () => {
-      state.isHovering = false;
-      if (state.autoplay) startAutoplay();
-    });
-
-    updateTrackPosition();
-    updateIndicators();
-    updateButtons();
-
-    if (state.autoplay) startAutoplay();
   }
-
-  function init(root = document) {
-    if (root instanceof Element && root.matches(".carousel-component")) {
-      initCarousel(root);
-    }
-    for (const carousel of root.querySelectorAll(".carousel-component:not([data-initialized])")) {
-      initCarousel(carousel);
-    }
+  
+  // Start observing
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', observeCarousels);
+  } else {
+    observeCarousels();
   }
-
-  window.templUI = window.templUI || {};
-  window.templUI.carousel = { init: init };
-
-  document.addEventListener("DOMContentLoaded", () => init());
+  
+  // Watch for dynamically added carousels
+  new MutationObserver(observeCarousels).observe(document.body, {
+    childList: true,
+    subtree: true
+  });
 })();

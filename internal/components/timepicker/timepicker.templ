@@ -2,10 +2,11 @@ package timepicker
 
 import (
 	"fmt"
-	"github.com/axzilla/templui/internal/components/button"
-	"github.com/axzilla/templui/internal/components/icon"
-	"github.com/axzilla/templui/internal/components/selectbox"
-	"github.com/axzilla/templui/internal/utils"
+	"github.com/templui/templui/internal/components/button"
+	"github.com/templui/templui/internal/components/card"
+	"github.com/templui/templui/internal/components/icon"
+	"github.com/templui/templui/internal/components/popover"
+	"github.com/templui/templui/internal/utils"
 	"strconv"
 	"time"
 )
@@ -16,6 +17,9 @@ type Props struct {
 	Attributes  templ.Attributes
 	Name        string
 	Value       time.Time
+	MinTime     time.Time
+	MaxTime     time.Time
+	Step        int
 	Use12Hours  bool
 	AMLabel     string
 	PMLabel     string
@@ -25,254 +29,214 @@ type Props struct {
 	HasError    bool
 }
 
-type SelectOption struct {
-	Label string
-	Value string
-}
-
 templ TimePicker(props ...Props) {
-	{{ var p Props }}
-	if len(props) > 0 {
-		{{ p = props[0] }}
-	}
-	if p.ID == "" {
-		{{ p.ID = utils.RandomID() }}
-	}
-	if p.Placeholder == "" {
-		{{ p.Placeholder = "Select time" }}
-	}
-	if p.AMLabel == "" {
-		{{ p.AMLabel = "AM" }}
-	}
-	if p.PMLabel == "" {
-		{{ p.PMLabel = "PM" }}
-	}
-	<div
-		class={ utils.TwMerge("relative", p.Class) }
-		if p.Value != (time.Time{}) {
-			data-value={ p.Value.Format("15:04") }
+	{{
+		var p Props
+		if len(props) > 0 {
+			p = props[0]
 		}
-		data-use12hours={ fmt.Sprintf("%t", p.Use12Hours) }
-		x-data="timePicker"
-		data-input-id={ p.ID }
-	>
-		<div class="relative">
-			<input
-				type="hidden"
-				name={ p.Name }
-				required?={ p.Required }
-			/>
-			@button.Button(button.Props{
-				ID:      p.ID,
-				Type:    "button",
-				Variant: button.VariantOutline,
-				Class: utils.TwMerge(
-					"w-full flex justify-between items-center",
-					utils.If(p.HasError, "border-destructive ring-destructive"),
-				),
-				Disabled: p.Disabled,
-				Attributes: utils.MergeAttributes(
-					templ.Attributes{
-						"@click": "toggleTimePicker",
-					},
-					p.Attributes,
-				),
+		if p.ID == "" {
+			p.ID = utils.RandomID()
+		}
+		if p.Name == "" {
+			p.Name = p.ID
+		}
+		if p.Placeholder == "" {
+			p.Placeholder = "Select time"
+		}
+		if p.AMLabel == "" {
+			p.AMLabel = "AM"
+		}
+		if p.PMLabel == "" {
+			p.PMLabel = "PM"
+		}
+		if p.Step <= 0 {
+			p.Step = 1
+		}
+
+		var contentID = p.ID + "-content"
+		var valueString string
+		if p.Value != (time.Time{}) {
+			valueString = p.Value.Format("15:04")
+		}
+		var minTimeString string
+		if p.MinTime != (time.Time{}) {
+			minTimeString = p.MinTime.Format("15:04")
+		}
+		var maxTimeString string
+		if p.MaxTime != (time.Time{}) {
+			maxTimeString = p.MaxTime.Format("15:04")
+		}
+	}}
+	<div class="relative inline-block w-full">
+		<input
+			type="hidden"
+			name={ p.Name }
+			value={ valueString }
+			required?={ p.Required }
+			id={ p.ID + "-hidden" }
+			data-tui-timepicker-hidden-input="true"
+		/>
+		@popover.Trigger(popover.TriggerProps{For: contentID}) {
+		@button.Button(button.Props{
+			ID:      p.ID,
+			Variant: button.VariantOutline,
+			Class: utils.TwMerge(
+				// Base styles matching input
+				"w-full h-9 px-3 py-1 text-base md:text-sm",
+				"flex items-center justify-between",
+				"rounded-md border border-input bg-transparent shadow-xs transition-[color,box-shadow] outline-none",
+				// Dark mode background
+				"dark:bg-input/30",
+				// Selection styles
+				"selection:bg-primary selection:text-primary-foreground",
+				// Focus styles
+				"focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]",
+				// Error/Invalid styles
+				"aria-invalid:ring-destructive/20 aria-invalid:border-destructive dark:aria-invalid:ring-destructive/40",
+				utils.If(p.HasError, "border-destructive ring-destructive/20 dark:ring-destructive/40"),
+				p.Class,
+			),
+			Disabled: p.Disabled,
+			Attributes: utils.MergeAttributes(p.Attributes, templ.Attributes{
+				"data-tui-timepicker":             "true",
+				"data-tui-timepicker-use12hours":  fmt.Sprintf("%t", p.Use12Hours),
+				"data-tui-timepicker-am-label":    p.AMLabel,
+				"data-tui-timepicker-pm-label":    p.PMLabel,
+				"data-tui-timepicker-placeholder": p.Placeholder,
+				"data-tui-timepicker-step":        fmt.Sprintf("%d", p.Step),
+				"data-tui-timepicker-min-time":    minTimeString,
+				"data-tui-timepicker-max-time":    maxTimeString,
+				"aria-invalid":                    utils.If(p.HasError, "true"),
+			}),
+		}) {
+			<span data-tui-timepicker-display class="text-left grow text-muted-foreground">
+				{ p.Placeholder }
+			</span>
+			<span class="text-muted-foreground flex items-center ml-2">
+				@icon.Clock(icon.Props{Size: 16})
+			</span>
+		}
+	}
+	@popover.Content(popover.ContentProps{
+		ID:        contentID,
+		Placement: popover.PlacementBottomStart,
+		Class:     "p-0 w-80",
+	}) {
+		@card.Card(card.Props{
+			Class: "border-0 shadow-none",
+		}) {
+			@card.Content(card.ContentProps{
+				Class: "p-4",
 			}) {
-				<span
-					class={
-						utils.TwMerge(
-							"timepicker-display truncate",
-							utils.If(p.Value == (time.Time{}), "text-muted-foreground"),
-						),
+				<div
+					data-tui-timepicker-popup="true"
+					data-tui-timepicker-input-name={ p.Name }
+					data-tui-timepicker-parent-id={ p.ID }
+					if valueString != "" {
+						data-tui-timepicker-value={ valueString }
 					}
 				>
-					if p.Value != (time.Time{}) {
-						if p.Use12Hours {
-							{ p.Value.Format("03:04 PM") }
-						} else {
-							{ p.Value.Format("15:04") }
-						}
-					} else {
-						{ p.Placeholder }
-					}
-				</span>
-				@icon.Clock(icon.Props{
-					Class: "ml-2 h-4 w-4 text-muted-foreground",
-				})
-			}
-		</div>
-		<div
-			x-show="open"
-			x-ref="timePickerPopup"
-			@click.away="closeTimePicker"
-			x-transition.opacity
-			class="absolute left-0 z-50 w-72 p-4 rounded-lg border bg-popover shadow-md"
-			:class="positionClass"
-			@resize.window="updatePosition"
-		>
-			<div class="grid grid-cols-2 gap-2 flex-1">
-				<div>
-					@selectbox.SelectBox(selectbox.Props{
-						ID:    "hour-select-" + p.ID,
-						Class: "w-full",
-					}) {
-						@selectbox.Trigger(selectbox.TriggerProps{
-							Name: "hour",
-						}) {
-							@selectbox.Value(selectbox.ValueProps{
-								Placeholder: "Hour",
-							}) {
-								if p.Value != (time.Time{}) {
+					// Time selection grid
+					<div class="grid grid-cols-2 gap-3 mb-4">
+						// Hour selection
+						<div class="space-y-2">
+							<label class="text-sm font-medium">Hour</label>
+							<div class="max-h-32 overflow-y-auto border rounded-md bg-background">
+								<div data-tui-timepicker-hour-list="true" class="p-1 space-y-0.5">
 									if p.Use12Hours {
-										// Convert 24h to 12h format for display
-										{{ hour := p.Value.Hour() % 12 }}
-										{{
-										if hour == 0 {
-											hour = 12
+										// 12-hour format: 12, 01-11
+										<button
+											type="button"
+											data-tui-timepicker-hour="0"
+											data-tui-timepicker-selected="false"
+											class="w-full px-2 py-1 text-sm rounded transition-colors text-left hover:bg-accent hover:text-accent-foreground data-[tui-timepicker-selected=true]:bg-primary data-[tui-timepicker-selected=true]:text-primary-foreground data-[tui-timepicker-selected=true]:hover:bg-primary/90"
+										>
+											12
+										</button>
+										for hour := 1; hour <= 11; hour++ {
+											<button
+												type="button"
+												data-tui-timepicker-hour={ strconv.Itoa(hour) }
+												data-tui-timepicker-selected="false"
+												class="w-full px-2 py-1 text-sm rounded transition-colors text-left hover:bg-accent hover:text-accent-foreground data-[tui-timepicker-selected=true]:bg-primary data-[tui-timepicker-selected=true]:text-primary-foreground data-[tui-timepicker-selected=true]:hover:bg-primary/90"
+											>
+												{ fmt.Sprintf("%02d", hour) }
+											</button>
 										}
-										}}
-										{ fmt.Sprintf("%02d", hour) }
 									} else {
-										{ fmt.Sprintf("%02d", p.Value.Hour()) }
+										// 24-hour format: 00-23
+										for hour := 0; hour < 24; hour++ {
+											<button
+												type="button"
+												data-tui-timepicker-hour={ strconv.Itoa(hour) }
+												data-tui-timepicker-selected="false"
+												class="w-full px-2 py-1 text-sm rounded transition-colors text-left hover:bg-accent hover:text-accent-foreground data-[tui-timepicker-selected=true]:bg-primary data-[tui-timepicker-selected=true]:text-primary-foreground data-[tui-timepicker-selected=true]:hover:bg-primary/90"
+											>
+												{ fmt.Sprintf("%02d", hour) }
+											</button>
+										}
 									}
-								}
-							}
-						}
-						@selectbox.Content() {
-							@selectbox.Group() {
-								for _, option := range hourOptions(p.Use12Hours) {
-									@selectbox.Item(selectbox.ItemProps{
-										Value: option.Value,
-										Selected: p.Value != (time.Time{}) &&
-											((p.Use12Hours &&
-												((p.Value.Hour()%12 == 0 && option.Value == "12") ||
-													(p.Value.Hour()%12 == parseInt(option.Value)))) ||
-												(!p.Use12Hours && p.Value.Hour() == parseInt(option.Value))),
-									}) {
-										{ option.Label }
+								</div>
+							</div>
+						</div>
+						// Minute selection
+						<div class="space-y-2">
+							<label class="text-sm font-medium">Minute</label>
+							<div class="max-h-32 overflow-y-auto border rounded-md bg-background">
+								<div data-tui-timepicker-minute-list="true" class="p-1 space-y-0.5">
+									for minute := 0; minute < 60; minute += p.Step {
+										<button
+											type="button"
+											data-tui-timepicker-minute={ strconv.Itoa(minute) }
+											data-tui-timepicker-selected="false"
+											class="w-full px-2 py-1 text-sm rounded transition-colors text-left hover:bg-accent hover:text-accent-foreground data-[tui-timepicker-selected=true]:bg-primary data-[tui-timepicker-selected=true]:text-primary-foreground data-[tui-timepicker-selected=true]:hover:bg-primary/90"
+										>
+											{ fmt.Sprintf("%02d", minute) }
+										</button>
 									}
-								}
-							}
-						}
-					}
-				</div>
-				<div>
-					@selectbox.SelectBox(selectbox.Props{
-						ID:    "minute-select-" + p.ID,
-						Class: "w-full",
-					}) {
-						@selectbox.Trigger(selectbox.TriggerProps{
-							Name: "minute",
-						}) {
-							@selectbox.Value(selectbox.ValueProps{
-								Placeholder: "Minute",
-							}) {
-								if p.Value != (time.Time{}) {
-									{ fmt.Sprintf("%02d", p.Value.Minute()) }
-								}
-							}
-						}
-						@selectbox.Content() {
-							@selectbox.Group() {
-								for _, option := range minuteOptions() {
-									@selectbox.Item(selectbox.ItemProps{
-										Value:    option.Value,
-										Selected: p.Value != (time.Time{}) && p.Value.Minute() == parseInt(option.Value),
-									}) {
-										{ option.Label }
-									}
-								}
-							}
-						}
-					}
-				</div>
-			</div>
-			<div class="flex justify-between mt-4 gap-2">
-				if p.Use12Hours {
-					<div class="flex justify-center gap-2">
-						<button
-							type="button"
-							data-period="AM"
-							@click="selectPeriod"
-							class={
-								utils.TwMerge(
-									"px-3 py-1 text-sm rounded-md hover:bg-muted",
-									utils.If(p.Value != (time.Time{}) && p.Value.Hour() < 12, "bg-primary text-primary-foreground"),
-								),
-							}
-						>
-							{ p.AMLabel }
-						</button>
-						<button
-							type="button"
-							data-period="PM"
-							@click="selectPeriod"
-							class={
-								utils.TwMerge(
-									"px-3 py-1 text-sm rounded-md hover:bg-muted",
-									utils.If(p.Value != (time.Time{}) && p.Value.Hour() >= 12, "bg-primary text-primary-foreground"),
-								),
-							}
-						>
-							{ p.PMLabel }
-						</button>
+								</div>
+							</div>
+						</div>
 					</div>
-				} else {
-					<div></div>
-				}
-				@button.Button(button.Props{
-					Type:    "button",
-					Variant: button.VariantSecondary,
-					Attributes: templ.Attributes{
-						"@click": "closeTimePicker",
-					},
-				}) {
-					Done
-				}
-			</div>
-		</div>
+					// AM/PM selector and action buttons
+					<div class="flex justify-between items-center">
+						if p.Use12Hours {
+							<div class="flex gap-1">
+								<button
+									type="button"
+									data-tui-timepicker-period="AM"
+									data-tui-timepicker-active="false"
+									class="px-3 py-1 text-sm rounded-md border transition-colors hover:bg-accent hover:text-accent-foreground data-[tui-timepicker-active=true]:bg-primary data-[tui-timepicker-active=true]:text-primary-foreground data-[tui-timepicker-active=true]:hover:bg-primary/90"
+								>
+									{ p.AMLabel }
+								</button>
+								<button
+									type="button"
+									data-tui-timepicker-period="PM"
+									data-tui-timepicker-active="false"
+									class="px-3 py-1 text-sm rounded-md border transition-colors hover:bg-accent hover:text-accent-foreground data-[tui-timepicker-active=true]:bg-primary data-[tui-timepicker-active=true]:text-primary-foreground data-[tui-timepicker-active=true]:hover:bg-primary/90"
+								>
+									{ p.PMLabel }
+								</button>
+							</div>
+						} else {
+							<div></div>
+						}
+						@button.Button(button.Props{
+							Type:    "button",
+							Variant: button.VariantSecondary,
+							Size:    button.SizeSm,
+							Attributes: templ.Attributes{
+								"data-tui-timepicker-done": "true",
+							},
+						}) {
+							Done
+						}
+					</div>
+				</div>
+			}
+		}
+	}
 	</div>
-}
-
-func parseInt(str string) int {
-	val, err := strconv.Atoi(str)
-	if err != nil {
-		return 0
-	}
-	return val
-}
-
-func hourOptions(use12Hours bool) []SelectOption {
-	options := make([]SelectOption, 0)
-	if use12Hours {
-		options = append(options, SelectOption{
-			Label: "12",
-			Value: "12",
-		})
-		for i := 1; i <= 11; i++ {
-			options = append(options, SelectOption{
-				Label: fmt.Sprintf("%02d", i),
-				Value: fmt.Sprintf("%d", i),
-			})
-		}
-	} else {
-		for i := 0; i <= 23; i++ {
-			options = append(options, SelectOption{
-				Label: fmt.Sprintf("%02d", i),
-				Value: fmt.Sprintf("%d", i),
-			})
-		}
-	}
-	return options
-}
-
-func minuteOptions() []SelectOption {
-	options := make([]SelectOption, 60)
-	for i := 0; i < 60; i++ {
-		options[i] = SelectOption{
-			Label: fmt.Sprintf("%02d", i),
-			Value: fmt.Sprintf("%d", i),
-		}
-	}
-	return options
 }

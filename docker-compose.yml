@@ -1,5 +1,4 @@
 version: "3.8"
-
 services:
   go-app:
     build:
@@ -19,6 +18,7 @@ services:
     restart: unless-stopped
     networks:
       - templui-net
+      - dokploy-network
     # Resource limits
     deploy:
       resources:
@@ -50,3 +50,5 @@ services:
 networks:
   templui-net:
     driver: bridge
+  dokploy-network:
+    external: true

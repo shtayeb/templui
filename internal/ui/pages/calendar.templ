@@ -1,9 +1,9 @@
 package pages
 
 import (
-	"github.com/axzilla/templui/internal/ui/layouts"
-	"github.com/axzilla/templui/internal/ui/modules"
-	"github.com/axzilla/templui/internal/ui/showcase"
+	"github.com/templui/templui/internal/ui/layouts"
+	"github.com/templui/templui/internal/ui/modules"
+	"github.com/templui/templui/internal/ui/showcase"
 )
 
 templ Calendar() {
@@ -118,6 +118,13 @@ templ Calendar() {
 								Type:        "int",
 								Default:     "",
 								Description: "Initial year to display. Defaults to current year or Value's year.",
+								Required:    false,
+							},
+							{
+								Name:        "StartOfWeek",
+								Type:        "*Day",
+								Default:     "nil",
+								Description: "Optional start of week (0-6, Sun-Sat). When nil, defaults to Monday (1). Use calendar.Sunday through calendar.Saturday constants.",
 								Required:    false,
 							},
 						},

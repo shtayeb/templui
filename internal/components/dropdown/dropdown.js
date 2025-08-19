@@ -1,38 +1,16 @@
 (function () {
-  function handleDropdownItemClick(event) {
-    const item = event.currentTarget;
-
-    // Check if this item should prevent dropdown from closing
-    if (item.dataset.preventClose === "true") {
-      return; // Don't close the dropdown
-    }
-
-    const popoverContent = item.closest("[data-popover-id]");
-    if (popoverContent) {
-      const popoverId = popoverContent.dataset.popoverId;
-      if (window.closePopover) {
-        window.closePopover(popoverId, true);
-      } else {
-        console.warn("popover.Script's closePopover function not found.");
-        document.body.click(); // Fallback
-      }
-    }
-  }
-
-  function init(root = document) {
-    // Select items with 'data-dropdown-item' but not 'data-dropdown-submenu-trigger'
-    const items = root.querySelectorAll(
-      "[data-dropdown-item]:not([data-dropdown-submenu-trigger]):not([data-initialized])"
-    );
-    items.forEach((item) => {
-      item.setAttribute("data-initialized", "true");
-      item.removeEventListener("click", handleDropdownItemClick);
-      item.addEventListener("click", handleDropdownItemClick);
-    });
-  }
-
-  window.templUI = window.templUI || {};
-  window.templUI.dropdown = { init: init };
-
-  document.addEventListener("DOMContentLoaded", () => init());
+  'use strict';
+  
+  document.addEventListener('click', (e) => {
+    const item = e.target.closest('[data-tui-dropdown-item]');
+    if (!item || 
+        item.hasAttribute('data-tui-dropdown-submenu-trigger') ||
+        item.getAttribute('data-tui-dropdown-prevent-close') === 'true') return;
+    
+    const popoverContent = item.closest('[data-tui-popover-id]');
+    if (!popoverContent) return;
+    
+    const popoverId = popoverContent.getAttribute('data-tui-popover-id') || popoverContent.id;
+    if (window.closePopover) window.closePopover(popoverId);
+  });
 })();

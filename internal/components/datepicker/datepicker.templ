@@ -1,12 +1,12 @@
 package datepicker
 
 import (
-	"github.com/axzilla/templui/internal/components/button"
-	"github.com/axzilla/templui/internal/components/calendar"
-	"github.com/axzilla/templui/internal/components/card"
-	"github.com/axzilla/templui/internal/components/icon"
-	"github.com/axzilla/templui/internal/components/popover"
-	"github.com/axzilla/templui/internal/utils"
+	"github.com/templui/templui/internal/components/button"
+	"github.com/templui/templui/internal/components/calendar"
+	"github.com/templui/templui/internal/components/card"
+	"github.com/templui/templui/internal/components/icon"
+	"github.com/templui/templui/internal/components/popover"
+	"github.com/templui/templui/internal/utils"
 	"time"
 )
 
@@ -37,8 +37,9 @@ type Props struct {
 	Class       string
 	Attributes  templ.Attributes
 	Value       time.Time
-	Format      Format    // Controls the display format using Intl dateStyle options.
-	LocaleTag   LocaleTag // BCP 47 Locale Tag (e.g., "en-US", "es-ES"). Determines language and regional format defaults.
+	Format      Format        // Controls the display format using Intl dateStyle options.
+	LocaleTag   LocaleTag     // BCP 47 Locale Tag (e.g., "en-US", "es-ES"). Determines language and regional format defaults.
+	StartOfWeek *calendar.Day // Optional: 0-6 [Sun-Sat] (Default: 1).
 	Placeholder string
 	Disabled    bool
 	Required    bool
@@ -70,11 +71,21 @@ templ DatePicker(props ...Props) {
 
 		var contentID = p.ID + "-content"
 		var valuePtr *time.Time
+		var initialSelectedISO string
 		if !p.Value.IsZero() {
 			valuePtr = &p.Value
+			initialSelectedISO = p.Value.Format("2006-01-02")
 		}
 	}}
-	@popover.Trigger(popover.TriggerProps{For: contentID}) {
+	<div class="relative inline-block w-full">
+		<input
+			type="hidden"
+			name={ p.Name }
+			value={ initialSelectedISO }
+			id={ p.ID + "-hidden" }
+			data-tui-datepicker-hidden-input
+		/>
+		@popover.Trigger(popover.TriggerProps{For: contentID}) {
 		@button.Button(button.Props{
 			ID:      p.ID,
 			Variant: button.VariantOutline,
@@ -96,15 +107,15 @@ templ DatePicker(props ...Props) {
 			),
 			Disabled: p.Disabled,
 			Attributes: utils.MergeAttributes(p.Attributes, templ.Attributes{
-				"data-datepicker":     "true",
-				"data-display-format": string(p.Format),
-				"data-locale-tag":     string(p.LocaleTag),
-				"data-placeholder":    p.Placeholder,
-				"aria-invalid":        utils.If(p.HasError, "true"),
+				"data-tui-datepicker":                "true",
+				"data-tui-datepicker-display-format": string(p.Format),
+				"data-tui-datepicker-locale-tag":     string(p.LocaleTag),
+				"data-tui-datepicker-placeholder":    p.Placeholder,
+				"aria-invalid":                       utils.If(p.HasError, "true"),
 			}),
 		}) {
 			if p.Placeholder != "" {
-				<span data-datepicker-display class={ "text-left grow text-muted-foreground" }>
+				<span data-tui-datepicker-display class={ "text-left grow text-muted-foreground" }>
 					{ p.Placeholder }
 				</span>
 			}
@@ -125,12 +136,14 @@ templ DatePicker(props ...Props) {
 				Class: "p-3",
 			}) {
 				@calendar.Calendar(calendar.Props{
-					ID:        p.ID + "-calendar-instance",     // Pass ID for calendar instance
-					Name:      p.Name,                          // Pass Name for hidden input
-					LocaleTag: calendar.LocaleTag(p.LocaleTag), // Pass locale tag to calendar
-					Value:     valuePtr,                        // Pass pointer to value
+					ID:               p.ID + "-calendar-instance",     // Pass ID for calendar instance
+					LocaleTag:        calendar.LocaleTag(p.LocaleTag), // Pass locale tag to calendar
+					StartOfWeek:      p.StartOfWeek,                   // Pass start of week to calendar
+					Value:            valuePtr,                        // Pass pointer to value
+					RenderHiddenInput: false,                          // Don't render hidden input inside popover
 				})
 			}
 		}
 	}
+	</div>
 }

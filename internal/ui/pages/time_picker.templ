@@ -1,9 +1,9 @@
 package pages
 
 import (
-	"github.com/axzilla/templui/internal/ui/layouts"
-	"github.com/axzilla/templui/internal/ui/modules"
-	"github.com/axzilla/templui/internal/ui/showcase"
+	"github.com/templui/templui/internal/ui/layouts"
+	"github.com/templui/templui/internal/ui/modules"
+	"github.com/templui/templui/internal/ui/showcase"
 )
 
 templ TimePicker() {
@@ -18,6 +18,36 @@ templ TimePicker() {
 			{
 				ID:   "examples",
 				Text: "Examples",
+				Children: []modules.TableOfContentsItem{
+					{
+						ID:   "12h-format",
+						Text: "12-hour Format",
+					},
+					{
+						ID:   "with-label",
+						Text: "With Label",
+					},
+					{
+						ID:   "custom-placeholder",
+						Text: "Custom Placeholder",
+					},
+					{
+						ID:   "selected-time",
+						Text: "With Selected Time",
+					},
+					{
+						ID:   "step",
+						Text: "With Step Intervals",
+					},
+					{
+						ID:   "min-max",
+						Text: "With Min/Max Range",
+					},
+					{
+						ID:   "form",
+						Text: "Form Integration",
+					},
+				},
 			},
 			{
 				ID:   "api",
@@ -62,6 +92,7 @@ templ TimePicker() {
 			}) {
 				@modules.ComponentUsage(modules.ComponentUsageProps{
 					ComponentName: "timepicker",
+					JSFiles:       []string{"timepicker", "popover"},
 				})
 			}
 			@modules.ContainerWrapper(modules.ContainerWrapperProps{
@@ -72,6 +103,7 @@ templ TimePicker() {
 					SectionName:     "12h Format",
 					ShowcaseFile:    showcase.TimePicker12Hour(),
 					PreviewCodeFile: "time_picker_12hour.templ",
+					ID:              "12h-format",
 				})
 				@modules.ExampleWrapper(modules.ExampleWrapperProps{
 					SectionName:     "With Label",
@@ -83,11 +115,25 @@ templ TimePicker() {
 					SectionName:     "With Custom Placeholder",
 					ShowcaseFile:    showcase.TimePickerCustomPlaceholder(),
 					PreviewCodeFile: "time_picker_custom_placeholder.templ",
+					ID:              "custom-placeholder",
 				})
 				@modules.ExampleWrapper(modules.ExampleWrapperProps{
 					SectionName:     "With Selected Time",
 					ShowcaseFile:    showcase.TimePickerSelectedTime(),
 					PreviewCodeFile: "time_picker_selected_time.templ",
+					ID:              "selected-time",
+				})
+				@modules.ExampleWrapper(modules.ExampleWrapperProps{
+					SectionName:     "With Step Intervals",
+					ShowcaseFile:    showcase.TimePickerStep(),
+					PreviewCodeFile: "time_picker_step.templ",
+					ID:              "step",
+				})
+				@modules.ExampleWrapper(modules.ExampleWrapperProps{
+					SectionName:     "With Min/Max Range",
+					ShowcaseFile:    showcase.TimePickerMinMax(),
+					PreviewCodeFile: "time_picker_min_max.templ",
+					ID:              "min-max",
 				})
 				@modules.ExampleWrapper(modules.ExampleWrapperProps{
 					SectionName:     "With Form",
@@ -139,6 +185,27 @@ templ TimePicker() {
 								Type:        "time.Time",
 								Default:     "",
 								Description: "Selected time value.",
+								Required:    false,
+							},
+							{
+								Name:        "MinTime",
+								Type:        "time.Time",
+								Default:     "",
+								Description: "Minimum selectable time. Times before this will be disabled.",
+								Required:    false,
+							},
+							{
+								Name:        "MaxTime",
+								Type:        "time.Time",
+								Default:     "",
+								Description: "Maximum selectable time. Times after this will be disabled.",
+								Required:    false,
+							},
+							{
+								Name:        "Step",
+								Type:        "int",
+								Default:     "1",
+								Description: "Minute intervals for selection (e.g., 5, 10, 15, 30). Must be a divisor of 60.",
 								Required:    false,
 							},
 							{

@@ -2,8 +2,8 @@ package rating
 
 import (
 	"fmt"
-	"github.com/axzilla/templui/internal/components/icon"
-	"github.com/axzilla/templui/internal/utils"
+	"github.com/templui/templui/internal/components/icon"
+	"github.com/templui/templui/internal/utils"
 	"strconv"
 )
 
@@ -50,14 +50,14 @@ templ Rating(props ...Props) {
 		if p.ID != "" {
 			id={ p.ID }
 		}
-		data-rating-component
-		data-initial-value={ fmt.Sprintf("%.2f", p.Value) }
-		data-precision={ fmt.Sprintf("%.2f", p.Precision) }
-		data-readonly={ strconv.FormatBool(p.ReadOnly) }
+		data-tui-rating-component
+		data-tui-rating-initial-value={ fmt.Sprintf("%.2f", p.Value) }
+		data-tui-rating-precision={ fmt.Sprintf("%.2f", p.Precision) }
+		data-tui-rating-readonly={ strconv.FormatBool(p.ReadOnly) }
 		if p.Name != "" {
-			data-name={ p.Name }
+			data-tui-rating-name={ p.Name }
 		}
-		data-onlyinteger={ strconv.FormatBool(p.OnlyInteger) }
+		data-tui-rating-onlyinteger={ strconv.FormatBool(p.OnlyInteger) }
 		class={
 			utils.TwMerge(
 				"flex flex-col items-start gap-1",
@@ -72,7 +72,7 @@ templ Rating(props ...Props) {
 				type="hidden"
 				name={ p.Name }
 				value={ fmt.Sprintf("%.2f", p.Value) }
-				data-rating-input
+				data-tui-rating-input
 			/>
 		}
 	</div>
@@ -104,8 +104,8 @@ templ Item(props ...ItemProps) {
 		if p.ID != "" {
 			id={ p.ID }
 		}
-		data-rating-item
-		data-rating-value={ strconv.Itoa(p.Value) }
+		data-tui-rating-item
+		data-tui-rating-value={ strconv.Itoa(p.Value) }
 		class={
 			utils.TwMerge(
 				"relative",
@@ -122,7 +122,7 @@ templ Item(props ...ItemProps) {
 		</div>
 		<div
 			class="absolute inset-0 overflow-hidden w-0"
-			data-rating-item-foreground
+			data-tui-rating-item-foreground
 		>
 			@ratingIcon(p.Style, true, float64(p.Value))
 		</div>

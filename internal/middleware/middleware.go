@@ -8,8 +8,8 @@ import (
 	"sync"
 	"time"
 
-	"github.com/axzilla/templui/internal/config"
-	"github.com/axzilla/templui/internal/ctxkeys"
+	"github.com/templui/templui/internal/config"
+	"github.com/templui/templui/internal/ctxkeys"
 )
 
 func CacheControlMiddleware(next http.Handler) http.Handler {
@@ -19,6 +19,11 @@ func CacheControlMiddleware(next http.Handler) http.Handler {
 		w.Header().Set("Expires", "0")
 		next.ServeHTTP(w, r)
 	})
+}
+
+// IsHtmxRequest checks if the request is from HTMX
+func IsHtmxRequest(r *http.Request) bool {
+	return r.Header.Get("HX-Request") == "true"
 }
 
 // WithURLPathValue adds the current URL's path to the context.
@@ -72,7 +77,7 @@ func getGitHubStars() int {
 
 	// Fetch fresh data
 	client := &http.Client{Timeout: 5 * time.Second}
-	req, err := http.NewRequest("GET", "https://api.github.com/repos/axzilla/templui", nil)
+	req, err := http.NewRequest("GET", "https://api.github.com/repos/templui/templui", nil)
 	if err != nil {
 		return githubStarsCache.stars
 	}

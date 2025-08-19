@@ -1,6 +1,6 @@
 package chart
 
-import "github.com/axzilla/templui/internal/utils"
+import "github.com/templui/templui/internal/utils"
 
 type Variant string
 
@@ -85,7 +85,7 @@ templ Chart(props ...Props) {
 		}
 		{ p.Attributes... }
 	>
-		<canvas id={ canvasId } data-chart-id={ dataId }></canvas>
+		<canvas id={ canvasId } data-tui-chart-id={ dataId }></canvas>
 	</div>
 	{{
 		chartConfig := Config{

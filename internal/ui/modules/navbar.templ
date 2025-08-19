@@ -2,13 +2,13 @@ package modules
 
 import (
 	"fmt"
-	"github.com/axzilla/templui/internal/components/button"
-	"github.com/axzilla/templui/internal/components/drawer"
-	"github.com/axzilla/templui/internal/components/icon"
-	"github.com/axzilla/templui/internal/ctxkeys"
-	"github.com/axzilla/templui/internal/shared"
-	wrappedicon "github.com/axzilla/templui/internal/ui/icons"
-	"github.com/axzilla/templui/internal/components/separator"
+	"github.com/templui/templui/internal/components/button"
+	"github.com/templui/templui/internal/components/drawer"
+	"github.com/templui/templui/internal/components/icon"
+	"github.com/templui/templui/internal/ctxkeys"
+	"github.com/templui/templui/internal/shared"
+	wrappedicon "github.com/templui/templui/internal/ui/icons"
+	"github.com/templui/templui/internal/components/separator"
 )
 
 func formatStars(count int) string {
@@ -63,7 +63,7 @@ templ Navbar() {
 			<div class="flex gap-1 items-center justify-center">
 				@button.Button(button.Props{
 					Variant: button.VariantGhost,
-					Href:    "https://github.com/axzilla/templui",
+					Href:    "https://github.com/templui/templui",
 					Target:  "_blank",
 					Class:   "gap-1",
 				}) {

@@ -1,8 +1,8 @@
 package calendar
 
 import (
-	"github.com/axzilla/templui/internal/components/icon"
-	"github.com/axzilla/templui/internal/utils"
+	"github.com/templui/templui/internal/components/icon"
+	"github.com/templui/templui/internal/utils"
 	"strconv"
 	"time"
 )
@@ -20,14 +20,28 @@ var (
 	LocaleTagSpanish    = LocaleTag("es-ES")
 )
 
+type Day int
+
+var (
+	Sunday    = Day(0)
+	Monday    = Day(1)
+	Tuesday   = Day(2)
+	Wednesday = Day(3)
+	Thursday  = Day(4)
+	Friday    = Day(5)
+	Saturday  = Day(6)
+)
+
 type Props struct {
-	ID           string
-	Class        string
-	LocaleTag    LocaleTag
-	Value        *time.Time
-	Name         string
-	InitialMonth int // Optional: 0-11 (Default: current or from Value). Controls the initially displayed month view.
-	InitialYear  int // Optional: (Default: current or from Value). Controls the initially displayed year view.
+	ID               string
+	Class            string
+	LocaleTag        LocaleTag
+	Value            *time.Time
+	Name             string
+	InitialMonth     int  // Optional: 0-11 (Default: current or from Value). Controls the initially displayed month view.
+	InitialYear      int  // Optional: (Default: current or from Value). Controls the initially displayed year view.
+	StartOfWeek      *Day // Optional: 0-6 [Sun-Sat] (Default: 1).
+	RenderHiddenInput bool // Optional: Whether to render the hidden input (Default: true). Set to false when used inside DatePicker.
 }
 
 templ Calendar(props ...Props) {
@@ -45,6 +59,18 @@ templ Calendar(props ...Props) {
 	}
 	if p.LocaleTag == "" {
 		p.LocaleTag = LocaleDefaultTag
+	}
+	// Default to rendering hidden input unless explicitly set to false
+	if p.RenderHiddenInput == false && len(props) > 0 {
+		// Only respect false if it was explicitly passed
+		p.RenderHiddenInput = props[0].RenderHiddenInput
+	} else {
+		p.RenderHiddenInput = true
+	}
+
+	initialStartOfWeek := Monday
+	if p.StartOfWeek != nil {
+		initialStartOfWeek = *p.StartOfWeek
 	}
 
 	initialView := time.Now()
@@ -71,36 +97,39 @@ templ Calendar(props ...Props) {
 		initialSelectedISO = p.Value.Format("2006-01-02")
 	}
 	}}
-	<div class={ p.Class } id={ p.ID + "-wrapper" } data-calendar-wrapper="true">
-		<input
-			type="hidden"
-			name={ p.Name }
-			value={ initialSelectedISO }
-			id={ p.ID + "-hidden" }
-			data-calendar-hidden-input
-		/>
+	<div class={ p.Class } id={ p.ID + "-wrapper" } data-tui-calendar-wrapper="true">
+		if p.RenderHiddenInput {
+			<input
+				type="hidden"
+				name={ p.Name }
+				value={ initialSelectedISO }
+				id={ p.ID + "-hidden" }
+				data-tui-calendar-hidden-input
+			/>
+		}
 		<div
 			id={ p.ID }
-			data-calendar-container="true"
-			data-locale-tag={ string(p.LocaleTag) }
-			data-initial-month={ strconv.Itoa(initialMonth) }
-			data-initial-year={ strconv.Itoa(initialYear) }
-			data-selected-date={ initialSelectedISO }
+			data-tui-calendar-container="true"
+			data-tui-calendar-locale-tag={ string(p.LocaleTag) }
+			data-tui-calendar-initial-month={ strconv.Itoa(initialMonth) }
+			data-tui-calendar-initial-year={ strconv.Itoa(initialYear) }
+			data-tui-calendar-selected-date={ initialSelectedISO }
+			data-tui-calendar-start-of-week={ int(initialStartOfWeek) }
 		>
 			<!-- Calendar Header -->
 			<div class="flex items-center justify-between mb-4">
-				<span data-calendar-month-display class="text-sm font-medium"></span>
+				<span data-tui-calendar-month-display class="text-sm font-medium"></span>
 				<div class="flex gap-1">
 					<button
 						type="button"
-						data-calendar-prev
+						data-tui-calendar-prev
 						class="inline-flex items-center justify-center rounded-md text-sm font-medium h-7 w-7 hover:bg-accent hover:text-accent-foreground focus:outline-none disabled:opacity-50"
 					>
 						@icon.ChevronLeft()
 					</button>
 					<button
 						type="button"
-						data-calendar-next
+						data-tui-calendar-next
 						class="inline-flex items-center justify-center rounded-md text-sm font-medium h-7 w-7 hover:bg-accent hover:text-accent-foreground focus:outline-none disabled:opacity-50"
 					>
 						@icon.ChevronRight()
@@ -108,9 +137,9 @@ templ Calendar(props ...Props) {
 				</div>
 			</div>
 			<!-- Weekday Headers -->
-			<div data-calendar-weekdays class="grid grid-cols-7 gap-1 mb-1 place-items-center"></div>
+			<div data-tui-calendar-weekdays class="grid grid-cols-7 gap-1 mb-1 place-items-center"></div>
 			<!-- Calendar Day Grid -->
-			<div data-calendar-days class="grid grid-cols-7 gap-1 place-items-center"></div>
+			<div data-tui-calendar-days class="grid grid-cols-7 gap-1 place-items-center"></div>
 		</div>
 	</div>
 }

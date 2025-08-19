@@ -1,6 +1,6 @@
 package modal
 
-import "github.com/axzilla/templui/internal/utils"
+import "github.com/templui/templui/internal/utils"
 
 type Props struct {
 	ID               string
@@ -54,27 +54,27 @@ templ Modal(props ...Props) {
 	}
 	<div
 		id={ p.ID }
-		data-modal
-		data-open="false"
+		data-tui-modal
+		data-tui-modal-open="false"
 		class="modal-container fixed inset-0 z-50 items-center justify-center overflow-y-auto opacity-0 transition-opacity duration-300 ease-out hidden"
 		aria-labelledby={ p.ID + "-title" }
 		role="dialog"
 		aria-modal="true"
 		if p.DisableClickAway {
-			data-disable-click-away="true"
+			data-tui-modal-disable-click-away="true"
 		}
 		if p.DisableESC {
-			data-disable-esc="true"
+			data-tui-modal-disable-esc="true"
 		}
 		if p.InitialOpen {
-			data-initial-open="true"
+			data-tui-modal-initial-open="true"
 		}
 		{ p.Attributes... }
 	>
-		<div data-modal-backdrop class="fixed inset-0 bg-background/70 bg-opacity-50" aria-hidden="true"></div>
+		<div data-tui-modal-backdrop class="fixed inset-0 bg-background/70 bg-opacity-50" aria-hidden="true"></div>
 		<div
 			id={ p.ID + "-content" }
-			data-modal-content
+			data-tui-modal-content
 			class={
 				utils.TwMerge(
 					"modal-content relative bg-background rounded-lg border text-left overflow-hidden shadow-xl transform transition-all sm:my-8 w-full scale-95 opacity-0", // Base classes + transition start
@@ -98,9 +98,9 @@ templ Trigger(props ...TriggerProps) {
 			id={ p.ID }
 		}
 		if p.For != "" {
-			data-modal-trigger={ p.For }
+			data-tui-modal-trigger={ p.For }
 		}
-		data-open="false"
+		data-tui-modal-trigger-open="false"
 		class={
 			utils.TwMerge(
 				"group",
@@ -124,9 +124,9 @@ templ Close(props ...CloseProps) {
 			id={ p.ID }
 		}
 		if p.For != "" {
-			data-modal-close={ p.For }
+			data-tui-modal-close={ p.For }
 		} else {
-			data-modal-close
+			data-tui-modal-close
 		}
 		class={ utils.TwMerge("cursor-pointer", p.Class) }
 		{ p.Attributes... }

@@ -3,8 +3,8 @@ package dropdown
 import (
 	"context"
 	"fmt"
-	"github.com/axzilla/templui/internal/components/popover"
-	"github.com/axzilla/templui/internal/utils"
+	"github.com/templui/templui/internal/components/popover"
+	"github.com/templui/templui/internal/utils"
 )
 
 type contextKey string
@@ -219,16 +219,16 @@ templ Item(props ...ItemProps) {
 			}
 			class={
 				utils.TwMerge(
-					"flex text-left items-center px-2 py-1.5 text-sm rounded-sm",
+					"flex text-left items-center justify-between px-2 py-1.5 text-sm rounded-sm",
 					utils.If(!p.Disabled, "focus:bg-accent focus:text-accent-foreground hover:bg-accent hover:text-accent-foreground cursor-default"),
 					utils.If(p.Disabled, "opacity-50 pointer-events-none"),
 					p.Class,
 				),
 			}
 			role="menuitem"
-			data-dropdown-item
+			data-tui-dropdown-item
 			if p.PreventClose {
-				data-prevent-close="true"
+				data-tui-dropdown-prevent-close="true"
 			}
 			{ p.Attributes... }
 		>
@@ -246,10 +246,10 @@ templ Item(props ...ItemProps) {
 				),
 			}
 			role="menuitem"
-			data-dropdown-item
+			data-tui-dropdown-item
 			disabled?={ p.Disabled }
 			if p.PreventClose {
-				data-prevent-close="true"
+				data-tui-dropdown-prevent-close="true"
 			}
 			{ p.Attributes... }
 		>
@@ -305,7 +305,7 @@ templ Sub(props ...SubProps) {
 		if p.ID != "" {
 			id={ p.ID }
 		}
-		data-dropdown-submenu
+		data-tui-dropdown-submenu
 		class={ utils.TwMerge("relative", p.Class) }
 		{ p.Attributes... }
 	>
@@ -331,7 +331,7 @@ templ SubTrigger(props ...SubTriggerProps) {
 	}) {
 		<button
 			type="button"
-			data-dropdown-submenu-trigger
+			data-tui-dropdown-submenu-trigger
 			class={
 				utils.TwMerge(
 					"w-full text-left flex items-center justify-between px-2 py-1.5 text-sm rounded-sm",

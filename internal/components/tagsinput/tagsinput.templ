@@ -1,9 +1,9 @@
 package tagsinput
 
 import (
-	"github.com/axzilla/templui/internal/components/badge"
-	"github.com/axzilla/templui/internal/components/input"
-	"github.com/axzilla/templui/internal/utils"
+	"github.com/templui/templui/internal/components/badge"
+	"github.com/templui/templui/internal/components/input"
+	"github.com/templui/templui/internal/utils"
 )
 
 type Props struct {
@@ -38,21 +38,21 @@ templ TagsInput(p Props) {
 				p.Class,
 			),
 		}
-		data-tags-input
-		data-name={ p.Name }
+		data-tui-tagsinput
+		data-tui-tagsinput-name={ p.Name }
 		{ p.Attributes... }
 	>
-		<div class="flex items-center flex-wrap gap-2" data-tags-container>
+		<div class="flex items-center flex-wrap gap-2" data-tui-tagsinput-container>
 			for _, tag := range p.Value {
 				@badge.Badge(badge.Props{
-					Attributes: templ.Attributes{"data-tag-chip": ""},
+					Attributes: templ.Attributes{"data-tui-tagsinput-chip": ""},
 				}) {
 					<span>{ tag }</span>
 					<button
 						type="button"
 						class="ml-1 text-current hover:text-destructive disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
 						disabled?={ p.Disabled }
-						data-tag-remove
+						data-tui-tagsinput-remove
 					>
 						<svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 pointer-events-none" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
 							<path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"></path>
@@ -69,11 +69,11 @@ templ TagsInput(p Props) {
 			Disabled:    p.Disabled,
 			Readonly:    p.Readonly,
 			Attributes: utils.MergeAttributes(
-				templ.Attributes{"data-text-input": ""},
+				templ.Attributes{"data-tui-tagsinput-text-input": ""},
 				p.Attributes,
 			),
 		})
-		<div data-hidden-inputs>
+		<div data-tui-tagsinput-hidden-inputs>
 			for _, tag := range p.Value {
 				<input type="hidden" name={ p.Name } value={ tag }/>
 			}
