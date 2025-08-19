@@ -36,7 +36,9 @@ type Props struct {
 	ID          string
 	Class       string
 	Attributes  templ.Attributes
+	Name        string
 	Value       time.Time
+	Form        string
 	Format      Format        // Controls the display format using Intl dateStyle options.
 	LocaleTag   LocaleTag     // BCP 47 Locale Tag (e.g., "en-US", "es-ES"). Determines language and regional format defaults.
 	StartOfWeek *calendar.Day // Optional: 0-6 [Sun-Sat] (Default: 1).
@@ -44,7 +46,6 @@ type Props struct {
 	Disabled    bool
 	Required    bool
 	HasError    bool
-	Name        string
 }
 
 templ DatePicker(props ...Props) {
@@ -82,6 +83,9 @@ templ DatePicker(props ...Props) {
 			type="hidden"
 			name={ p.Name }
 			value={ initialSelectedISO }
+			if p.Form != "" {
+				form={ p.Form }
+			}
 			id={ p.ID + "-hidden" }
 			data-tui-datepicker-hidden-input
 		/>
