@@ -7,6 +7,7 @@ type Props struct {
 	Class      string
 	Attributes templ.Attributes
 	Name       string
+	Form       string
 	Disabled   bool
 	Checked    bool
 }
@@ -33,6 +34,9 @@ templ Toggle(props ...Props) {
 			if p.Name != "" {
 				name={ p.Name }
 			}
+			if p.Form != "" {
+				form={ p.Form }
+			}
 			type="checkbox"
 			value="true"
 			checked?={ p.Checked }
@@ -46,6 +50,9 @@ templ Toggle(props ...Props) {
 			type="hidden"
 			if p.Name != "" {
 				name={ p.Name }
+			}
+			if p.Form != "" {
+				form={ p.Form }
 			}
 			value="false"
 		/>
