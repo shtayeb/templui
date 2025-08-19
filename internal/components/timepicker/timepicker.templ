@@ -16,6 +16,7 @@ type Props struct {
 	Class       string
 	Attributes  templ.Attributes
 	Name        string
+	Form        string
 	Value       time.Time
 	MinTime     time.Time
 	MaxTime     time.Time
@@ -73,6 +74,9 @@ templ TimePicker(props ...Props) {
 			type="hidden"
 			name={ p.Name }
 			value={ valueString }
+			if p.Form != "" {
+				form={ p.Form }
+			}
 			required?={ p.Required }
 			id={ p.ID + "-hidden" }
 			data-tui-timepicker-hidden-input="true"
