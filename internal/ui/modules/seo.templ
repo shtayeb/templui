@@ -3,7 +3,9 @@ package modules
 // SEO is a simple module for all important SEO tags
 templ SEO(title, description, path string) {
 	{{ title = title + " - templUI" }}
-	<title>{ title }</title>
+	@templ.Fragment("title") {
+		<title hx-swap-oob="true">{ title }</title>
+	}
 	<meta name="description" content={ description }/>
 	// Charset & Viewport
 	<meta charset="UTF-8"/>
