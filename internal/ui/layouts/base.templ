@@ -54,24 +54,6 @@ templ BaseLayout(title, description string) {
 		</body>
 		// HTMX
 		<script nonce={ templ.GetNonce(ctx) }>
-			// Re-initialize templUI components after HTMX swaps
-			document.body.addEventListener("htmx:afterSwap", (e) => {
-				if (window.templUI) {
-					Object.values(window.templUI).forEach(comp => {
-						comp.init?.(e.detail.elt);
-					});
-				}
-			});
-
-			// Re-initialize components after out-of-band swaps
-			document.body.addEventListener("htmx:oobAfterSwap", (e) => {
-				if (window.templUI) {
-					Object.values(window.templUI).forEach(comp => {
-						comp.init?.(e.detail.target);
-					});
-				}
-			});
-
 			// Active link updater
 			document.body.addEventListener('htmx:afterSettle', () => {
 				document.querySelectorAll('aside a').forEach(a => {
@@ -85,7 +67,6 @@ templ BaseLayout(title, description string) {
 					e.detail.target.scrollTop = 0;
 				}
 			});
-
 		</script>
 	</html>
 }

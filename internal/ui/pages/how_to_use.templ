@@ -198,48 +198,6 @@ var installAir = `go install github.com/air-verse/air@latest`
 
 var devCommand = `make dev`
 
-var htmxIntegration = `<script>
-  // Re-initialize templUI components after HTMX swaps
-  document.body.addEventListener("htmx:afterSwap", (e) => {
-    if (window.templUI) {
-      Object.values(window.templUI).forEach(comp => {
-        comp.init?.(e.detail.elt);
-      });
-    }
-  });
-
-  // Re-initialize components after out-of-band swaps
-  document.body.addEventListener("htmx:oobAfterSwap", (e) => {
-    if (window.templUI) {
-      Object.values(window.templUI).forEach(comp => {
-        comp.init?.(e.detail.target);
-      });
-    }
-  });
-</script>`
-
-var datastarIntegration = `<!-- Event-based approach -->
-<body data-on-datastar-fetch="initComponents(evt)">
-  <!-- ... -->
-</body>
-
-<script>
-  window.initComponents = function(evt) {
-    // Re-initialize components after finished event
-    if (evt.detail?.type === 'finished') {
-      // setTimeout is required because Datastar's 'finished' event 
-      // fires before DOM updates are complete
-      setTimeout(() => {
-        if (window.templUI) {
-          Object.values(window.templUI).forEach(comp => {
-            comp.init?.();
-          });
-        }
-      }, 100);
-    }
-  }
-</script>`
-
 var configurationFile = `{
   "componentsDir": "components",
   "utilsDir": "utils", 
@@ -303,14 +261,6 @@ templ HowToUse() {
 					{ID: "upgrade-cli", Text: "Upgrade CLI"},
 					{ID: "copy-paste", Text: "Copy & Paste"},
 					{ID: "quickstart-template", Text: "Quickstart Template"},
-				},
-			},
-			{
-				ID:   "framework-integration",
-				Text: "Framework Integration",
-				Children: []modules.TableOfContentsItem{
-					{ID: "htmx-integration", Text: "HTMX"},
-					{ID: "datastar-integration", Text: "Datastar"},
 				},
 			},
 			{
@@ -640,40 +590,6 @@ templ HowToUse() {
 							<p class="mb-4 text-muted-foreground">
 								For a completely new project with everything pre-configured, use our <a href="https://github.com/templui/templui-quickstart" class="text-primary underline" target="_blank">templUI Quickstart</a> template.
 							</p>
-						</div>
-					</div>
-				</section>
-			}
-			@modules.ContainerWrapper(modules.ContainerWrapperProps{
-				Title: "Framework Integration",
-				ID:    "framework-integration",
-			}) {
-				<section class="mb-12">
-					<p class="mb-6 text-muted-foreground">
-						templUI is framework-agnostic and works with any JavaScript framework or library. Components need to be re-initialized after dynamic content changes.
-					</p>
-					<div class="space-y-8">
-						<div id="htmx-integration">
-							<h3 class="text-xl font-semibold mb-2">HTMX</h3>
-							<p class="mb-4 text-muted-foreground">
-								For HTMX-powered applications, add this script to initialize components after content swaps:
-							</p>
-							@modules.Code(modules.CodeProps{
-								Language:       "html",
-								ShowCopyButton: true,
-								CodeContent:    htmxIntegration,
-							})
-						</div>
-						<div id="datastar-integration">
-							<h3 class="text-xl font-semibold mb-2">Datastar</h3>
-							<p class="mb-4 text-muted-foreground">
-								For Datastar applications, use SSE events to re-initialize components:
-							</p>
-							@modules.Code(modules.CodeProps{
-								Language:       "html",
-								ShowCopyButton: true,
-								CodeContent:    datastarIntegration,
-							})
 						</div>
 					</div>
 				</section>

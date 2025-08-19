@@ -1,276 +1,245 @@
 (function () {
-  function initCalendar(container) {
-    if (!container || container.hasAttribute("data-tui-calendar-initialized")) return;
-    container.setAttribute("data-tui-calendar-initialized", "true");
-
-    const monthDisplay = container.querySelector(
-      "[data-tui-calendar-month-display]"
-    );
-    const weekdaysContainer = container.querySelector(
-      "[data-tui-calendar-weekdays]"
-    );
-    const daysContainer = container.querySelector("[data-tui-calendar-days]");
-    const prevButton = container.querySelector("[data-tui-calendar-prev]");
-    const nextButton = container.querySelector("[data-tui-calendar-next]");
-    const wrapper = container.closest("[data-tui-calendar-wrapper]");
-    // Try to find hidden input in wrapper or in parent document (for datepicker)
-    let hiddenInput = wrapper
-      ? wrapper.querySelector("[data-tui-calendar-hidden-input]")
-      : null;
+  'use strict';
+  
+  // Utility functions
+  function parseISODate(isoStr) {
+    if (!isoStr) return null;
+    const parts = isoStr.split("-");
+    if (parts.length !== 3) return null;
     
-    // If not found in wrapper, it might be a datepicker - look for it outside
-    if (!hiddenInput) {
-      const calendarId = container.id;
-      if (calendarId) {
-        // Extract parent ID from calendar instance ID (e.g., "xyz-calendar-instance" -> "xyz")
-        const parentId = calendarId.replace("-calendar-instance", "");
-        hiddenInput = document.getElementById(parentId + "-hidden");
-      }
+    const year = parseInt(parts[0], 10);
+    const month = parseInt(parts[1], 10) - 1;
+    const day = parseInt(parts[2], 10);
+    const date = new Date(Date.UTC(year, month, day));
+    
+    if (date.getUTCFullYear() === year && 
+        date.getUTCMonth() === month && 
+        date.getUTCDate() === day) {
+      return date;
     }
-
-    if (
-      !monthDisplay ||
-      !weekdaysContainer ||
-      !daysContainer ||
-      !prevButton ||
-      !nextButton
-    ) {
-      console.error(
-        "Calendar init error: Missing required elements.",
-        container
-      );
-      return;
-    }
-
-    const localeTag = container.getAttribute("data-tui-calendar-locale-tag") || "en-US";
-    const startOfWeek = parseInt(container.getAttribute("data-tui-calendar-start-of-week")) || 1; // 1 -> Monday
-    let monthNames;
+    return null;
+  }
+  
+  function getMonthNames(locale) {
     try {
-      monthNames = Array.from({ length: 12 }, (_, i) =>
-        new Intl.DateTimeFormat(localeTag, {
+      return Array.from({ length: 12 }, (_, i) =>
+        new Intl.DateTimeFormat(locale, {
           month: "long",
           timeZone: "UTC",
         }).format(new Date(Date.UTC(2000, i, 1)))
       );
-    } catch (e) {
-      console.error(
-        `Calendar: Error generating month names via Intl (locale: "${localeTag}"). Falling back to English.`,
-        e
-      );
-      // Fallback to English names if Intl fails for any reason
-      monthNames = [
-        "January",
-        "February",
-        "March",
-        "April",
-        "May",
-        "June",
-        "July",
-        "August",
-        "September",
-        "October",
-        "November",
-        "December",
-      ];
+    } catch {
+      return ["January", "February", "March", "April", "May", "June",
+              "July", "August", "September", "October", "November", "December"];
     }
-    let dayNames = ["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"]; // Default fallback
-
+  }
+  
+  function getDayNames(locale, startOfWeek) {
     try {
-      // Use days 0-6 (Sun-Sat standard). Intl provides names in the locale's typical order.
-      dayNames = Array.from({ length: 7 }, (_, i) =>
-        new Intl.DateTimeFormat(localeTag, { weekday: "short", timeZone: "UTC" }).format(
-          new Date(Date.UTC(2000, 0, i+2+startOfWeek)) // +2 because Date.UTC(2000, 0, 0) actually returns 1999.12.31, which is a Friday
+      return Array.from({ length: 7 }, (_, i) =>
+        new Intl.DateTimeFormat(locale, { weekday: "short", timeZone: "UTC" }).format(
+          new Date(Date.UTC(2000, 0, i + 2 + startOfWeek))
         )
       );
-    } catch (e) {
-      console.error("Error generating calendar day names via Intl:", e);
-      // Keep default dayNames on error
+    } catch {
+      return ["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"];
     }
-
-    let currentMonth = parseInt(container.getAttribute("data-tui-calendar-initial-month"));
-    let currentYear = parseInt(container.getAttribute("data-tui-calendar-initial-year"));
-    let selectedDate = null; // Stored as JS Date object (UTC midnight)
-
-    if (container.getAttribute("data-tui-calendar-selected-date")) {
-      selectedDate = parseISODate(container.getAttribute("data-tui-calendar-selected-date"));
+  }
+  
+  // Get calendar state from DOM
+  function getState(container) {
+    return {
+      currentMonth: parseInt(container.dataset.tuiCalendarCurrentMonth) || new Date().getMonth(),
+      currentYear: parseInt(container.dataset.tuiCalendarCurrentYear) || new Date().getFullYear(),
+      selectedDate: container.dataset.tuiCalendarSelectedDate ? parseISODate(container.dataset.tuiCalendarSelectedDate) : null,
+      locale: container.getAttribute("data-tui-calendar-locale-tag") || "en-US",
+      startOfWeek: parseInt(container.getAttribute("data-tui-calendar-start-of-week")) || 1
+    };
+  }
+  
+  function setState(container, month, year, selectedDate = null) {
+    container.dataset.tuiCalendarCurrentMonth = month;
+    container.dataset.tuiCalendarCurrentYear = year;
+    if (selectedDate) {
+      container.dataset.tuiCalendarSelectedDate = selectedDate.toISOString().split("T")[0];
+    } else {
+      delete container.dataset.tuiCalendarSelectedDate;
     }
-
-    function parseISODate(isoStr) {
-      if (!isoStr) return null;
-      try {
-        const parts = isoStr.split("-");
-        const year = parseInt(parts[0], 10);
-        const month = parseInt(parts[1], 10) - 1; // JS month is 0-indexed
-        const day = parseInt(parts[2], 10);
-        const date = new Date(Date.UTC(year, month, day));
-        if (
-          !isNaN(date) &&
-          date.getUTCFullYear() === year &&
-          date.getUTCMonth() === month &&
-          date.getUTCDate() === day
-        ) {
-          return date;
-        }
-      } catch {}
-      return null;
+  }
+  
+  function findHiddenInput(container) {
+    // Check wrapper first
+    const wrapper = container.closest("[data-tui-calendar-wrapper]");
+    let hiddenInput = wrapper?.querySelector("[data-tui-calendar-hidden-input]");
+    
+    // For datepicker integration
+    if (!hiddenInput && container.id) {
+      const parentId = container.id.replace("-calendar-instance", "");
+      hiddenInput = document.getElementById(parentId + "-hidden");
     }
-
-    function updateMonthDisplay() {
-      // Always use the fallback month name combined with the current year
-      // Ensure month index is within bounds (0-11)
-      const monthIndex = Math.max(0, Math.min(11, currentMonth));
-      const monthName = monthNames[monthIndex];
-      const displayString = `${monthName} ${currentYear}`;
-      monthDisplay.textContent = displayString;
+    
+    return hiddenInput;
+  }
+  
+  function renderCalendar(container) {
+    const state = getState(container);
+    const monthDisplay = container.querySelector("[data-tui-calendar-month-display]");
+    const weekdaysContainer = container.querySelector("[data-tui-calendar-weekdays]");
+    const daysContainer = container.querySelector("[data-tui-calendar-days]");
+    
+    if (!monthDisplay || !weekdaysContainer || !daysContainer) return;
+    
+    // Update month display
+    const monthNames = getMonthNames(state.locale);
+    monthDisplay.textContent = `${monthNames[state.currentMonth]} ${state.currentYear}`;
+    
+    // Render weekdays if empty
+    if (!weekdaysContainer.children.length) {
+      const dayNames = getDayNames(state.locale, state.startOfWeek);
+      weekdaysContainer.innerHTML = dayNames
+        .map(day => `<div class="text-center text-xs text-muted-foreground font-medium">${day}</div>`)
+        .join("");
     }
-
-    function renderWeekdays() {
-      weekdaysContainer.innerHTML = "";
-      dayNames.forEach((day) => {
-        const el = document.createElement("div");
-        el.className = "text-center text-xs text-muted-foreground font-medium";
-        el.textContent = day;
-        weekdaysContainer.appendChild(el);
-      });
+    
+    // Render days
+    daysContainer.innerHTML = "";
+    
+    const firstDay = new Date(Date.UTC(state.currentYear, state.currentMonth, 1));
+    const startOffset = (((firstDay.getUTCDay() - state.startOfWeek) % 7) + 7) % 7;
+    const daysInMonth = new Date(Date.UTC(state.currentYear, state.currentMonth + 1, 0)).getUTCDate();
+    
+    const today = new Date();
+    const todayUTC = new Date(Date.UTC(today.getFullYear(), today.getMonth(), today.getDate()));
+    
+    // Add empty cells for offset
+    for (let i = 0; i < startOffset; i++) {
+      daysContainer.innerHTML += '<div class="h-8 w-8"></div>';
     }
-
-    function renderCalendar() {
-      daysContainer.innerHTML = "";
-      const firstDayOfMonth = new Date(Date.UTC(currentYear, currentMonth, 1));
-      const firstDayUTCDay = firstDayOfMonth.getUTCDay(); // 0=Sun
-      let startOffset = (((firstDayUTCDay - startOfWeek) % 7) + 7) % 7; // Always want a positive number
-      // NOTE: A robust implementation might need to adjust offset based on locale's actual first day of week.
-      // Intl doesn't directly provide this easily yet. In the meantime, allow user to pick.
-
-      const daysInMonth = new Date(
-        Date.UTC(currentYear, currentMonth + 1, 0)
-      ).getUTCDate();
-      // Calculate 'today' based on the browser's local date for correct highlighting
-      const now = new Date();
-      const today = new Date(
-        Date.UTC(now.getFullYear(), now.getMonth(), now.getDate())
-      );
-
-      for (let i = 0; i < startOffset; i++) {
-        const blank = document.createElement("div");
-        blank.className = "h-8 w-8";
-        daysContainer.appendChild(blank);
+    
+    // Add day buttons
+    for (let day = 1; day <= daysInMonth; day++) {
+      const currentDate = new Date(Date.UTC(state.currentYear, state.currentMonth, day));
+      const isSelected = state.selectedDate && currentDate.getTime() === state.selectedDate.getTime();
+      const isToday = currentDate.getTime() === todayUTC.getTime();
+      
+      let classes = "inline-flex h-8 w-8 items-center justify-center rounded-md text-sm font-medium focus:outline-none focus:ring-1 focus:ring-ring";
+      
+      if (isSelected) {
+        classes += " bg-primary text-primary-foreground hover:bg-primary/90";
+      } else if (isToday) {
+        classes += " bg-accent text-accent-foreground";
+      } else {
+        classes += " hover:bg-accent hover:text-accent-foreground";
       }
-
-      for (let day = 1; day <= daysInMonth; day++) {
-        const button = document.createElement("button");
-        button.type = "button";
-        button.className =
-          "inline-flex h-8 w-8 items-center justify-center rounded-md text-sm font-medium focus:outline-none focus:ring-1 focus:ring-ring";
-        button.textContent = day;
-        button.dataset.tuiCalendarDay = day;
-        const currentDate = new Date(Date.UTC(currentYear, currentMonth, day));
-        const isSelected =
-          selectedDate && currentDate.getTime() === selectedDate.getTime();
-        const isToday = currentDate.getTime() === today.getTime();
-
-        if (isSelected)
-          button.classList.add(
-            "bg-primary",
-            "text-primary-foreground",
-            "hover:bg-primary/90"
-          );
-        else if (isToday)
-          button.classList.add("bg-accent", "text-accent-foreground");
-        else
-          button.classList.add(
-            "hover:bg-accent",
-            "hover:text-accent-foreground"
-          );
-
-        button.addEventListener("click", handleDayClick);
-        daysContainer.appendChild(button);
-      }
+      
+      daysContainer.innerHTML += `<button type="button" class="${classes}" data-tui-calendar-day="${day}">${day}</button>`;
     }
-
-    function handlePrevMonthClick() {
-      currentMonth--;
-      if (currentMonth < 0) {
-        currentMonth = 11;
-        currentYear--;
+  }
+  
+  // Event delegation for calendar navigation and selection
+  document.addEventListener("click", (e) => {
+    // Previous month
+    if (e.target.matches("[data-tui-calendar-prev]")) {
+      const container = e.target.closest("[data-tui-calendar-container]");
+      if (!container) return;
+      
+      const state = getState(container);
+      let month = state.currentMonth - 1;
+      let year = state.currentYear;
+      
+      if (month < 0) {
+        month = 11;
+        year--;
       }
-      updateMonthDisplay();
-      renderCalendar();
+      
+      setState(container, month, year, state.selectedDate);
+      renderCalendar(container);
+      return;
     }
-
-    function handleNextMonthClick() {
-      currentMonth++;
-      if (currentMonth > 11) {
-        currentMonth = 0;
-        currentYear++;
+    
+    // Next month
+    if (e.target.matches("[data-tui-calendar-next]")) {
+      const container = e.target.closest("[data-tui-calendar-container]");
+      if (!container) return;
+      
+      const state = getState(container);
+      let month = state.currentMonth + 1;
+      let year = state.currentYear;
+      
+      if (month > 11) {
+        month = 0;
+        year++;
       }
-      updateMonthDisplay();
-      renderCalendar();
+      
+      setState(container, month, year, state.selectedDate);
+      renderCalendar(container);
+      return;
     }
-
-    function handleDayClick(event) {
-      const day = parseInt(event.target.dataset.tuiCalendarDay);
-      if (!day) return;
-      const newlySelectedDate = new Date(
-        Date.UTC(currentYear, currentMonth, day)
-      );
-
-      selectedDate = newlySelectedDate;
-
-      const isoFormattedValue = newlySelectedDate.toISOString().split("T")[0];
+    
+    // Day selection
+    if (e.target.matches("[data-tui-calendar-day]")) {
+      const container = e.target.closest("[data-tui-calendar-container]");
+      if (!container) return;
+      
+      const state = getState(container);
+      const day = parseInt(e.target.dataset.tuiCalendarDay);
+      const selectedDate = new Date(Date.UTC(state.currentYear, state.currentMonth, day));
+      
+      setState(container, state.currentMonth, state.currentYear, selectedDate);
+      
+      // Update hidden input
+      const hiddenInput = findHiddenInput(container);
       if (hiddenInput) {
-        hiddenInput.value = isoFormattedValue;
+        hiddenInput.value = selectedDate.toISOString().split("T")[0];
         hiddenInput.dispatchEvent(new Event("change", { bubbles: true }));
       }
-
+      
+      // Dispatch custom event
       container.dispatchEvent(
         new CustomEvent("calendar-date-selected", {
           bubbles: true,
-          detail: { date: newlySelectedDate },
+          detail: { date: selectedDate }
         })
       );
-
-      renderCalendar();
+      
+      renderCalendar(container);
     }
-
-    // Initialization
-    prevButton.addEventListener("click", handlePrevMonthClick);
-    nextButton.addEventListener("click", handleNextMonthClick);
-
-    updateMonthDisplay();
-    renderWeekdays();
-    renderCalendar();
-
-    // Form reset support
-    const form = hiddenInput ? hiddenInput.closest('form') : container.closest('form');
-    if (form && hiddenInput) {
-      form.addEventListener('reset', () => {
-        // Clear selected date
-        selectedDate = null;
-        hiddenInput.value = '';
-        // Re-render calendar to show current month without selection
-        currentMonth = new Date().getMonth();
-        currentYear = new Date().getFullYear();
-        updateMonthDisplay();
-        renderCalendar();
-      });
-    }
-
-    container._calendarInitialized = true;
-  }
-
-  function init(root = document) {
-    if (root instanceof Element && root.matches("[data-tui-calendar-container]")) {
-      initCalendar(root);
-    }
-
-    for (const calendar of root.querySelectorAll("[data-tui-calendar-container]:not([data-tui-calendar-initialized])")) {
-      initCalendar(calendar);
-    }
-  }
-
-  window.templUI = window.templUI || {};
-  window.templUI.calendar = { init: init };
-
-  document.addEventListener("DOMContentLoaded", () => init());
+  });
+  
+  // Form reset handling
+  document.addEventListener("reset", (e) => {
+    if (!e.target.matches("form")) return;
+    
+    e.target.querySelectorAll("[data-tui-calendar-container]").forEach(container => {
+      const hiddenInput = findHiddenInput(container);
+      if (hiddenInput) {
+        hiddenInput.value = "";
+      }
+      
+      const today = new Date();
+      setState(container, today.getMonth(), today.getFullYear(), null);
+      renderCalendar(container);
+    });
+  });
+  
+  // MutationObserver for initial rendering
+  new MutationObserver(() => {
+    document.querySelectorAll('[data-tui-calendar-container]:not([data-rendered])').forEach(container => {
+      container.setAttribute('data-rendered', 'true');
+      
+      // Set initial state from attributes
+      const initialMonth = parseInt(container.getAttribute("data-tui-calendar-initial-month"));
+      const initialYear = parseInt(container.getAttribute("data-tui-calendar-initial-year"));
+      const selectedDate = container.getAttribute("data-tui-calendar-selected-date");
+      
+      setState(
+        container,
+        !isNaN(initialMonth) ? initialMonth : new Date().getMonth(),
+        !isNaN(initialYear) ? initialYear : new Date().getFullYear(),
+        selectedDate ? parseISODate(selectedDate) : null
+      );
+      
+      renderCalendar(container);
+    });
+  }).observe(document.body, { childList: true, subtree: true });
 })();

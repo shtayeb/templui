@@ -49,7 +49,27 @@ func handleLoadDatastarExample(w http.ResponseWriter, r *http.Request) {
 }
 
 func handleLoadModalHtmx(w http.ResponseWriter, r *http.Request) {
+	showcase.AvatarFallback().Render(r.Context(), w)
+	showcase.CalendarDefault().Render(r.Context(), w)
+	showcase.CarouselDefault().Render(r.Context(), w)
+	showcase.ChartDefault().Render(r.Context(), w)
+	showcase.CodeDefault().Render(r.Context(), w)
+	showcase.DatePickerDefault().Render(r.Context(), w)
+	showcase.DrawerDefault().Render(r.Context(), w)
+	showcase.DropdownDefault().Render(r.Context(), w)
+	showcase.InputPassword().Render(r.Context(), w)
+	showcase.InputOTPDefault().Render(r.Context(), w)
 	showcase.ModalDefault().Render(r.Context(), w)
+	showcase.PopoverDefault().Render(r.Context(), w)
+	showcase.ProgressDefault().Render(r.Context(), w)
+	showcase.RatingDefault().Render(r.Context(), w)
+	showcase.SelectBoxDefault().Render(r.Context(), w)
+	showcase.SliderValue().Render(r.Context(), w)
+	showcase.TabsDefault().Render(r.Context(), w)
+	showcase.TagsInputDefault().Render(r.Context(), w)
+	showcase.TextareaAutoResize().Render(r.Context(), w)
+	showcase.TimePickerDefault().Render(r.Context(), w)
+	showcase.ToastDefault().Render(r.Context(), w)
 }
 
 // htmxHandler wraps a templ component to support HTMX fragment requests
@@ -100,7 +120,6 @@ func main() {
 		w.Header().Set("Content-Type", "text/plain")
 		w.Write(content)
 	})
-
 
 	mux.Handle("GET /{$}", templ.Handler(pages.Landing()))
 	mux.Handle("GET /docs", http.RedirectHandler("/docs/introduction", http.StatusSeeOther))
@@ -210,7 +229,7 @@ func SetupAssetsRoutes(mux *http.ServeMux) {
 		// Capture variables for closure
 		r := route
 		path := assetPath
-		
+
 		mux.HandleFunc("GET "+r, func(w http.ResponseWriter, r *http.Request) {
 			// Set content type based on file extension
 			if strings.HasSuffix(path, ".ico") {
@@ -218,7 +237,7 @@ func SetupAssetsRoutes(mux *http.ServeMux) {
 			} else if strings.HasSuffix(path, ".png") {
 				w.Header().Set("Content-Type", "image/png")
 			}
-			
+
 			if isDevelopment {
 				w.Header().Set("Cache-Control", "no-store")
 				http.ServeFile(w, r, "./assets/"+path)
