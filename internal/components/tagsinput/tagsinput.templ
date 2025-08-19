@@ -10,6 +10,7 @@ type Props struct {
 	ID          string
 	Name        string
 	Value       []string
+	Form        string
 	Placeholder string
 	Class       string
 	HasError    bool
@@ -40,6 +41,7 @@ templ TagsInput(p Props) {
 		}
 		data-tui-tagsinput
 		data-tui-tagsinput-name={ p.Name }
+		data-tui-tagsinput-form={ p.Form }
 		{ p.Attributes... }
 	>
 		<div class="flex items-center flex-wrap gap-2" data-tui-tagsinput-container>
