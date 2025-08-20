@@ -50,7 +50,7 @@ templ Switch(props ...Props) {
 			class={
 				utils.TwMerge(
 					// Container
-					"relative inline-flex h-6 w-11 shrink-0 cursor-pointer items-center",
+					"relative inline-flex h-5 w-9 shrink-0 cursor-pointer items-center",
 					"rounded-full border-2 border-transparent",
 					"transition-colors",
 					// Background colors
@@ -64,13 +64,13 @@ templ Switch(props ...Props) {
 					"peer-disabled:cursor-not-allowed peer-disabled:opacity-50",
 					// Thumb
 					"after:pointer-events-none after:block",
-					"after:h-5 after:w-5",
+					"after:h-4 after:w-4",
 					"after:rounded-full after:bg-background",
 					"after:shadow-lg after:ring-0",
 					"after:transition-transform",
 					"after:content-['']",
 					// Thumb position
-					"peer-checked:after:translate-x-5",
+					"peer-checked:after:translate-x-4",
 					p.Class,
 				),
 			}
