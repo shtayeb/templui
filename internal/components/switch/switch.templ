@@ -10,6 +10,7 @@ type Props struct {
 	Value      string
 	Disabled   bool
 	Checked    bool
+	Form       string
 }
 
 templ Switch(props ...Props) {
@@ -38,6 +39,9 @@ templ Switch(props ...Props) {
 				value={ p.Value }
 			} else {
 				value="on"
+			}
+			if p.Form != "" {
+				form={ p.Form }
 			}
 			checked?={ p.Checked }
 			disabled?={ p.Disabled }
