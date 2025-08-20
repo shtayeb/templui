@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"net/http"
 	"strconv"
@@ -141,7 +142,6 @@ func main() {
 	mux.Handle("GET /docs/components/carousel", htmxHandler(pages.Carousel()))
 	mux.Handle("GET /docs/components/charts", htmxHandler(pages.Chart()))
 	mux.Handle("GET /docs/components/checkbox", htmxHandler(pages.Checkbox()))
-	mux.Handle("GET /docs/components/checkbox-card", htmxHandler(pages.CheckboxCard()))
 	mux.Handle("GET /docs/components/code", htmxHandler(pages.Code()))
 	mux.Handle("GET /docs/components/date-picker", htmxHandler(pages.DatePicker()))
 	mux.Handle("GET /docs/components/drawer", htmxHandler(pages.Drawer()))
@@ -155,7 +155,6 @@ func main() {
 	mux.Handle("GET /docs/components/pagination", htmxHandler(pages.Pagination()))
 	mux.Handle("GET /docs/components/progress", htmxHandler(pages.Progress()))
 	mux.Handle("GET /docs/components/radio", htmxHandler(pages.Radio()))
-	mux.Handle("GET /docs/components/radio-card", htmxHandler(pages.RadioCard()))
 	mux.Handle("GET /docs/components/rating", htmxHandler(pages.Rating()))
 	mux.Handle("GET /docs/components/select-box", htmxHandler(pages.SelectBox()))
 	mux.Handle("GET /docs/components/separator", htmxHandler(pages.Separator()))
@@ -167,11 +166,28 @@ func main() {
 	mux.Handle("GET /docs/components/textarea", htmxHandler(pages.Textarea()))
 	mux.Handle("GET /docs/components/time-picker", htmxHandler(pages.TimePicker()))
 	mux.Handle("GET /docs/components/toast", htmxHandler(pages.Toast()))
-	mux.Handle("GET /docs/components/toggle", htmxHandler(pages.Toggle()))
+	mux.Handle("GET /docs/components/switch", htmxHandler(pages.Switch()))
 	mux.Handle("GET /docs/components/tooltip", htmxHandler(pages.Tooltip()))
 	mux.Handle("GET /docs/components/popover", htmxHandler(pages.Popover()))
 	// Showcase API
 	mux.Handle("POST /docs/toast/demo", http.HandlerFunc(toastDemoHandler))
+
+	// Test Form Items Handler
+	mux.Handle("GET /docs/test-form-items", htmxHandler(pages.TestFormItems()))
+	mux.HandleFunc("POST /docs/test-form-items", func(w http.ResponseWriter, r *http.Request) {
+		r.ParseForm()
+		fmt.Println("=== Form Values Received ===")
+		fmt.Printf("switch_default: %q\n", r.FormValue("switch_default"))
+		fmt.Printf("switch_custom: %q\n", r.FormValue("switch_custom"))
+		fmt.Printf("checkbox_default: %q\n", r.FormValue("checkbox_default"))
+		fmt.Printf("checkbox_custom: %q\n", r.FormValue("checkbox_custom"))
+		fmt.Printf("interests (multiple checkboxes): %v\n", r.Form["interests"])
+		fmt.Printf("features (multiple switches): %v\n", r.Form["features"])
+		fmt.Println("============================")
+		
+		// Redirect back to form
+		http.Redirect(w, r, "/docs/test-form-items", http.StatusSeeOther)
+	})
 
 	// Datastar Example
 	mux.Handle("GET /docs/datastar-example", htmxHandler(pages.ExampleDatastar()))

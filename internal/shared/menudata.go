@@ -78,10 +78,6 @@ var Sections = []Section{
 				Href: "/docs/components/checkbox",
 			},
 			{
-				Text: "Checkbox Card",
-				Href: "/docs/components/checkbox-card",
-			},
-			{
 				Text: "Code",
 				Href: "/docs/components/code",
 			},
@@ -139,10 +135,6 @@ var Sections = []Section{
 				Href: "/docs/components/radio",
 			},
 			{
-				Text: "Radio Card",
-				Href: "/docs/components/radio-card",
-			},
-			{
 				Text: "Rating",
 				Href: "/docs/components/rating",
 			},
@@ -161,6 +153,10 @@ var Sections = []Section{
 			{
 				Text: "Slider",
 				Href: "/docs/components/slider",
+			},
+			{
+				Text: "Switch",
+				Href: "/docs/components/switch",
 			},
 			{
 				Text: "Table",
@@ -185,10 +181,6 @@ var Sections = []Section{
 			{
 				Text: "Toast",
 				Href: "/docs/components/toast",
-			},
-			{
-				Text: "Toggle",
-				Href: "/docs/components/toggle",
 			},
 			{
 				Text: "Tooltip",

@@ -1,0 +1,120 @@
+package pages
+
+import (
+	"github.com/templui/templui/internal/ui/layouts"
+	"github.com/templui/templui/internal/ui/modules"
+	"github.com/templui/templui/internal/components/button"
+	"github.com/templui/templui/internal/components/checkbox"
+	switchcomp "github.com/templui/templui/internal/components/switch"
+	"github.com/templui/templui/internal/components/label"
+)
+
+templ TestFormItems() {
+	@layouts.DocsLayout(
+		"Test Form Items",
+		"Test checkbox and toggle form submission",
+		[]modules.TableOfContentsItem{},
+	) {
+		<div class="space-y-8">
+			<div>
+				<h2 class="text-xl font-bold mb-4">Test Form Submission</h2>
+				<form method="POST" action="/docs/test-form-items" class="space-y-4">
+					<div class="space-y-2">
+						<h3 class="font-semibold">Switch (default value="on")</h3>
+						<div class="flex items-center gap-2">
+							@switchcomp.Switch(switchcomp.Props{Name: "switch_default", ID: "t1"})
+							@label.Label(label.Props{For: "t1"}) {
+								Switch Default 
+							}
+						</div>
+					</div>
+					<div class="space-y-2">
+						<h3 class="font-semibold">Switch with custom value</h3>
+						<div class="flex items-center gap-2">
+							@switchcomp.Switch(switchcomp.Props{Name: "switch_custom", Value: "yes", ID: "t2"})
+							@label.Label(label.Props{For: "t2"}) {
+								Switch Custom (value="yes") 
+							}
+						</div>
+					</div>
+					<div class="space-y-2">
+						<h3 class="font-semibold">Checkbox (default value="on")</h3>
+						<div class="flex items-center gap-2">
+							@checkbox.Checkbox(checkbox.Props{Name: "checkbox_default", ID: "c1"})
+							@label.Label(label.Props{For: "c1"}) {
+								Checkbox Default 
+							}
+						</div>
+					</div>
+					<div class="space-y-2">
+						<h3 class="font-semibold">Checkbox with custom value</h3>
+						<div class="flex items-center gap-2">
+							@checkbox.Checkbox(checkbox.Props{Name: "checkbox_custom", Value: "accepted", ID: "c2"})
+							@label.Label(label.Props{For: "c2"}) {
+								Checkbox Custom (value="accepted") 
+							}
+						</div>
+					</div>
+					<div class="space-y-2">
+						<h3 class="font-semibold">Multiple Checkboxes (same name)</h3>
+						<div class="space-y-2">
+							<div class="flex items-center gap-2">
+								@checkbox.Checkbox(checkbox.Props{Name: "interests", Value: "design", ID: "m1"})
+								@label.Label(label.Props{For: "m1"}) {
+									Design 
+								}
+							</div>
+							<div class="flex items-center gap-2">
+								@checkbox.Checkbox(checkbox.Props{Name: "interests", Value: "development", ID: "m2"})
+								@label.Label(label.Props{For: "m2"}) {
+									Development 
+								}
+							</div>
+							<div class="flex items-center gap-2">
+								@checkbox.Checkbox(checkbox.Props{Name: "interests", Value: "marketing", ID: "m3"})
+								@label.Label(label.Props{For: "m3"}) {
+									Marketing 
+								}
+							</div>
+						</div>
+					</div>
+					
+					<div class="space-y-2">
+						<h3 class="font-semibold">Multiple Switches (same name)</h3>
+						<div class="space-y-2">
+							<div class="flex items-center gap-2">
+								@switchcomp.Switch(switchcomp.Props{Name: "features", Value: "notifications", ID: "f1"})
+								@label.Label(label.Props{For: "f1"}) {
+									Enable Notifications 
+								}
+							</div>
+							<div class="flex items-center gap-2">
+								@switchcomp.Switch(switchcomp.Props{Name: "features", Value: "analytics", ID: "f2"})
+								@label.Label(label.Props{For: "f2"}) {
+									Enable Analytics 
+								}
+							</div>
+							<div class="flex items-center gap-2">
+								@switchcomp.Switch(switchcomp.Props{Name: "features", Value: "darkmode", ID: "f3"})
+								@label.Label(label.Props{For: "f3"}) {
+									Enable Dark Mode 
+								}
+							</div>
+						</div>
+					</div>
+					@button.Button(button.Props{
+						Type:  button.TypeSubmit,
+						Class: "mt-4",
+					}) {
+						Submit Form
+					}
+				</form>
+			</div>
+			<div class="text-sm text-muted-foreground">
+				<p>Submit the form and check console/server logs to see the values sent.</p>
+				<p>Unchecked items should not send any value.</p>
+				<p>Checked items should send their value ("on" by default or custom value).</p>
+			</div>
+		</div>
+	}
+}

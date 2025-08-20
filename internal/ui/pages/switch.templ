@@ -6,9 +6,9 @@ import (
 	"github.com/templui/templui/internal/ui/showcase"
 )
 
-templ Toggle() {
+templ Switch() {
 	@layouts.DocsLayout(
-		"Toggle",
+		"Switch",
 		"Two-state button that can be switched on or off.",
 		[]modules.TableOfContentsItem{
 			{
@@ -20,18 +20,6 @@ templ Toggle() {
 				ID:   "examples",
 				Children: []modules.TableOfContentsItem{
 					{
-						Text: "Checked",
-						ID:   "checked",
-					},
-					{
-						Text: "With Label",
-						ID:   "with-label",
-					},
-					{
-						Text: "Disabled",
-						ID:   "disabled",
-					},
-					{
 						Text: "Form",
 						ID:   "form",
 					},
@@ -42,15 +30,15 @@ templ Toggle() {
 				Text: "API Reference",
 				Children: []modules.TableOfContentsItem{
 					{
-						ID:   "toggle",
-						Text: "Toggle",
+						ID:   "switch",
+						Text: "Switch",
 					},
 				},
 			},
 		},
 	) {
 		@modules.PageWrapper(modules.PageWrapperProps{
-			Name:        "Toggle",
+			Name:        "Switch",
 			Description: templ.Raw("Two-state button that can be switched on or off."),
 			Tailwind:    true,
 			Breadcrumbs: modules.Breadcrumbs{
@@ -64,21 +52,21 @@ templ Toggle() {
 						Path: "/docs/components",
 					},
 					{
-						Text: "Toggle",
+						Text: "Switch",
 					},
 				},
 			},
 		}) {
 			@modules.ExampleWrapper(modules.ExampleWrapperProps{
-				ShowcaseFile:    showcase.ToggleDefault(),
-				PreviewCodeFile: "toggle_default.templ",
+				ShowcaseFile:    showcase.SwitchDefault(),
+				PreviewCodeFile: "switch_default.templ",
 			})
 			@modules.ContainerWrapper(modules.ContainerWrapperProps{
 				Title: "Installation",
 				ID:    "installation",
 			}) {
 				@modules.ComponentUsage(modules.ComponentUsageProps{
-					ComponentName: "toggle",
+					ComponentName: "switch",
 				})
 			}
 			@modules.ContainerWrapper(modules.ContainerWrapperProps{
@@ -86,27 +74,9 @@ templ Toggle() {
 				ID:    "examples",
 			}) {
 				@modules.ExampleWrapper(modules.ExampleWrapperProps{
-					SectionName:     "Checked",
-					ShowcaseFile:    showcase.ToggleChecked(),
-					PreviewCodeFile: "toggle_checked.templ",
-					ID:              "checked",
-				})
-				@modules.ExampleWrapper(modules.ExampleWrapperProps{
-					SectionName:     "With Label",
-					ShowcaseFile:    showcase.ToggleWithLabel(),
-					PreviewCodeFile: "toggle_with_label.templ",
-					ID:              "with-label",
-				})
-				@modules.ExampleWrapper(modules.ExampleWrapperProps{
-					SectionName:     "Disabled",
-					ShowcaseFile:    showcase.ToggleDisabled(),
-					PreviewCodeFile: "toggle_disabled.templ",
-					ID:              "disabled",
-				})
-				@modules.ExampleWrapper(modules.ExampleWrapperProps{
 					SectionName:     "Form",
-					ShowcaseFile:    showcase.ToggleForm(),
-					PreviewCodeFile: "toggle_form.templ",
+					ShowcaseFile:    showcase.SwitchForm(),
+					PreviewCodeFile: "switch_form.templ",
 					ID:              "form",
 				})
 			}
@@ -115,30 +85,30 @@ templ Toggle() {
 				ID:    "api",
 			}) {
 				@modules.APILegend()
-				<div id="toggle" class="mb-8">
+				<div id="switch" class="mb-8">
 					@modules.APITable(modules.APITableProps{
-						Title:       "Toggle",
+						Title:       "Switch",
 						Description: "Two-state button component that can be switched on or off.",
 						Items: []modules.APITableItem{
 							{
 								Name:        "ID",
 								Type:        "string",
 								Default:     "",
-								Description: "Unique identifier for the toggle element.",
+								Description: "Unique identifier for the switch element.",
 								Required:    false,
 							},
 							{
 								Name:        "Class",
 								Type:        "string",
 								Default:     "",
-								Description: "Additional CSS classes to apply to the toggle.",
+								Description: "Additional CSS classes to apply to the switch.",
 								Required:    false,
 							},
 							{
 								Name:        "Attributes",
 								Type:        "templ.Attributes",
 								Default:     "",
-								Description: "Additional HTML attributes to apply to the toggle element.",
+								Description: "Additional HTML attributes to apply to the switch element.",
 								Required:    false,
 							},
 							{
@@ -149,17 +119,24 @@ templ Toggle() {
 								Required:    false,
 							},
 							{
+								Name:        "Value",
+								Type:        "string",
+								Default:     "on",
+								Description: "Value sent when the switch is checked.",
+								Required:    false,
+							},
+							{
 								Name:        "Checked",
 								Type:        "bool",
 								Default:     "false",
-								Description: "Whether the toggle is initially checked.",
+								Description: "Whether the switch is initially checked.",
 								Required:    false,
 							},
 							{
 								Name:        "Disabled",
 								Type:        "bool",
 								Default:     "false",
-								Description: "Whether the toggle is disabled and non-interactive.",
+								Description: "Whether the switch is disabled and non-interactive.",
 								Required:    false,
 							},
 						},

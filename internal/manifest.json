@@ -78,12 +78,6 @@
       "dependencies": ["icon"]
     },
     {
-      "name": "checkboxcard",
-      "description": "Card-style checkbox selection",
-      "files": ["internal/components/checkboxcard/checkboxcard.templ"],
-      "dependencies": []
-    },
-    {
       "name": "code",
       "description": "Syntax-highlighted code blocks",
       "files": ["internal/components/code/code.templ"],
@@ -182,12 +176,6 @@
       "dependencies": []
     },
     {
-      "name": "radiocard",
-      "description": "Card-style radio selection",
-      "files": ["internal/components/radiocard/radiocard.templ"],
-      "dependencies": []
-    },
-    {
       "name": "rating",
       "description": "Star rating input",
       "files": ["internal/components/rating/rating.templ"],
@@ -262,9 +250,9 @@
       "hasJS": true
     },
     {
-      "name": "toggle",
+      "name": "switch",
       "description": "On/off switch control",
-      "files": ["internal/components/toggle/toggle.templ"],
+      "files": ["internal/components/switch/switch.templ"],
       "dependencies": []
     },
     {

@@ -36,6 +36,8 @@ templ Checkbox(props ...Props) {
 			}
 			if p.Value != "" {
 				value={ p.Value }
+			} else {
+				value="on"
 			}
 			if p.Form != "" {
 				form={ p.Form }

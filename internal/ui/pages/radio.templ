@@ -20,18 +20,6 @@ templ Radio() {
 				ID:   "examples",
 				Children: []modules.TableOfContentsItem{
 					{
-						Text: "Checked",
-						ID:   "checked",
-					},
-					{
-						Text: "With Label",
-						ID:   "with-label",
-					},
-					{
-						Text: "Disabled",
-						ID:   "disabled",
-					},
-					{
 						Text: "Form",
 						ID:   "form",
 					},
@@ -85,24 +73,6 @@ templ Radio() {
 				Title: "Examples",
 				ID:    "examples",
 			}) {
-				@modules.ExampleWrapper(modules.ExampleWrapperProps{
-					SectionName:     "Checked",
-					ShowcaseFile:    showcase.RadioChecked(),
-					PreviewCodeFile: "radio_checked.templ",
-					ID:              "checked",
-				})
-				@modules.ExampleWrapper(modules.ExampleWrapperProps{
-					SectionName:     "With Label",
-					ShowcaseFile:    showcase.RadioWithLabel(),
-					PreviewCodeFile: "radio_with_label.templ",
-					ID:              "with-label",
-				})
-				@modules.ExampleWrapper(modules.ExampleWrapperProps{
-					SectionName:     "Disabled",
-					ShowcaseFile:    showcase.RadioDisabled(),
-					PreviewCodeFile: "radio_disabled.templ",
-					ID:              "disabled",
-				})
 				@modules.ExampleWrapper(modules.ExampleWrapperProps{
 					SectionName:     "Form",
 					ShowcaseFile:    showcase.RadioForm(),
