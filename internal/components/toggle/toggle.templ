@@ -7,6 +7,7 @@ type Props struct {
 	Class      string
 	Attributes templ.Attributes
 	Name       string
+	Value      string
 	Disabled   bool
 	Checked    bool
 }
@@ -28,26 +29,21 @@ templ Toggle(props ...Props) {
 	>
 		<!-- Actual checkbox toggle -->
 		<input
-			x-ref={ p.ID }
 			id={ p.ID }
 			if p.Name != "" {
 				name={ p.Name }
 			}
 			type="checkbox"
-			value="true"
+			if p.Value != "" {
+				value={ p.Value }
+			} else {
+				value="on"
+			}
 			checked?={ p.Checked }
 			disabled?={ p.Disabled }
 			class="peer hidden"
 			role="switch"
 			{ p.Attributes... }
-		/>
-		<!-- Hidden fallback value to ensure "false" is sent when not checked -->
-		<input
-			type="hidden"
-			if p.Name != "" {
-				name={ p.Name }
-			}
-			value="false"
 		/>
 		<!-- Visual toggle UI -->
 		<div
