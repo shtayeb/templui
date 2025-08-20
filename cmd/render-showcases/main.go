@@ -234,11 +234,8 @@ func main() {
 		"out/showcase/toast_playground.html": showcase.ToastPlayground(),
 
 		// Switch
-		"out/showcase/switch_checked.html":    showcase.SwitchChecked(),
-		"out/showcase/switch_default.html":    showcase.SwitchDefault(),
-		"out/showcase/switch_disabled.html":   showcase.SwitchDisabled(),
-		"out/showcase/switch_form.html":       showcase.SwitchForm(),
-		"out/showcase/switch_with_label.html": showcase.SwitchWithLabel(),
+		"out/showcase/switch_default.html": showcase.SwitchDefault(),
+		"out/showcase/switch_form.html":    showcase.SwitchForm(),
 
 		// Tooltip
 		"out/showcase/tooltip_default.html":   showcase.TooltipDefault(),

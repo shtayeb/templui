@@ -20,18 +20,6 @@ templ Switch() {
 				ID:   "examples",
 				Children: []modules.TableOfContentsItem{
 					{
-						Text: "Checked",
-						ID:   "checked",
-					},
-					{
-						Text: "With Label",
-						ID:   "with-label",
-					},
-					{
-						Text: "Disabled",
-						ID:   "disabled",
-					},
-					{
 						Text: "Form",
 						ID:   "form",
 					},
@@ -86,24 +74,6 @@ templ Switch() {
 				ID:    "examples",
 			}) {
 				@modules.ExampleWrapper(modules.ExampleWrapperProps{
-					SectionName:     "Checked",
-					ShowcaseFile:    showcase.SwitchChecked(),
-					PreviewCodeFile: "switch_checked.templ",
-					ID:              "checked",
-				})
-				@modules.ExampleWrapper(modules.ExampleWrapperProps{
-					SectionName:     "With Label",
-					ShowcaseFile:    showcase.SwitchWithLabel(),
-					PreviewCodeFile: "switch_with_label.templ",
-					ID:              "with-label",
-				})
-				@modules.ExampleWrapper(modules.ExampleWrapperProps{
-					SectionName:     "Disabled",
-					ShowcaseFile:    showcase.SwitchDisabled(),
-					PreviewCodeFile: "switch_disabled.templ",
-					ID:              "disabled",
-				})
-				@modules.ExampleWrapper(modules.ExampleWrapperProps{
 					SectionName:     "Form",
 					ShowcaseFile:    showcase.SwitchForm(),
 					PreviewCodeFile: "switch_form.templ",
@@ -146,6 +116,13 @@ templ Switch() {
 								Type:        "string",
 								Default:     "",
 								Description: "Name attribute for form submission.",
+								Required:    false,
+							},
+							{
+								Name:        "Value",
+								Type:        "string",
+								Default:     "on",
+								Description: "Value sent when the switch is checked.",
 								Required:    false,
 							},
 							{

@@ -49,17 +49,28 @@ templ Switch(props ...Props) {
 		<div
 			class={
 				utils.TwMerge(
-					"relative h-6 w-10",
-					"after:absolute after:left-0.5 after:top-0.5",
-					"after:h-5 after:w-5",
-					"rounded-full bg-neutral-200",
-					"after:rounded-full after:bg-muted-foreground",
-					"after:content-['']",
-					"after:transition-all",
+					// Container
+					"relative inline-flex h-6 w-11 shrink-0 cursor-pointer items-center",
+					"rounded-full border-2 border-transparent",
+					"transition-colors",
+					// Background colors
+					"bg-input",
 					"peer-checked:bg-primary",
-					"peer-checked:after:translate-x-[16px]",
-					"peer-checked:after:bg-secondary",
-					"peer-disabled:opacity-50",
+					// Focus styles
+					"peer-focus-visible:outline-none peer-focus-visible:ring-2",
+					"peer-focus-visible:ring-ring peer-focus-visible:ring-offset-2",
+					"peer-focus-visible:ring-offset-background",
+					// Disabled state
+					"peer-disabled:cursor-not-allowed peer-disabled:opacity-50",
+					// Thumb
+					"after:pointer-events-none after:block",
+					"after:h-5 after:w-5",
+					"after:rounded-full after:bg-background",
+					"after:shadow-lg after:ring-0",
+					"after:transition-transform",
+					"after:content-['']",
+					// Thumb position
+					"peer-checked:after:translate-x-5",
 					p.Class,
 				),
 			}
