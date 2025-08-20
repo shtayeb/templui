@@ -155,6 +155,10 @@ var Sections = []Section{
 				Href: "/docs/components/slider",
 			},
 			{
+				Text: "Switch",
+				Href: "/docs/components/switch",
+			},
+			{
 				Text: "Table",
 				Href: "/docs/components/table",
 			},
@@ -177,10 +181,6 @@ var Sections = []Section{
 			{
 				Text: "Toast",
 				Href: "/docs/components/toast",
-			},
-			{
-				Text: "Toggle",
-				Href: "/docs/components/toggle",
 			},
 			{
 				Text: "Tooltip",

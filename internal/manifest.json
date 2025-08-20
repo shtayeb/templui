@@ -250,9 +250,9 @@
       "hasJS": true
     },
     {
-      "name": "toggle",
+      "name": "switch",
       "description": "On/off switch control",
-      "files": ["internal/components/toggle/toggle.templ"],
+      "files": ["internal/components/switch/switch.templ"],
       "dependencies": []
     },
     {

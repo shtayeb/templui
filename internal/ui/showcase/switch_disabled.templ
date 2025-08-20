@@ -2,12 +2,12 @@ package showcase
 
 import (
 	"github.com/templui/templui/internal/components/label"
-	"github.com/templui/templui/internal/components/toggle"
+	switchcomp "github.com/templui/templui/internal/components/switch"
 )
 
-templ ToggleDisabled() {
+templ SwitchDisabled() {
 	<div class="flex items-center gap-2">
-		@toggle.Toggle(toggle.Props{
+		@switchcomp.Switch(switchcomp.Props{
 			ID:       "toggle-disabled",
 			Disabled: true,
 		})

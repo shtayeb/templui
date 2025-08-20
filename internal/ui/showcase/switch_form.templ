@@ -2,14 +2,14 @@ package showcase
 
 import (
 	"github.com/templui/templui/internal/components/form"
-	"github.com/templui/templui/internal/components/toggle"
+	switchcomp "github.com/templui/templui/internal/components/switch"
 )
 
-templ ToggleForm() {
+templ SwitchForm() {
 	<div class="w-full max-w-sm">
 		@form.Item() {
 			@form.ItemFlex() {
-				@toggle.Toggle(toggle.Props{
+				@switchcomp.Switch(switchcomp.Props{
 					ID:   "airplane-mode",
 					Name: "airplane",
 				})
@@ -20,7 +20,7 @@ templ ToggleForm() {
 				}
 			}
 			@form.ItemFlex() {
-				@toggle.Toggle(toggle.Props{
+				@switchcomp.Switch(switchcomp.Props{
 					ID:       "wifi-mode",
 					Name:     "wifi",
 					Disabled: true,
@@ -32,7 +32,7 @@ templ ToggleForm() {
 				}
 			}
 			@form.ItemFlex() {
-				@toggle.Toggle(toggle.Props{
+				@switchcomp.Switch(switchcomp.Props{
 					ID:      "bluetooth-mode",
 					Name:    "bluetooth",
 					Checked: true,

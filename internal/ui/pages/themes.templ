@@ -19,7 +19,7 @@ import (
 	"github.com/templui/templui/internal/components/tabs"
 	"github.com/templui/templui/internal/components/tagsinput"
 	"github.com/templui/templui/internal/components/textarea"
-	"github.com/templui/templui/internal/components/toggle"
+	switchcomp "github.com/templui/templui/internal/components/switch"
 	"github.com/templui/templui/internal/ui/layouts"
 	"github.com/templui/templui/internal/ui/modules"
 )
@@ -414,14 +414,14 @@ templ ThemeShowcase() {
 					</div>
 				}
 			}
-			<!-- Toggles & Checkboxes -->
+			<!-- Switches & Checkboxes -->
 			@card.Card(card.Props{}) {
 				@card.Content(card.ContentProps{Class: "p-6 space-y-4"}) {
 					<div class="flex items-center justify-between">
 						@form.Label(form.LabelProps{For: "notifications"}) {
 							Notifications
 						}
-						@toggle.Toggle(toggle.Props{
+						@switchcomp.Switch(switchcomp.Props{
 							ID:      "notifications",
 							Checked: true,
 						})
@@ -430,7 +430,7 @@ templ ThemeShowcase() {
 						@form.Label(form.LabelProps{For: "marketing"}) {
 							Marketing emails
 						}
-						@toggle.Toggle(toggle.Props{ID: "marketing"})
+						@switchcomp.Switch(switchcomp.Props{ID: "marketing"})
 					</div>
 					<div class="border-t pt-4">
 						<div class="space-y-2">

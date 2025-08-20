@@ -233,12 +233,12 @@ func main() {
 		"out/showcase/toast_default.html":    showcase.ToastDefault(),
 		"out/showcase/toast_playground.html": showcase.ToastPlayground(),
 
-		// Toggle
-		"out/showcase/toggle_checked.html":    showcase.ToggleChecked(),
-		"out/showcase/toggle_default.html":    showcase.ToggleDefault(),
-		"out/showcase/toggle_disabled.html":   showcase.ToggleDisabled(),
-		"out/showcase/toggle_form.html":       showcase.ToggleForm(),
-		"out/showcase/toggle_with_label.html": showcase.ToggleWithLabel(),
+		// Switch
+		"out/showcase/switch_checked.html":    showcase.SwitchChecked(),
+		"out/showcase/switch_default.html":    showcase.SwitchDefault(),
+		"out/showcase/switch_disabled.html":   showcase.SwitchDisabled(),
+		"out/showcase/switch_form.html":       showcase.SwitchForm(),
+		"out/showcase/switch_with_label.html": showcase.SwitchWithLabel(),
 
 		// Tooltip
 		"out/showcase/tooltip_default.html":   showcase.TooltipDefault(),

@@ -7,7 +7,7 @@ import (
 	"github.com/templui/templui/internal/components/input"
 	"github.com/templui/templui/internal/components/label"
 	"github.com/templui/templui/internal/components/selectbox"
-	"github.com/templui/templui/internal/components/toggle"
+	switchcomp "github.com/templui/templui/internal/components/switch"
 )
 
 templ ToastPlayground() {
@@ -170,7 +170,7 @@ templ ToastPlayground() {
 								Dismissible
 							}
 							@form.ItemFlex() {
-								@toggle.Toggle(toggle.Props{
+								@switchcomp.Switch(switchcomp.Props{
 									Name:    "dismissible",
 									Checked: true,
 									ID:      "dismissible",
@@ -182,7 +182,7 @@ templ ToastPlayground() {
 								}
 							}
 							@form.ItemFlex() {
-								@toggle.Toggle(toggle.Props{
+								@switchcomp.Switch(switchcomp.Props{
 									Name:    "icon",
 									Checked: true,
 								})
@@ -193,7 +193,7 @@ templ ToastPlayground() {
 								}
 							}
 							@form.ItemFlex() {
-								@toggle.Toggle(toggle.Props{
+								@switchcomp.Switch(switchcomp.Props{
 									ID:      "indicator",
 									Name:    "indicator",
 									Checked: true,

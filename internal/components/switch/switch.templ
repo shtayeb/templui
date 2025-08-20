@@ -1,4 +1,4 @@
-package toggle
+package switchcomp
 
 import "github.com/templui/templui/internal/utils"
 
@@ -12,7 +12,7 @@ type Props struct {
 	Checked    bool
 }
 
-templ Toggle(props ...Props) {
+templ Switch(props ...Props) {
 	{{ var p Props }}
 	if len(props) > 0 {
 		{{ p = props[0] }}
@@ -27,7 +27,7 @@ templ Toggle(props ...Props) {
 			utils.If(p.Disabled, "cursor-not-allowed"),
 		) }
 	>
-		<!-- Actual checkbox toggle -->
+		<!-- Actual checkbox switch -->
 		<input
 			id={ p.ID }
 			if p.Name != "" {
@@ -45,7 +45,7 @@ templ Toggle(props ...Props) {
 			role="switch"
 			{ p.Attributes... }
 		/>
-		<!-- Visual toggle UI -->
+		<!-- Visual switch UI -->
 		<div
 			class={
 				utils.TwMerge(
