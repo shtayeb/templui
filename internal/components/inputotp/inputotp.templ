@@ -12,6 +12,7 @@ type Props struct {
 	Value      string
 	Required   bool
 	Name       string
+	Form       string
 	HasError   bool
 }
 
@@ -49,6 +50,9 @@ templ InputOTP(props ...Props) {
 		}
 		if p.Value != "" {
 			data-tui-inputotp-value={ p.Value }
+		}
+		if p.Form != "" {
+			form={ p.Form }
 		}
 		class={
 			utils.TwMerge(

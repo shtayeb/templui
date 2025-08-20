@@ -27,6 +27,7 @@ type Props struct {
 	Attributes       templ.Attributes
 	Name             string
 	Type             Type
+	Form             string
 	Placeholder      string
 	Value            string
 	Disabled         bool
@@ -63,6 +64,9 @@ templ Input(props ...Props) {
 			}
 			if p.Type == TypeFile && p.FileAccept != "" {
 				accept={ p.FileAccept }
+			}
+			if p.Form != "" {
+				form={ p.Form }
 			}
 			disabled?={ p.Disabled }
 			readonly?={ p.Readonly }

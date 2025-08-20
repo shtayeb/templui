@@ -8,6 +8,7 @@ type Props struct {
 	Attributes templ.Attributes
 	Name       string
 	Value      string
+	Form       string
 	Disabled   bool
 	Required   bool
 	Checked    bool
@@ -28,6 +29,9 @@ templ Radio(props ...Props) {
 		}
 		if p.Value != "" {
 			value={ p.Value }
+		}
+		if p.Form != "" {
+			form={ p.Form }
 		}
 		checked?={ p.Checked }
 		disabled?={ p.Disabled }

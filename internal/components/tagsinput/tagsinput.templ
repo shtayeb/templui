@@ -10,6 +10,7 @@ type Props struct {
 	ID          string
 	Name        string
 	Value       []string
+	Form        string
 	Placeholder string
 	Class       string
 	HasError    bool
@@ -18,7 +19,11 @@ type Props struct {
 	Readonly    bool
 }
 
-templ TagsInput(p Props) {
+templ TagsInput(props ...Props) {
+	{{ var p Props }}
+	if len(props) > 0 {
+		{{ p = props[0] }}
+	}
 	<div
 		id={ p.ID + "-container" }
 		class={
@@ -40,6 +45,7 @@ templ TagsInput(p Props) {
 		}
 		data-tui-tagsinput
 		data-tui-tagsinput-name={ p.Name }
+		data-tui-tagsinput-form={ p.Form }
 		{ p.Attributes... }
 	>
 		<div class="flex items-center flex-wrap gap-2" data-tui-tagsinput-container>
