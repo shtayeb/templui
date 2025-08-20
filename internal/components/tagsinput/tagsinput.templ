@@ -19,7 +19,11 @@ type Props struct {
 	Readonly    bool
 }
 
-templ TagsInput(p Props) {
+templ TagsInput(props ...Props) {
+	{{ var p Props }}
+	if len(props) > 0 {
+		{{ p = props[0] }}
+	}
 	<div
 		id={ p.ID + "-container" }
 		class={
