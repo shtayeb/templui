@@ -101,13 +101,8 @@ func main() {
 		"out/showcase/chart_radar.html":            showcase.ChartRadar(),
 
 		// Checkbox
-		"out/showcase/checkbox_card_default.html": showcase.CheckboxCardDefault(),
-		"out/showcase/checkbox_checked.html":      showcase.CheckboxChecked(),
-		"out/showcase/checkbox_custom_icon.html":  showcase.CheckboxCustomIcon(),
-		"out/showcase/checkbox_default.html":      showcase.CheckboxDefault(),
-		"out/showcase/checkbox_disabled.html":     showcase.CheckboxDisabled(),
-		"out/showcase/checkbox_form.html":         showcase.CheckboxForm(),
-		"out/showcase/checkbox_with_label.html":   showcase.CheckboxWithLabel(),
+		"out/showcase/checkbox_default.html": showcase.CheckboxDefault(),
+		"out/showcase/checkbox_form.html":    showcase.CheckboxForm(),
 
 		// Code
 		"out/showcase/code_copy_button.html": showcase.CodeCopyButton(),
@@ -170,12 +165,8 @@ func main() {
 		"out/showcase/progress_sizes.html":   showcase.ProgressSizes(),
 
 		// Radio
-		"out/showcase/radio_card_default.html": showcase.RadioCardDefault(),
-		"out/showcase/radio_checked.html":      showcase.RadioChecked(),
-		"out/showcase/radio_default.html":      showcase.RadioDefault(),
-		"out/showcase/radio_disabled.html":     showcase.RadioDisabled(),
-		"out/showcase/radio_form.html":         showcase.RadioForm(),
-		"out/showcase/radio_with_label.html":   showcase.RadioWithLabel(),
+		"out/showcase/radio_default.html": showcase.RadioDefault(),
+		"out/showcase/radio_form.html":    showcase.RadioForm(),
 
 		// Rating
 		"out/showcase/rating_default.html":    showcase.RatingDefault(),

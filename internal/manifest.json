@@ -78,12 +78,6 @@
       "dependencies": ["icon"]
     },
     {
-      "name": "checkboxcard",
-      "description": "Card-style checkbox selection",
-      "files": ["internal/components/checkboxcard/checkboxcard.templ"],
-      "dependencies": []
-    },
-    {
       "name": "code",
       "description": "Syntax-highlighted code blocks",
       "files": ["internal/components/code/code.templ"],
@@ -179,12 +173,6 @@
       "name": "radio",
       "description": "Single-choice selection",
       "files": ["internal/components/radio/radio.templ"],
-      "dependencies": []
-    },
-    {
-      "name": "radiocard",
-      "description": "Card-style radio selection",
-      "files": ["internal/components/radiocard/radiocard.templ"],
       "dependencies": []
     },
     {

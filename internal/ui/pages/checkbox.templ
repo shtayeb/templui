@@ -20,18 +20,6 @@ templ Checkbox() {
 				ID:   "examples",
 				Children: []modules.TableOfContentsItem{
 					{
-						Text: "With Label",
-						ID:   "with-label",
-					},
-					{
-						Text: "Disabled",
-						ID:   "disabled",
-					},
-					{
-						Text: "Custom Icon",
-						ID:   "custom-icon",
-					},
-					{
 						Text: "Form",
 						ID:   "form",
 					},
@@ -85,30 +73,6 @@ templ Checkbox() {
 				Title: "Examples",
 				ID:    "examples",
 			}) {
-				@modules.ExampleWrapper(modules.ExampleWrapperProps{
-					SectionName:     "Checked",
-					ShowcaseFile:    showcase.CheckboxChecked(),
-					PreviewCodeFile: "checkbox_checked.templ",
-					ID:              "checked",
-				})
-				@modules.ExampleWrapper(modules.ExampleWrapperProps{
-					SectionName:     "With Label",
-					ShowcaseFile:    showcase.CheckboxWithLabel(),
-					PreviewCodeFile: "checkbox_with_label.templ",
-					ID:              "with-label",
-				})
-				@modules.ExampleWrapper(modules.ExampleWrapperProps{
-					SectionName:     "Disabled",
-					ShowcaseFile:    showcase.CheckboxDisabled(),
-					PreviewCodeFile: "checkbox_disabled.templ",
-					ID:              "disabled",
-				})
-				@modules.ExampleWrapper(modules.ExampleWrapperProps{
-					SectionName:     "Custom Icon",
-					ShowcaseFile:    showcase.CheckboxCustomIcon(),
-					PreviewCodeFile: "checkbox_custom_icon.templ",
-					ID:              "custom-icon",
-				})
 				@modules.ExampleWrapper(modules.ExampleWrapperProps{
 					SectionName:     "Form",
 					ShowcaseFile:    showcase.CheckboxForm(),

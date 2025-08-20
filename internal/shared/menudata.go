@@ -78,10 +78,6 @@ var Sections = []Section{
 				Href: "/docs/components/checkbox",
 			},
 			{
-				Text: "Checkbox Card",
-				Href: "/docs/components/checkbox-card",
-			},
-			{
 				Text: "Code",
 				Href: "/docs/components/code",
 			},
@@ -137,10 +133,6 @@ var Sections = []Section{
 			{
 				Text: "Radio",
 				Href: "/docs/components/radio",
-			},
-			{
-				Text: "Radio Card",
-				Href: "/docs/components/radio-card",
 			},
 			{
 				Text: "Rating",
