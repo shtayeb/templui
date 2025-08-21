@@ -12,16 +12,11 @@ templ CollapsibleDefault() {
 			<h4 class="text-sm font-semibold">
 				{ "@axadrn" } starred 3 repositories
 			</h4>
-			@collapsible.Trigger(collapsible.TriggerProps{
-				Class: "size-8",
-			}) {
+			@collapsible.Trigger() {
 				@button.Button(button.Props{
 					Variant: button.VariantGhost,
 					Size:    button.SizeIcon,
 					Class:   "size-8",
-					Attributes: templ.Attributes{
-						"data-collapsible": "trigger",
-					},
 				}) {
 					@icon.ChevronsUpDown(icon.Props{Class: "size-4"})
 					<span class="sr-only">Toggle</span>
