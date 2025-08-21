@@ -60,8 +60,6 @@ type MenuButtonProps struct {
 	Attributes templ.Attributes
 	Href       string
 	IsActive   bool
-	HasSubmenu bool
-	IsOpen     bool
 }
 
 // Main sidebar container
@@ -224,7 +222,7 @@ templ MenuButton(props ...MenuButtonProps) {
 	if len(props) > 0 {
 		{{ p = props[0] }}
 	}
-	if p.Href != "" && !p.HasSubmenu {
+	if p.Href != "" {
 		<a
 			if p.ID != "" {
 				id={ p.ID }
@@ -259,27 +257,12 @@ templ MenuButton(props ...MenuButtonProps) {
 				p.Class,
 			) }
 			data-sidebar="menu-button"
-			if p.HasSubmenu {
-				data-sidebar-menu-toggle
-				data-sidebar-menu-state={ utils.IfElse(p.IsOpen, "open", "closed") }
-			}
 			if p.IsActive {
 				data-active="true"
 			}
 			{ p.Attributes... }
 		>
-			<div class="flex-1 flex items-center gap-3">
-				{ children... }
-			</div>
-			if p.HasSubmenu {
-				<div
-					class="ml-auto size-4 transition-transform duration-200 data-[state=open]:rotate-90"
-					data-sidebar-menu-chevron
-					data-state={ utils.IfElse(p.IsOpen, "open", "closed") }
-				>
-					@icon.ChevronRight(icon.Props{Class: "size-4"})
-				</div>
-			}
+			{ children... }
 		</button>
 	}
 }
@@ -291,31 +274,25 @@ type MenuSubProps struct {
 	Attributes templ.Attributes
 }
 
-// Sidebar submenu container
+// Sidebar submenu container (styling only, animation handled by Collapsible)
 templ MenuSub(props ...MenuSubProps) {
 	{{ var p MenuSubProps }}
 	if len(props) > 0 {
 		{{ p = props[0] }}
 	}
-	<div
+	<ul
 		if p.ID != "" {
 			id={ p.ID }
 		}
 		class={ utils.TwMerge(
-			"grid grid-rows-[0fr] transition-[grid-template-rows] duration-200",
-			"data-[state=open]:grid-rows-[1fr]",
+			"ml-4 space-y-1 py-1 pl-4 border-l border-sidebar-border",
 			p.Class,
 		) }
 		data-sidebar="menu-sub"
-		data-state="closed"
 		{ p.Attributes... }
 	>
-		<div class="overflow-hidden">
-			<ul class="ml-4 space-y-1 py-1 pl-4 border-l border-sidebar-border">
-				{ children... }
-			</ul>
-		</div>
-	</div>
+		{ children... }
+	</ul>
 }
 
 // Sidebar submenu item props

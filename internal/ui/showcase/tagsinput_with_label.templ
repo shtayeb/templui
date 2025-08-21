@@ -1,8 +1,8 @@
 package showcase
 
 import (
-	"github.com/templui/templui/internal/components/tagsinput"
 	"github.com/templui/templui/internal/components/label"
+	"github.com/templui/templui/internal/components/tagsinput"
 )
 
 templ TagsInputWithLabel() {
@@ -15,7 +15,7 @@ templ TagsInputWithLabel() {
 		@tagsinput.TagsInput(tagsinput.Props{
 			ID:          "nets",
 			Placeholder: "Enter a network",
-			Value: []string{"127.0.0.1/32"},
+			Value:       []string{"127.0.0.1/32"},
 		})
 	</div>
 }

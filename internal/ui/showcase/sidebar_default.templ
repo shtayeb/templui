@@ -3,6 +3,7 @@ package showcase
 import "github.com/templui/templui/internal/components/sidebar"
 import "github.com/templui/templui/internal/components/icon"
 import "github.com/templui/templui/internal/components/avatar"
+import "github.com/templui/templui/internal/components/collapsible"
 
 templ SidebarDefault() {
 	<!-- Container that holds both sidebar and content -->
@@ -38,34 +39,43 @@ templ SidebarDefault() {
 							}
 						}
 						@sidebar.MenuItem() {
-							@sidebar.MenuButton(sidebar.MenuButtonProps{
-								HasSubmenu: true,
-								IsOpen:     true,
+							@collapsible.Collapsible(collapsible.Props{
+								DefaultOpen: true,
+								Class:       "group/collapsible w-full",
 							}) {
-								@icon.FileText(icon.Props{Class: "size-4"})
-								<span>Documents</span>
-							}
-							@sidebar.MenuSub() {
-								@sidebar.MenuSubItem() {
-									@sidebar.MenuSubButton(sidebar.MenuSubButtonProps{
-										Href: "#",
-									}) {
-										<span>Reports</span>
-									}
+								@collapsible.Trigger(collapsible.TriggerProps{
+									Class: "flex w-full items-center gap-3 rounded-md px-3 py-2 text-sm text-left hover:bg-sidebar-accent hover:text-sidebar-accent-foreground transition-colors",
+								}) {
+									@icon.FileText(icon.Props{Class: "size-4"})
+									<span>Documents</span>
+									@icon.ChevronRight(icon.Props{
+										Class: "ml-auto size-4 transition-transform group-data-[state=open]/collapsible:rotate-90",
+									})
 								}
-								@sidebar.MenuSubItem() {
-									@sidebar.MenuSubButton(sidebar.MenuSubButtonProps{
-										Href: "#",
-									}) {
-										<span>Invoices</span>
-									}
-								}
-								@sidebar.MenuSubItem() {
-									@sidebar.MenuSubButton(sidebar.MenuSubButtonProps{
-										Href:     "#",
-										IsActive: true,
-									}) {
-										<span>Receipts</span>
+								@collapsible.Content() {
+									@sidebar.MenuSub() {
+										@sidebar.MenuSubItem() {
+											@sidebar.MenuSubButton(sidebar.MenuSubButtonProps{
+												Href: "#",
+											}) {
+												<span>Reports</span>
+											}
+										}
+										@sidebar.MenuSubItem() {
+											@sidebar.MenuSubButton(sidebar.MenuSubButtonProps{
+												Href: "#",
+											}) {
+												<span>Invoices</span>
+											}
+										}
+										@sidebar.MenuSubItem() {
+											@sidebar.MenuSubButton(sidebar.MenuSubButtonProps{
+												Href:     "#",
+												IsActive: true,
+											}) {
+												<span>Receipts</span>
+											}
+										}
 									}
 								}
 							}
@@ -90,15 +100,35 @@ templ SidebarDefault() {
 							}
 						}
 						@sidebar.MenuItem() {
-							@sidebar.MenuButton(sidebar.MenuButtonProps{
-								Href: "#",
-							}) {
-								@icon.Folder(icon.Props{Class: "size-4"})
-								<span>Project Beta</span>
-								@sidebar.SidebarMenuBadge() {
-									7
+							<div class="w-full">
+								@sidebar.MenuButton() {
+									@icon.Folder(icon.Props{Class: "size-4"})
+									<span>Project Beta</span>
 								}
-							}
+								@sidebar.MenuSub() {
+									@sidebar.MenuSubItem() {
+										@sidebar.MenuSubButton(sidebar.MenuSubButtonProps{
+											Href: "#",
+										}) {
+											<span>Overview</span>
+										}
+									}
+									@sidebar.MenuSubItem() {
+										@sidebar.MenuSubButton(sidebar.MenuSubButtonProps{
+											Href: "#",
+										}) {
+											<span>Analytics</span>
+										}
+									}
+									@sidebar.MenuSubItem() {
+										@sidebar.MenuSubButton(sidebar.MenuSubButtonProps{
+											Href: "#",
+										}) {
+											<span>Reports</span>
+										}
+									}
+								}
+							</div>
 						}
 					}
 				}
@@ -114,11 +144,44 @@ templ SidebarDefault() {
 							}
 						}
 						@sidebar.MenuItem() {
-							@sidebar.MenuButton(sidebar.MenuButtonProps{
-								Href: "#",
+							@collapsible.Collapsible(collapsible.Props{
+								DefaultOpen: false,
+								Class:       "group/collapsible w-full",
 							}) {
-								@icon.Settings(icon.Props{Class: "size-4"})
-								<span>Settings</span>
+								@collapsible.Trigger(collapsible.TriggerProps{
+									Class: "flex w-full items-center gap-3 rounded-md px-3 py-2 text-sm text-left hover:bg-sidebar-accent hover:text-sidebar-accent-foreground transition-colors",
+								}) {
+									@icon.Settings(icon.Props{Class: "size-4"})
+									<span>Settings</span>
+									@icon.ChevronRight(icon.Props{
+										Class: "ml-auto size-4 transition-transform group-data-[state=open]/collapsible:rotate-90",
+									})
+								}
+								@collapsible.Content() {
+									@sidebar.MenuSub() {
+										@sidebar.MenuSubItem() {
+											@sidebar.MenuSubButton(sidebar.MenuSubButtonProps{
+												Href: "#",
+											}) {
+												<span>General</span>
+											}
+										}
+										@sidebar.MenuSubItem() {
+											@sidebar.MenuSubButton(sidebar.MenuSubButtonProps{
+												Href: "#",
+											}) {
+												<span>Security</span>
+											}
+										}
+										@sidebar.MenuSubItem() {
+											@sidebar.MenuSubButton(sidebar.MenuSubButtonProps{
+												Href: "#",
+											}) {
+												<span>Notifications</span>
+											}
+										}
+									}
+								}
 							}
 						}
 					}
@@ -148,7 +211,8 @@ templ SidebarDefault() {
 					<div class="space-y-4">
 						<h2 class="text-2xl font-bold">Welcome to Acme Inc</h2>
 						<p class="text-muted-foreground">
-							This sidebar showcases all the available features including groups, labels, badges, separators, and nested menus.
+							This sidebar showcases all the available features including groups, labels, badges, separators, and different submenu types.
+							Documents uses collapsible (open), Settings uses collapsible (closed), and Project Beta has an always-visible submenu.
 							Try using the keyboard shortcut <kbd class="rounded border px-1">Ctrl+B</kbd> to toggle the sidebar.
 						</p>
 					</div>
