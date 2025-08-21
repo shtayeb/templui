@@ -139,8 +139,9 @@
   // Event delegation for calendar navigation and selection
   document.addEventListener("click", (e) => {
     // Previous month
-    if (e.target.matches("[data-tui-calendar-prev]")) {
-      const container = e.target.closest("[data-tui-calendar-container]");
+    const prevBtn = e.target.closest("[data-tui-calendar-prev]");
+    if (prevBtn) {
+      const container = prevBtn.closest("[data-tui-calendar-container]");
       if (!container) return;
       
       const state = getState(container);
@@ -158,8 +159,9 @@
     }
     
     // Next month
-    if (e.target.matches("[data-tui-calendar-next]")) {
-      const container = e.target.closest("[data-tui-calendar-container]");
+    const nextBtn = e.target.closest("[data-tui-calendar-next]");
+    if (nextBtn) {
+      const container = nextBtn.closest("[data-tui-calendar-container]");
       if (!container) return;
       
       const state = getState(container);
