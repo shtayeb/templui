@@ -78,6 +78,12 @@
       "dependencies": ["icon"]
     },
     {
+      "name": "collapsible",
+      "description": "An interactive component which expands/collapses a panel",
+      "files": ["internal/components/collapsible/collapsible.templ"],
+      "hasJS": true
+    },
+    {
       "name": "code",
       "description": "Syntax-highlighted code blocks",
       "files": ["internal/components/code/code.templ"],

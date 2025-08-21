@@ -78,6 +78,10 @@ var Sections = []Section{
 				Href: "/docs/components/checkbox",
 			},
 			{
+				Text: "Collapsible",
+				Href: "/docs/components/collapsible",
+			},
+			{
 				Text: "Code",
 				Href: "/docs/components/code",
 			},

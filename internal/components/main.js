@@ -3,6 +3,7 @@ import "./calendar/calendar.js";
 import "./carousel/carousel.js";
 import "./chart/chart.js";
 import "./code/code.js";
+import "./collapsible/collapsible.js";
 import "./datepicker/datepicker.js";
 import "./drawer/drawer.js";
 import "./dropdown/dropdown.js";

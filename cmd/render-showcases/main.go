@@ -108,6 +108,9 @@ func main() {
 		"out/showcase/checkbox_default.html": showcase.CheckboxDefault(),
 		"out/showcase/checkbox_form.html":    showcase.CheckboxForm(),
 
+		// Collapsible
+		"out/showcase/collapsible_default.html": showcase.CollapsibleDefault(),
+
 		// Code
 		"out/showcase/code_copy_button.html": showcase.CodeCopyButton(),
 		"out/showcase/code_custom_size.html": showcase.CodeCustomSize(),
