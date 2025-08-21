@@ -2,6 +2,7 @@ package showcase
 
 import "github.com/templui/templui/internal/components/sidebar"
 import "github.com/templui/templui/internal/components/icon"
+import "github.com/templui/templui/internal/components/avatar"
 
 templ SidebarDefault() {
 	<!-- Container that holds both sidebar and content -->
@@ -12,77 +13,124 @@ templ SidebarDefault() {
 				<span class="font-semibold">Acme Inc</span>
 			}
 			@sidebar.Content() {
-				@sidebar.Menu() {
-					@sidebar.MenuItem() {
-						@sidebar.MenuButton(sidebar.MenuButtonProps{
-							Href: "#",
-						}) {
-							@icon.House(icon.Props{Class: "size-4"})
-							<span>Home</span>
-						}
+				@sidebar.SidebarGroup() {
+					@sidebar.SidebarGroupLabel() {
+						Platform
 					}
-					@sidebar.MenuItem() {
-						@sidebar.MenuButton(sidebar.MenuButtonProps{
-							Href: "#",
-						}) {
-							@icon.Inbox(icon.Props{Class: "size-4"})
-							<span>Inbox</span>
-						}
-					}
-					@sidebar.MenuItem() {
-						@sidebar.MenuButton(sidebar.MenuButtonProps{
-							HasSubmenu: true,
-							IsOpen:     true,
-						}) {
-							@icon.FileText(icon.Props{Class: "size-4"})
-							<span>Documents</span>
-						}
-						@sidebar.MenuSub() {
-							@sidebar.MenuSubItem() {
-								@sidebar.MenuSubButton(sidebar.MenuSubButtonProps{
-									Href: "#",
-								}) {
-									<span>Reports</span>
-								}
+					@sidebar.Menu() {
+						@sidebar.MenuItem() {
+							@sidebar.MenuButton(sidebar.MenuButtonProps{
+								Href: "#",
+							}) {
+								@icon.House(icon.Props{Class: "size-4"})
+								<span>Home</span>
 							}
-							@sidebar.MenuSubItem() {
-								@sidebar.MenuSubButton(sidebar.MenuSubButtonProps{
-									Href: "#",
-								}) {
-									<span>Invoices</span>
-								}
-							}
-							@sidebar.MenuSubItem() {
-								@sidebar.MenuSubButton(sidebar.MenuSubButtonProps{
-									Href:     "#",
-									IsActive: true,
-								}) {
-									<span>Receipts</span>
+						}
+						@sidebar.MenuItem() {
+							@sidebar.MenuButton(sidebar.MenuButtonProps{
+								Href: "#",
+							}) {
+								@icon.Inbox(icon.Props{Class: "size-4"})
+								<span>Inbox</span>
+								@sidebar.SidebarMenuBadge() {
+									3
 								}
 							}
 						}
-					}
-					@sidebar.MenuItem() {
-						@sidebar.MenuButton(sidebar.MenuButtonProps{
-							Href: "#",
-						}) {
-							@icon.Users(icon.Props{Class: "size-4"})
-							<span>Team</span>
+						@sidebar.MenuItem() {
+							@sidebar.MenuButton(sidebar.MenuButtonProps{
+								HasSubmenu: true,
+								IsOpen:     true,
+							}) {
+								@icon.FileText(icon.Props{Class: "size-4"})
+								<span>Documents</span>
+							}
+							@sidebar.MenuSub() {
+								@sidebar.MenuSubItem() {
+									@sidebar.MenuSubButton(sidebar.MenuSubButtonProps{
+										Href: "#",
+									}) {
+										<span>Reports</span>
+									}
+								}
+								@sidebar.MenuSubItem() {
+									@sidebar.MenuSubButton(sidebar.MenuSubButtonProps{
+										Href: "#",
+									}) {
+										<span>Invoices</span>
+									}
+								}
+								@sidebar.MenuSubItem() {
+									@sidebar.MenuSubButton(sidebar.MenuSubButtonProps{
+										Href:     "#",
+										IsActive: true,
+									}) {
+										<span>Receipts</span>
+									}
+								}
+							}
 						}
 					}
-					@sidebar.MenuItem() {
-						@sidebar.MenuButton(sidebar.MenuButtonProps{
-							Href: "#",
-						}) {
-							@icon.Settings(icon.Props{Class: "size-4"})
-							<span>Settings</span>
+				}
+				@sidebar.SidebarSeparator()
+				@sidebar.SidebarGroup() {
+					@sidebar.SidebarGroupLabel() {
+						Projects
+					}
+					@sidebar.Menu() {
+						@sidebar.MenuItem() {
+							@sidebar.MenuButton(sidebar.MenuButtonProps{
+								Href: "#",
+							}) {
+								@icon.Folder(icon.Props{Class: "size-4"})
+								<span>Project Alpha</span>
+								@sidebar.SidebarMenuBadge() {
+									12
+								}
+							}
+						}
+						@sidebar.MenuItem() {
+							@sidebar.MenuButton(sidebar.MenuButtonProps{
+								Href: "#",
+							}) {
+								@icon.Folder(icon.Props{Class: "size-4"})
+								<span>Project Beta</span>
+								@sidebar.SidebarMenuBadge() {
+									7
+								}
+							}
+						}
+					}
+				}
+				@sidebar.SidebarSeparator()
+				@sidebar.SidebarGroup() {
+					@sidebar.Menu() {
+						@sidebar.MenuItem() {
+							@sidebar.MenuButton(sidebar.MenuButtonProps{
+								Href: "#",
+							}) {
+								@icon.Users(icon.Props{Class: "size-4"})
+								<span>Team</span>
+							}
+						}
+						@sidebar.MenuItem() {
+							@sidebar.MenuButton(sidebar.MenuButtonProps{
+								Href: "#",
+							}) {
+								@icon.Settings(icon.Props{Class: "size-4"})
+								<span>Settings</span>
+							}
 						}
 					}
 				}
 			}
 			@sidebar.Footer() {
 				<div class="flex items-center gap-3">
-					<div class="h-8 w-8 rounded-full bg-gray-300"></div>
+					@avatar.Avatar() {
+						@avatar.Image(avatar.ImageProps{
+							Src: "https://avatars.githubusercontent.com/u/26936893?v=4",
+						})
+					}
 					<div class="flex flex-col">
 						<span class="text-sm font-medium">John Doe</span>
 						<span class="text-xs text-gray-500">john@example.com</span>
@@ -94,8 +142,17 @@ templ SidebarDefault() {
 			<div class="flex h-full flex-col">
 				<div class="flex h-14 items-center gap-4 px-6">
 					@sidebar.Trigger()
+					<span class="text-sm text-muted-foreground">Press Ctrl+B to toggle sidebar</span>
 				</div>
-				<div class="flex-1 overflow-auto p-6"></div>
+				<div class="flex-1 overflow-auto p-6">
+					<div class="space-y-4">
+						<h2 class="text-2xl font-bold">Welcome to Acme Inc</h2>
+						<p class="text-muted-foreground">
+							This sidebar showcases all the available features including groups, labels, badges, separators, and nested menus.
+							Try using the keyboard shortcut <kbd class="rounded border px-1">Ctrl+B</kbd> to toggle the sidebar.
+						</p>
+					</div>
+				</div>
 			</div>
 		}
 	</div>

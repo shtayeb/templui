@@ -430,3 +430,111 @@ templ SidebarInset(props ...SidebarInsetProps) {
 		{ children... }
 	</main>
 }
+
+// Sidebar group props
+type SidebarGroupProps struct {
+	ID         string
+	Class      string
+	Attributes templ.Attributes
+}
+
+// SidebarGroup - groups related menu items together
+templ SidebarGroup(props ...SidebarGroupProps) {
+	{{ var p SidebarGroupProps }}
+	if len(props) > 0 {
+		{{ p = props[0] }}
+	}
+	<div
+		if p.ID != "" {
+			id={ p.ID }
+		}
+		class={ utils.TwMerge("space-y-2", p.Class) }
+		data-sidebar="group"
+		{ p.Attributes... }
+	>
+		{ children... }
+	</div>
+}
+
+// Sidebar group label props
+type SidebarGroupLabelProps struct {
+	ID         string
+	Class      string
+	Attributes templ.Attributes
+}
+
+// SidebarGroupLabel - label for a sidebar group
+templ SidebarGroupLabel(props ...SidebarGroupLabelProps) {
+	{{ var p SidebarGroupLabelProps }}
+	if len(props) > 0 {
+		{{ p = props[0] }}
+	}
+	<div
+		if p.ID != "" {
+			id={ p.ID }
+		}
+		class={ utils.TwMerge(
+			"px-3 py-2 text-xs font-semibold text-sidebar-foreground/70",
+			p.Class,
+		) }
+		data-sidebar="group-label"
+		{ p.Attributes... }
+	>
+		{ children... }
+	</div>
+}
+
+// Sidebar menu badge props
+type SidebarMenuBadgeProps struct {
+	ID         string
+	Class      string
+	Attributes templ.Attributes
+}
+
+// SidebarMenuBadge - badge within a menu item
+templ SidebarMenuBadge(props ...SidebarMenuBadgeProps) {
+	{{ var p SidebarMenuBadgeProps }}
+	if len(props) > 0 {
+		{{ p = props[0] }}
+	}
+	<span
+		if p.ID != "" {
+			id={ p.ID }
+		}
+		class={ utils.TwMerge(
+			"ml-auto flex h-5 min-w-5 items-center justify-center rounded-md px-1 text-xs font-medium",
+			"bg-sidebar-accent text-sidebar-accent-foreground",
+			p.Class,
+		) }
+		data-sidebar="menu-badge"
+		{ p.Attributes... }
+	>
+		{ children... }
+	</span>
+}
+
+// Sidebar separator props
+type SidebarSeparatorProps struct {
+	ID         string
+	Class      string
+	Attributes templ.Attributes
+}
+
+// SidebarSeparator - visual separator between sections
+templ SidebarSeparator(props ...SidebarSeparatorProps) {
+	{{ var p SidebarSeparatorProps }}
+	if len(props) > 0 {
+		{{ p = props[0] }}
+	}
+	<hr
+		if p.ID != "" {
+			id={ p.ID }
+		}
+		class={ utils.TwMerge(
+			"my-2 border-t border-sidebar-border",
+			p.Class,
+		) }
+		data-sidebar="separator"
+		{ p.Attributes... }
+	/>
+}

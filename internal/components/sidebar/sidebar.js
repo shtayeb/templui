@@ -4,14 +4,10 @@
 (function () {
   "use strict";
 
-  // Initialize on DOM ready
-  if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", init);
-  } else {
-    init();
-  }
+  let resizeHandlerSetup = false;
 
-  function init() {
+  // Initialize all sidebars
+  function initSidebars() {
     // Set initial state for all sidebars
     document.querySelectorAll('[data-sidebar="sidebar"]').forEach(setSidebarInitialState);
     
@@ -27,9 +23,47 @@
       }
     });
     
-    // Setup resize handler
-    setupResizeHandler();
+    // Setup resize handler only once
+    if (!resizeHandlerSetup) {
+      setupResizeHandler();
+      resizeHandlerSetup = true;
+    }
   }
+
+  // Initialize on DOM ready
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", initSidebars);
+  } else {
+    initSidebars();
+  }
+
+  // Watch for dynamically added sidebars (HTMX navigation)
+  const observer = new MutationObserver((mutations) => {
+    let shouldInit = false;
+    
+    for (const mutation of mutations) {
+      for (const node of mutation.addedNodes) {
+        if (node.nodeType === 1) { // Element node
+          if (node.querySelector?.('[data-sidebar="sidebar"]') || 
+              node.matches?.('[data-sidebar="sidebar"]')) {
+            shouldInit = true;
+            break;
+          }
+        }
+      }
+      if (shouldInit) break;
+    }
+    
+    if (shouldInit) {
+      // Small delay to ensure DOM is fully updated
+      setTimeout(initSidebars, 10);
+    }
+  });
+
+  observer.observe(document.body, {
+    childList: true,
+    subtree: true
+  });
 
   function setSidebarInitialState(sidebar) {
     // Desktop: open, Mobile: closed
@@ -85,11 +119,19 @@
     }
   });
 
-  // Handle escape key
+  // Handle keyboard shortcuts
   document.addEventListener("keydown", (e) => {
+    // Escape key - close sidebar
     if (e.key === "Escape") {
       document.querySelectorAll('[data-sidebar="sidebar"][data-sidebar-state="open"]')
         .forEach(closeSidebar);
+    }
+    
+    // Ctrl+B or Cmd+B - toggle sidebar
+    if ((e.ctrlKey || e.metaKey) && e.key === "b") {
+      e.preventDefault();
+      const sidebar = document.querySelector('[data-sidebar="sidebar"]');
+      if (sidebar) toggleSidebar(sidebar);
     }
   });
 
