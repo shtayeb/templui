@@ -171,7 +171,7 @@ templ Sidebar() {
 				<div id="sidebar-header" class="mb-8">
 					@modules.APITable(modules.APITableProps{
 						Title:       "Header",
-						Description: "Header section of the sidebar, typically contains logo and title.",
+						Description: "Header section of the sidebar, typically contains logo and title. This section is sticky and remains visible when content scrolls.",
 						Items: []modules.APITableItem{
 							{
 								Name:        "ID",
@@ -200,7 +200,7 @@ templ Sidebar() {
 				<div id="sidebar-content" class="mb-8">
 					@modules.APITable(modules.APITableProps{
 						Title:       "Content",
-						Description: "Main content area of the sidebar, typically contains navigation menu.",
+						Description: "Main content area of the sidebar, typically contains navigation menu. This section is scrollable when content exceeds the available height.",
 						Items: []modules.APITableItem{
 							{
 								Name:        "ID",
@@ -229,7 +229,7 @@ templ Sidebar() {
 				<div id="sidebar-footer" class="mb-8">
 					@modules.APITable(modules.APITableProps{
 						Title:       "Footer",
-						Description: "Footer section of the sidebar, typically contains user info or settings.",
+						Description: "Footer section of the sidebar, typically contains user info or settings. This section is sticky at the bottom and remains visible when content scrolls.",
 						Items: []modules.APITableItem{
 							{
 								Name:        "ID",
