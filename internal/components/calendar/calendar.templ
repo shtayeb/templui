@@ -33,14 +33,14 @@ var (
 )
 
 type Props struct {
-	ID               string
-	Class            string
-	LocaleTag        LocaleTag
-	Value            *time.Time
-	Name             string
-	InitialMonth     int  // Optional: 0-11 (Default: current or from Value). Controls the initially displayed month view.
-	InitialYear      int  // Optional: (Default: current or from Value). Controls the initially displayed year view.
-	StartOfWeek      *Day // Optional: 0-6 [Sun-Sat] (Default: 1).
+	ID                string
+	Class             string
+	LocaleTag         LocaleTag
+	Value             *time.Time
+	Name              string
+	InitialMonth      int  // Optional: 0-11 (Default: current or from Value). Controls the initially displayed month view.
+	InitialYear       int  // Optional: (Default: current or from Value). Controls the initially displayed year view.
+	StartOfWeek       *Day // Optional: 0-6 [Sun-Sat] (Default: 1).
 	RenderHiddenInput bool // Optional: Whether to render the hidden input (Default: true). Set to false when used inside DatePicker.
 }
 

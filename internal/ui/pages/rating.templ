@@ -138,122 +138,122 @@ templ Rating() {
 				<div id="rating" class="mb-8">
 					@modules.APITable(modules.APITableProps{
 						Title:       "Rating",
-					Description: "Main rating component container.",
-					Items: []modules.APITableItem{
-						{
-							Name:        "ID",
-							Type:        "string",
-							Default:     "\"\"",
-							Description: "Unique identifier for the rating component",
+						Description: "Main rating component container.",
+						Items: []modules.APITableItem{
+							{
+								Name:        "ID",
+								Type:        "string",
+								Default:     "\"\"",
+								Description: "Unique identifier for the rating component",
+							},
+							{
+								Name:        "Class",
+								Type:        "string",
+								Default:     "\"\"",
+								Description: "Additional CSS classes to apply to the rating container",
+							},
+							{
+								Name:        "Attributes",
+								Type:        "templ.Attributes",
+								Default:     "nil",
+								Description: "Additional HTML attributes to apply to the rating container",
+							},
+							{
+								Name:        "Value",
+								Type:        "float64",
+								Default:     "0",
+								Description: "Current rating value",
+							},
+							{
+								Name:        "ReadOnly",
+								Type:        "bool",
+								Default:     "false",
+								Description: "Whether the rating is read-only",
+							},
+							{
+								Name:        "Precision",
+								Type:        "float64",
+								Default:     "1.0",
+								Description: "Precision for rating values (e.g., 0.5 for half-star ratings)",
+							},
+							{
+								Name:        "Name",
+								Type:        "string",
+								Default:     "\"\"",
+								Description: "Name attribute for the hidden input field",
+							},
+							{
+								Name:        "OnlyInteger",
+								Type:        "bool",
+								Default:     "false",
+								Description: "Whether to only allow integer rating values",
+							},
 						},
-						{
-							Name:        "Class",
-							Type:        "string",
-							Default:     "\"\"",
-							Description: "Additional CSS classes to apply to the rating container",
-						},
-						{
-							Name:        "Attributes",
-							Type:        "templ.Attributes",
-							Default:     "nil",
-							Description: "Additional HTML attributes to apply to the rating container",
-						},
-						{
-							Name:        "Value",
-							Type:        "float64",
-							Default:     "0",
-							Description: "Current rating value",
-						},
-						{
-							Name:        "ReadOnly",
-							Type:        "bool",
-							Default:     "false",
-							Description: "Whether the rating is read-only",
-						},
-						{
-							Name:        "Precision",
-							Type:        "float64",
-							Default:     "1.0",
-							Description: "Precision for rating values (e.g., 0.5 for half-star ratings)",
-						},
-						{
-							Name:        "Name",
-							Type:        "string",
-							Default:     "\"\"",
-							Description: "Name attribute for the hidden input field",
-						},
-						{
-							Name:        "OnlyInteger",
-							Type:        "bool",
-							Default:     "false",
-							Description: "Whether to only allow integer rating values",
-						},
-					},
-				})
+					})
 				</div>
 				<div id="group" class="mb-8">
 					@modules.APITable(modules.APITableProps{
 						Title:       "Rating.Group",
-					Description: "Container for grouping rating items.",
-					Items: []modules.APITableItem{
-						{
-							Name:        "ID",
-							Type:        "string",
-							Default:     "\"\"",
-							Description: "Unique identifier for the group element",
+						Description: "Container for grouping rating items.",
+						Items: []modules.APITableItem{
+							{
+								Name:        "ID",
+								Type:        "string",
+								Default:     "\"\"",
+								Description: "Unique identifier for the group element",
+							},
+							{
+								Name:        "Class",
+								Type:        "string",
+								Default:     "\"\"",
+								Description: "Additional CSS classes to apply to the group",
+							},
+							{
+								Name:        "Attributes",
+								Type:        "templ.Attributes",
+								Default:     "nil",
+								Description: "Additional HTML attributes to apply to the group",
+							},
 						},
-						{
-							Name:        "Class",
-							Type:        "string",
-							Default:     "\"\"",
-							Description: "Additional CSS classes to apply to the group",
-						},
-						{
-							Name:        "Attributes",
-							Type:        "templ.Attributes",
-							Default:     "nil",
-							Description: "Additional HTML attributes to apply to the group",
-						},
-					},
-				})
+					})
 				</div>
 				<div id="item">
 					@modules.APITable(modules.APITableProps{
 						Title:       "Rating.Item",
-					Description: "Individual rating item (star, heart, emoji).",
-					Items: []modules.APITableItem{
-						{
-							Name:        "ID",
-							Type:        "string",
-							Default:     "\"\"",
-							Description: "Unique identifier for the item element",
+						Description: "Individual rating item (star, heart, emoji).",
+						Items: []modules.APITableItem{
+							{
+								Name:        "ID",
+								Type:        "string",
+								Default:     "\"\"",
+								Description: "Unique identifier for the item element",
+							},
+							{
+								Name:        "Class",
+								Type:        "string",
+								Default:     "\"\"",
+								Description: "Additional CSS classes to apply to the item",
+							},
+							{
+								Name:        "Attributes",
+								Type:        "templ.Attributes",
+								Default:     "nil",
+								Description: "Additional HTML attributes to apply to the item",
+							},
+							{
+								Name:        "Value",
+								Type:        "int",
+								Default:     "0",
+								Description: "Numeric value for this rating item",
+							},
+							{
+								Name:        "Style",
+								Type:        "Style",
+								Default:     "star",
+								Description: "Visual style for the rating item (star, heart, emoji)",
+							},
 						},
-						{
-							Name:        "Class",
-							Type:        "string",
-							Default:     "\"\"",
-							Description: "Additional CSS classes to apply to the item",
-						},
-						{
-							Name:        "Attributes",
-							Type:        "templ.Attributes",
-							Default:     "nil",
-							Description: "Additional HTML attributes to apply to the item",
-						},
-						{
-							Name:        "Value",
-							Type:        "int",
-							Default:     "0",
-							Description: "Numeric value for this rating item",
-						},
-						{
-							Name:        "Style",
-							Type:        "Style",
-							Default:     "star",
-							Description: "Visual style for the rating item (star, heart, emoji)",
-						},
-					},
-				})
+					})
 				</div>
 			}
 		}

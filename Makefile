@@ -67,6 +67,7 @@ minify-js-components:
 		internal/components/carousel/carousel.js \
 		internal/components/chart/chart.js \
 		internal/components/code/code.js \
+		internal/components/collapsible/collapsible.js \
 		internal/components/datepicker/datepicker.js \
 		internal/components/drawer/drawer.js \
 		internal/components/dropdown/dropdown.js \
@@ -78,6 +79,7 @@ minify-js-components:
 		internal/components/progress/progress.js \
 		internal/components/rating/rating.js \
 		internal/components/selectbox/selectbox.js \
+		internal/components/sidebar/sidebar.js \
 		internal/components/slider/slider.js \
 		internal/components/tabs/tabs.js \
 		internal/components/tagsinput/tagsinput.js \

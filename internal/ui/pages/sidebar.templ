@@ -1,0 +1,652 @@
+package pages
+
+import (
+	"github.com/templui/templui/internal/ui/layouts"
+	"github.com/templui/templui/internal/ui/modules"
+	"github.com/templui/templui/internal/ui/showcase"
+)
+
+templ Sidebar() {
+	@layouts.DocsLayout(
+		"Sidebar",
+		"A composable, themeable and customizable sidebar component.",
+		[]modules.TableOfContentsItem{
+			{
+				ID:   "installation",
+				Text: "Installation",
+			},
+			{
+				ID:   "api",
+				Text: "API Reference",
+				Children: []modules.TableOfContentsItem{
+					{
+						ID:   "sidebar",
+						Text: "Sidebar",
+					},
+					{
+						ID:   "sidebar-trigger",
+						Text: "Trigger",
+					},
+					{
+						ID:   "sidebar-header",
+						Text: "Header",
+					},
+					{
+						ID:   "sidebar-content",
+						Text: "Content",
+					},
+					{
+						ID:   "sidebar-footer",
+						Text: "Footer",
+					},
+					{
+						ID:   "sidebar-menu",
+						Text: "Menu",
+					},
+					{
+						ID:   "sidebar-menu-item",
+						Text: "MenuItem",
+					},
+					{
+						ID:   "sidebar-menu-button",
+						Text: "MenuButton",
+					},
+					{
+						ID:   "sidebar-menu-sub",
+						Text: "MenuSub",
+					},
+					{
+						ID:   "sidebar-menu-sub-item",
+						Text: "MenuSubItem",
+					},
+					{
+						ID:   "sidebar-menu-sub-button",
+						Text: "MenuSubButton",
+					},
+					{
+						ID:   "inset",
+						Text: "Inset",
+					},
+					{
+						ID:   "group",
+						Text: "Group",
+					},
+					{
+						ID:   "group-label",
+						Text: "GroupLabel",
+					},
+					{
+						ID:   "menu-badge",
+						Text: "MenuBadge",
+					},
+					{
+						ID:   "separator",
+						Text: "Separator",
+					},
+				},
+			},
+		},
+	) {
+		@modules.PageWrapper(modules.PageWrapperProps{
+			Name:        "Sidebar",
+			Description: templ.Raw("A composable, themeable and customizable sidebar component."),
+			Tailwind:    true,
+			VanillaJS:   true,
+			Breadcrumbs: modules.Breadcrumbs{
+				Items: []modules.BreadcrumbItem{
+					{
+						Text: "Docs",
+						Path: "/docs",
+					},
+					{
+						Text: "Components",
+						Path: "/docs/components",
+					},
+					{
+						Text: "Sidebar",
+					},
+				},
+			},
+		}) {
+			@modules.ExampleWrapper(modules.ExampleWrapperProps{
+				ShowcaseFile:    showcase.SidebarDefault(),
+				PreviewCodeFile: "sidebar_default.templ",
+			})
+			@modules.ContainerWrapper(modules.ContainerWrapperProps{
+				Title: "Installation",
+				ID:    "installation",
+			}) {
+				@modules.ComponentUsage(modules.ComponentUsageProps{
+					ComponentName: "sidebar",
+					JSFiles:       []string{"sidebar"},
+				})
+			}
+			@modules.ContainerWrapper(modules.ContainerWrapperProps{
+				Title: "API Reference",
+				ID:    "api",
+			}) {
+				@modules.APILegend()
+				<div id="sidebar" class="mb-8">
+					@modules.APITable(modules.APITableProps{
+						Title:       "Sidebar",
+						Description: "Main sidebar container that holds all sidebar components.",
+						Items: []modules.APITableItem{
+							{
+								Name:        "ID",
+								Type:        "string",
+								Default:     "auto-generated",
+								Description: "Unique identifier for the sidebar. Auto-generated if not provided.",
+								Required:    false,
+							},
+							{
+								Name:        "Class",
+								Type:        "string",
+								Default:     "",
+								Description: "Additional CSS classes to apply to the sidebar.",
+								Required:    false,
+							},
+							{
+								Name:        "Attributes",
+								Type:        "templ.Attributes",
+								Default:     "",
+								Description: "Additional HTML attributes to apply to the sidebar element.",
+								Required:    false,
+							},
+							{
+								Name:        "Side",
+								Type:        "SidebarSide",
+								Default:     "left",
+								Description: "Position of the sidebar. Options: 'left' or 'right'.",
+								Required:    false,
+							},
+							{
+								Name:        "DefaultOpen",
+								Type:        "bool",
+								Default:     "true",
+								Description: "Whether the sidebar is open by default on desktop. Mobile always starts closed.",
+								Required:    false,
+							},
+						},
+					})
+				</div>
+				<div id="sidebar-trigger" class="mb-8">
+					@modules.APITable(modules.APITableProps{
+						Title:       "Trigger",
+						Description: "Button component to toggle the sidebar visibility.",
+						Items: []modules.APITableItem{
+							{
+								Name:        "ID",
+								Type:        "string",
+								Default:     "",
+								Description: "Unique identifier for the trigger button.",
+								Required:    false,
+							},
+							{
+								Name:        "Class",
+								Type:        "string",
+								Default:     "",
+								Description: "Additional CSS classes to apply to the trigger button.",
+								Required:    false,
+							},
+							{
+								Name:        "Attributes",
+								Type:        "templ.Attributes",
+								Default:     "",
+								Description: "Additional HTML attributes to apply to the trigger button.",
+								Required:    false,
+							},
+						},
+					})
+				</div>
+				<div id="sidebar-header" class="mb-8">
+					@modules.APITable(modules.APITableProps{
+						Title:       "Header",
+						Description: "Header section of the sidebar, typically contains logo and title. This section is sticky and remains visible when content scrolls.",
+						Items: []modules.APITableItem{
+							{
+								Name:        "ID",
+								Type:        "string",
+								Default:     "",
+								Description: "Unique identifier for the header element.",
+								Required:    false,
+							},
+							{
+								Name:        "Class",
+								Type:        "string",
+								Default:     "",
+								Description: "Additional CSS classes to apply to the header.",
+								Required:    false,
+							},
+							{
+								Name:        "Attributes",
+								Type:        "templ.Attributes",
+								Default:     "",
+								Description: "Additional HTML attributes to apply to the header element.",
+								Required:    false,
+							},
+						},
+					})
+				</div>
+				<div id="sidebar-content" class="mb-8">
+					@modules.APITable(modules.APITableProps{
+						Title:       "Content",
+						Description: "Main content area of the sidebar, typically contains navigation menu. This section is scrollable when content exceeds the available height.",
+						Items: []modules.APITableItem{
+							{
+								Name:        "ID",
+								Type:        "string",
+								Default:     "",
+								Description: "Unique identifier for the content element.",
+								Required:    false,
+							},
+							{
+								Name:        "Class",
+								Type:        "string",
+								Default:     "",
+								Description: "Additional CSS classes to apply to the content area.",
+								Required:    false,
+							},
+							{
+								Name:        "Attributes",
+								Type:        "templ.Attributes",
+								Default:     "",
+								Description: "Additional HTML attributes to apply to the content element.",
+								Required:    false,
+							},
+						},
+					})
+				</div>
+				<div id="sidebar-footer" class="mb-8">
+					@modules.APITable(modules.APITableProps{
+						Title:       "Footer",
+						Description: "Footer section of the sidebar, typically contains user info or settings. This section is sticky at the bottom and remains visible when content scrolls.",
+						Items: []modules.APITableItem{
+							{
+								Name:        "ID",
+								Type:        "string",
+								Default:     "",
+								Description: "Unique identifier for the footer element.",
+								Required:    false,
+							},
+							{
+								Name:        "Class",
+								Type:        "string",
+								Default:     "",
+								Description: "Additional CSS classes to apply to the footer.",
+								Required:    false,
+							},
+							{
+								Name:        "Attributes",
+								Type:        "templ.Attributes",
+								Default:     "",
+								Description: "Additional HTML attributes to apply to the footer element.",
+								Required:    false,
+							},
+						},
+					})
+				</div>
+				<div id="sidebar-menu" class="mb-8">
+					@modules.APITable(modules.APITableProps{
+						Title:       "Menu",
+						Description: "Navigation menu container that holds menu items.",
+						Items: []modules.APITableItem{
+							{
+								Name:        "ID",
+								Type:        "string",
+								Default:     "",
+								Description: "Unique identifier for the menu element.",
+								Required:    false,
+							},
+							{
+								Name:        "Class",
+								Type:        "string",
+								Default:     "",
+								Description: "Additional CSS classes to apply to the menu.",
+								Required:    false,
+							},
+							{
+								Name:        "Attributes",
+								Type:        "templ.Attributes",
+								Default:     "",
+								Description: "Additional HTML attributes to apply to the menu element.",
+								Required:    false,
+							},
+						},
+					})
+				</div>
+				<div id="sidebar-menu-item" class="mb-8">
+					@modules.APITable(modules.APITableProps{
+						Title:       "MenuItem",
+						Description: "Individual menu item wrapper within the menu.",
+						Items: []modules.APITableItem{
+							{
+								Name:        "ID",
+								Type:        "string",
+								Default:     "",
+								Description: "Unique identifier for the menu item element.",
+								Required:    false,
+							},
+							{
+								Name:        "Class",
+								Type:        "string",
+								Default:     "",
+								Description: "Additional CSS classes to apply to the menu item.",
+								Required:    false,
+							},
+							{
+								Name:        "Attributes",
+								Type:        "templ.Attributes",
+								Default:     "",
+								Description: "Additional HTML attributes to apply to the menu item element.",
+								Required:    false,
+							},
+						},
+					})
+				</div>
+				<div id="sidebar-menu-button" class="mb-8">
+					@modules.APITable(modules.APITableProps{
+						Title:       "MenuButton",
+						Description: "Clickable menu button or link within a menu item.",
+						Items: []modules.APITableItem{
+							{
+								Name:        "ID",
+								Type:        "string",
+								Default:     "",
+								Description: "Unique identifier for the menu button element.",
+								Required:    false,
+							},
+							{
+								Name:        "Class",
+								Type:        "string",
+								Default:     "",
+								Description: "Additional CSS classes to apply to the menu button.",
+								Required:    false,
+							},
+							{
+								Name:        "Attributes",
+								Type:        "templ.Attributes",
+								Default:     "",
+								Description: "Additional HTML attributes to apply to the menu button element.",
+								Required:    false,
+							},
+							{
+								Name:        "Href",
+								Type:        "string",
+								Default:     "",
+								Description: "URL for the menu link. When provided, renders an anchor tag instead of button.",
+								Required:    false,
+							},
+							{
+								Name:        "IsActive",
+								Type:        "bool",
+								Default:     "false",
+								Description: "Whether the menu item is currently active/selected.",
+								Required:    false,
+							},
+							{
+								Name:        "HasSubmenu",
+								Type:        "bool",
+								Default:     "false",
+								Description: "Whether the menu item has a submenu that can be expanded.",
+								Required:    false,
+							},
+							{
+								Name:        "IsOpen",
+								Type:        "bool",
+								Default:     "false",
+								Description: "Whether the submenu is initially expanded (only applies when HasSubmenu is true).",
+								Required:    false,
+							},
+						},
+					})
+				</div>
+				<div id="sidebar-menu-sub" class="mb-8">
+					@modules.APITable(modules.APITableProps{
+						Title:       "MenuSub",
+						Description: "Container for nested submenu items.",
+						Items: []modules.APITableItem{
+							{
+								Name:        "ID",
+								Type:        "string",
+								Default:     "",
+								Description: "Unique identifier for the submenu element.",
+								Required:    false,
+							},
+							{
+								Name:        "Class",
+								Type:        "string",
+								Default:     "",
+								Description: "Additional CSS classes to apply to the submenu.",
+								Required:    false,
+							},
+							{
+								Name:        "Attributes",
+								Type:        "templ.Attributes",
+								Default:     "",
+								Description: "Additional HTML attributes to apply to the submenu element.",
+								Required:    false,
+							},
+						},
+					})
+				</div>
+				<div id="sidebar-menu-sub-item" class="mb-8">
+					@modules.APITable(modules.APITableProps{
+						Title:       "MenuSubItem",
+						Description: "Individual submenu item wrapper.",
+						Items: []modules.APITableItem{
+							{
+								Name:        "ID",
+								Type:        "string",
+								Default:     "",
+								Description: "Unique identifier for the submenu item element.",
+								Required:    false,
+							},
+							{
+								Name:        "Class",
+								Type:        "string",
+								Default:     "",
+								Description: "Additional CSS classes to apply to the submenu item.",
+								Required:    false,
+							},
+							{
+								Name:        "Attributes",
+								Type:        "templ.Attributes",
+								Default:     "",
+								Description: "Additional HTML attributes to apply to the submenu item element.",
+								Required:    false,
+							},
+						},
+					})
+				</div>
+				<div id="sidebar-menu-sub-button" class="mb-8">
+					@modules.APITable(modules.APITableProps{
+						Title:       "MenuSubButton",
+						Description: "Clickable submenu button or link.",
+						Items: []modules.APITableItem{
+							{
+								Name:        "ID",
+								Type:        "string",
+								Default:     "",
+								Description: "Unique identifier for the submenu button element.",
+								Required:    false,
+							},
+							{
+								Name:        "Class",
+								Type:        "string",
+								Default:     "",
+								Description: "Additional CSS classes to apply to the submenu button.",
+								Required:    false,
+							},
+							{
+								Name:        "Attributes",
+								Type:        "templ.Attributes",
+								Default:     "",
+								Description: "Additional HTML attributes to apply to the submenu button element.",
+								Required:    false,
+							},
+							{
+								Name:        "Href",
+								Type:        "string",
+								Default:     "",
+								Description: "URL for the submenu link. When provided, renders an anchor tag instead of button.",
+								Required:    false,
+							},
+							{
+								Name:        "IsActive",
+								Type:        "bool",
+								Default:     "false",
+								Description: "Whether the submenu item is currently active/selected.",
+								Required:    false,
+							},
+						},
+					})
+				</div>
+				<div id="inset" class="mb-8">
+					@modules.APITable(modules.APITableProps{
+						Title:       "Inset",
+						Description: "Main content wrapper that adapts to sidebar state.",
+						Items: []modules.APITableItem{
+							{
+								Name:        "ID",
+								Type:        "string",
+								Default:     "",
+								Description: "Unique identifier for the inset element.",
+								Required:    false,
+							},
+							{
+								Name:        "Class",
+								Type:        "string",
+								Default:     "",
+								Description: "Additional CSS classes to apply to the inset.",
+								Required:    false,
+							},
+							{
+								Name:        "Attributes",
+								Type:        "templ.Attributes",
+								Default:     "",
+								Description: "Additional HTML attributes to apply to the inset element.",
+								Required:    false,
+							},
+						},
+					})
+				</div>
+				<div id="group" class="mb-8">
+					@modules.APITable(modules.APITableProps{
+						Title:       "Group",
+						Description: "Groups related menu items together with optional label.",
+						Items: []modules.APITableItem{
+							{
+								Name:        "ID",
+								Type:        "string",
+								Default:     "",
+								Description: "Unique identifier for the group element.",
+								Required:    false,
+							},
+							{
+								Name:        "Class",
+								Type:        "string",
+								Default:     "",
+								Description: "Additional CSS classes to apply to the group.",
+								Required:    false,
+							},
+							{
+								Name:        "Attributes",
+								Type:        "templ.Attributes",
+								Default:     "",
+								Description: "Additional HTML attributes to apply to the group element.",
+								Required:    false,
+							},
+						},
+					})
+				</div>
+				<div id="group-label" class="mb-8">
+					@modules.APITable(modules.APITableProps{
+						Title:       "GroupLabel",
+						Description: "Label for a sidebar group, typically used to name sections like 'Platform' or 'Projects'.",
+						Items: []modules.APITableItem{
+							{
+								Name:        "ID",
+								Type:        "string",
+								Default:     "",
+								Description: "Unique identifier for the group label element.",
+								Required:    false,
+							},
+							{
+								Name:        "Class",
+								Type:        "string",
+								Default:     "",
+								Description: "Additional CSS classes to apply to the group label.",
+								Required:    false,
+							},
+							{
+								Name:        "Attributes",
+								Type:        "templ.Attributes",
+								Default:     "",
+								Description: "Additional HTML attributes to apply to the group label element.",
+								Required:    false,
+							},
+						},
+					})
+				</div>
+				<div id="menu-badge" class="mb-8">
+					@modules.APITable(modules.APITableProps{
+						Title:       "MenuBadge",
+						Description: "Badge within a menu item, typically used to show counts or notifications.",
+						Items: []modules.APITableItem{
+							{
+								Name:        "ID",
+								Type:        "string",
+								Default:     "",
+								Description: "Unique identifier for the menu badge element.",
+								Required:    false,
+							},
+							{
+								Name:        "Class",
+								Type:        "string",
+								Default:     "",
+								Description: "Additional CSS classes to apply to the menu badge.",
+								Required:    false,
+							},
+							{
+								Name:        "Attributes",
+								Type:        "templ.Attributes",
+								Default:     "",
+								Description: "Additional HTML attributes to apply to the menu badge element.",
+								Required:    false,
+							},
+						},
+					})
+				</div>
+				<div id="separator" class="mb-8">
+					@modules.APITable(modules.APITableProps{
+						Title:       "Separator",
+						Description: "Visual separator between sidebar sections.",
+						Items: []modules.APITableItem{
+							{
+								Name:        "ID",
+								Type:        "string",
+								Default:     "",
+								Description: "Unique identifier for the separator element.",
+								Required:    false,
+							},
+							{
+								Name:        "Class",
+								Type:        "string",
+								Default:     "",
+								Description: "Additional CSS classes to apply to the separator.",
+								Required:    false,
+							},
+							{
+								Name:        "Attributes",
+								Type:        "templ.Attributes",
+								Default:     "",
+								Description: "Additional HTML attributes to apply to the separator element.",
+								Required:    false,
+							},
+						},
+					})
+				</div>
+			}
+		}
+	}
+}
