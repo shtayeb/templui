@@ -43,14 +43,14 @@ templ SidebarDefault() {
 								DefaultOpen: true,
 								Class:       "group/collapsible w-full",
 							}) {
-								@collapsible.Trigger(collapsible.TriggerProps{
-									Class: "flex w-full items-center gap-3 rounded-md px-3 py-2 text-sm text-left hover:bg-sidebar-accent hover:text-sidebar-accent-foreground transition-colors",
-								}) {
-									@icon.FileText(icon.Props{Class: "size-4"})
-									<span>Documents</span>
-									@icon.ChevronRight(icon.Props{
-										Class: "ml-auto size-4 transition-transform group-data-[state=open]/collapsible:rotate-90",
-									})
+								@collapsible.Trigger() {
+									@sidebar.MenuButton() {
+										@icon.FileText(icon.Props{Class: "size-4"})
+										<span>Documents</span>
+										@icon.ChevronRight(icon.Props{
+											Class: "ml-auto size-4 transition-transform group-data-[state=open]/collapsible:rotate-90",
+										})
+									}
 								}
 								@collapsible.Content() {
 									@sidebar.MenuSub() {
@@ -148,14 +148,14 @@ templ SidebarDefault() {
 								DefaultOpen: false,
 								Class:       "group/collapsible w-full",
 							}) {
-								@collapsible.Trigger(collapsible.TriggerProps{
-									Class: "flex w-full items-center gap-3 rounded-md px-3 py-2 text-sm text-left hover:bg-sidebar-accent hover:text-sidebar-accent-foreground transition-colors",
-								}) {
-									@icon.Settings(icon.Props{Class: "size-4"})
-									<span>Settings</span>
-									@icon.ChevronRight(icon.Props{
-										Class: "ml-auto size-4 transition-transform group-data-[state=open]/collapsible:rotate-90",
-									})
+								@collapsible.Trigger() {
+									@sidebar.MenuButton() {
+										@icon.Settings(icon.Props{Class: "size-4"})
+										<span>Settings</span>
+										@icon.ChevronRight(icon.Props{
+											Class: "ml-auto size-4 transition-transform group-data-[state=open]/collapsible:rotate-90",
+										})
+									}
 								}
 								@collapsible.Content() {
 									@sidebar.MenuSub() {

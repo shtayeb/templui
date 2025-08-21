@@ -37,24 +37,22 @@ type TriggerProps struct {
 	Attributes templ.Attributes
 }
 
-// Trigger - Button that toggles the collapsible
+// Trigger - Wrapper for the button that toggles the collapsible
 templ Trigger(props ...TriggerProps) {
 	{{ var p TriggerProps }}
 	if len(props) > 0 {
 		{{ p = props[0] }}
 	}
-	<button
+	<div
 		if p.ID != "" {
 			id={ p.ID }
 		}
-		type="button"
 		class={ utils.TwMerge("", p.Class) }
 		data-collapsible="trigger"
-		aria-expanded="false"
 		{ p.Attributes... }
 	>
 		{ children... }
-	</button>
+	</div>
 }
 
 // Props for the expandable content
