@@ -52,6 +52,18 @@ templ Sidebar() {
 						Text: "MenuButton",
 					},
 					{
+						ID:   "sidebar-menu-sub",
+						Text: "MenuSub",
+					},
+					{
+						ID:   "sidebar-menu-sub-item",
+						Text: "MenuSubItem",
+					},
+					{
+						ID:   "sidebar-menu-sub-button",
+						Text: "MenuSubButton",
+					},
+					{
 						ID:   "sidebar-inset",
 						Text: "SidebarInset",
 					},
@@ -339,6 +351,121 @@ templ Sidebar() {
 								Type:        "bool",
 								Default:     "false",
 								Description: "Whether the menu item is currently active/selected.",
+								Required:    false,
+							},
+							{
+								Name:        "HasSubmenu",
+								Type:        "bool",
+								Default:     "false",
+								Description: "Whether the menu item has a submenu that can be expanded.",
+								Required:    false,
+							},
+							{
+								Name:        "IsOpen",
+								Type:        "bool",
+								Default:     "false",
+								Description: "Whether the submenu is initially expanded (only applies when HasSubmenu is true).",
+								Required:    false,
+							},
+						},
+					})
+				</div>
+				<div id="sidebar-menu-sub" class="mb-8">
+					@modules.APITable(modules.APITableProps{
+						Title:       "MenuSub",
+						Description: "Container for nested submenu items.",
+						Items: []modules.APITableItem{
+							{
+								Name:        "ID",
+								Type:        "string",
+								Default:     "",
+								Description: "Unique identifier for the submenu element.",
+								Required:    false,
+							},
+							{
+								Name:        "Class",
+								Type:        "string",
+								Default:     "",
+								Description: "Additional CSS classes to apply to the submenu.",
+								Required:    false,
+							},
+							{
+								Name:        "Attributes",
+								Type:        "templ.Attributes",
+								Default:     "",
+								Description: "Additional HTML attributes to apply to the submenu element.",
+								Required:    false,
+							},
+						},
+					})
+				</div>
+				<div id="sidebar-menu-sub-item" class="mb-8">
+					@modules.APITable(modules.APITableProps{
+						Title:       "MenuSubItem",
+						Description: "Individual submenu item wrapper.",
+						Items: []modules.APITableItem{
+							{
+								Name:        "ID",
+								Type:        "string",
+								Default:     "",
+								Description: "Unique identifier for the submenu item element.",
+								Required:    false,
+							},
+							{
+								Name:        "Class",
+								Type:        "string",
+								Default:     "",
+								Description: "Additional CSS classes to apply to the submenu item.",
+								Required:    false,
+							},
+							{
+								Name:        "Attributes",
+								Type:        "templ.Attributes",
+								Default:     "",
+								Description: "Additional HTML attributes to apply to the submenu item element.",
+								Required:    false,
+							},
+						},
+					})
+				</div>
+				<div id="sidebar-menu-sub-button" class="mb-8">
+					@modules.APITable(modules.APITableProps{
+						Title:       "MenuSubButton",
+						Description: "Clickable submenu button or link.",
+						Items: []modules.APITableItem{
+							{
+								Name:        "ID",
+								Type:        "string",
+								Default:     "",
+								Description: "Unique identifier for the submenu button element.",
+								Required:    false,
+							},
+							{
+								Name:        "Class",
+								Type:        "string",
+								Default:     "",
+								Description: "Additional CSS classes to apply to the submenu button.",
+								Required:    false,
+							},
+							{
+								Name:        "Attributes",
+								Type:        "templ.Attributes",
+								Default:     "",
+								Description: "Additional HTML attributes to apply to the submenu button element.",
+								Required:    false,
+							},
+							{
+								Name:        "Href",
+								Type:        "string",
+								Default:     "",
+								Description: "URL for the submenu link. When provided, renders an anchor tag instead of button.",
+								Required:    false,
+							},
+							{
+								Name:        "IsActive",
+								Type:        "bool",
+								Default:     "false",
+								Description: "Whether the submenu item is currently active/selected.",
 								Required:    false,
 							},
 						},

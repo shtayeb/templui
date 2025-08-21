@@ -15,8 +15,7 @@ templ SidebarDefault() {
 				@sidebar.Menu() {
 					@sidebar.MenuItem() {
 						@sidebar.MenuButton(sidebar.MenuButtonProps{
-							Href:     "#",
-							IsActive: true,
+							Href: "#",
 						}) {
 							@icon.House(icon.Props{Class: "size-4"})
 							<span>Home</span>
@@ -32,10 +31,35 @@ templ SidebarDefault() {
 					}
 					@sidebar.MenuItem() {
 						@sidebar.MenuButton(sidebar.MenuButtonProps{
-							Href: "#",
+							HasSubmenu: true,
+							IsOpen:     true,
 						}) {
 							@icon.FileText(icon.Props{Class: "size-4"})
 							<span>Documents</span>
+						}
+						@sidebar.MenuSub() {
+							@sidebar.MenuSubItem() {
+								@sidebar.MenuSubButton(sidebar.MenuSubButtonProps{
+									Href: "#",
+								}) {
+									<span>Reports</span>
+								}
+							}
+							@sidebar.MenuSubItem() {
+								@sidebar.MenuSubButton(sidebar.MenuSubButtonProps{
+									Href: "#",
+								}) {
+									<span>Invoices</span>
+								}
+							}
+							@sidebar.MenuSubItem() {
+								@sidebar.MenuSubButton(sidebar.MenuSubButtonProps{
+									Href:     "#",
+									IsActive: true,
+								}) {
+									<span>Receipts</span>
+								}
+							}
 						}
 					}
 					@sidebar.MenuItem() {

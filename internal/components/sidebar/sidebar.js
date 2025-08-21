@@ -15,6 +15,18 @@
     // Set initial state for all sidebars
     document.querySelectorAll('[data-sidebar="sidebar"]').forEach(setSidebarInitialState);
     
+    // Initialize submenu states based on button state
+    document.querySelectorAll('[data-sidebar-menu-toggle]').forEach(button => {
+      const isOpen = button.getAttribute("data-sidebar-menu-state") === "open";
+      if (isOpen) {
+        const menuItem = button.closest("[data-sidebar='menu-item']");
+        const submenu = menuItem?.querySelector("[data-sidebar='menu-sub']");
+        const chevron = button.querySelector("[data-sidebar-menu-chevron]");
+        if (submenu) submenu.setAttribute("data-state", "open");
+        if (chevron) chevron.setAttribute("data-state", "open");
+      }
+    });
+    
     // Setup resize handler
     setupResizeHandler();
   }
@@ -52,6 +64,14 @@
       e.preventDefault();
       const sidebar = findSidebar(trigger);
       if (sidebar) toggleSidebar(sidebar);
+      return;
+    }
+
+    // Handle submenu toggle clicks
+    const menuToggle = e.target.closest("[data-sidebar-menu-toggle]");
+    if (menuToggle) {
+      e.preventDefault();
+      toggleSubmenu(menuToggle);
       return;
     }
 
@@ -119,5 +139,24 @@
     const backdrop = document.querySelector(`[data-sidebar-backdrop][data-sidebar-id="${sidebar.id}"]`);
     if (backdrop) backdrop.classList.add("hidden");
     document.body.style.overflow = "";
+  }
+
+  function toggleSubmenu(button) {
+    const isOpen = button.getAttribute("data-sidebar-menu-state") === "open";
+    const menuItem = button.closest("[data-sidebar='menu-item']");
+    const submenu = menuItem?.querySelector("[data-sidebar='menu-sub']");
+    const chevron = button.querySelector("[data-sidebar-menu-chevron]");
+    
+    if (!submenu) return;
+    
+    if (isOpen) {
+      button.setAttribute("data-sidebar-menu-state", "closed");
+      submenu.setAttribute("data-state", "closed");
+      if (chevron) chevron.setAttribute("data-state", "closed");
+    } else {
+      button.setAttribute("data-sidebar-menu-state", "open");
+      submenu.setAttribute("data-state", "open");
+      if (chevron) chevron.setAttribute("data-state", "open");
+    }
   }
 })();
