@@ -78,6 +78,7 @@ minify-js-components:
 		internal/components/progress/progress.js \
 		internal/components/rating/rating.js \
 		internal/components/selectbox/selectbox.js \
+		internal/components/sidebar/sidebar.js \
 		internal/components/slider/slider.js \
 		internal/components/tabs/tabs.js \
 		internal/components/tagsinput/tagsinput.js \

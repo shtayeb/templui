@@ -71,6 +71,9 @@ func main() {
 		"out/showcase/button_sizes.html":       showcase.ButtonSizes(),
 		"out/showcase/button_with_icon.html":   showcase.ButtonWithIcon(),
 
+		// Calendar
+		"out/showcase/calendar_default.html": showcase.CalendarDefault(),
+
 		// Card
 		"out/showcase/card_default.html":    showcase.CardDefault(),
 		"out/showcase/card_with_image.html": showcase.CardWithImage(),
@@ -99,6 +102,7 @@ func main() {
 		"out/showcase/chart_pie_legend.html":       showcase.ChartPieLegend(),
 		"out/showcase/chart_pie_stacked.html":      showcase.ChartPieStacked(),
 		"out/showcase/chart_radar.html":            showcase.ChartRadar(),
+		"out/showcase/chart_radar_stacked.html":    showcase.CharRadarStacked(),
 
 		// Checkbox
 		"out/showcase/checkbox_default.html": showcase.CheckboxDefault(),
@@ -136,6 +140,7 @@ func main() {
 		"out/showcase/input_disabled.html":   showcase.InputDisabled(),
 		"out/showcase/input_file.html":       showcase.InputFile(),
 		"out/showcase/input_form.html":       showcase.InputForm(),
+		"out/showcase/input_password.html":   showcase.InputPassword(),
 		"out/showcase/input_with_label.html": showcase.InputWithLabel(),
 
 		// Input OTP
@@ -160,7 +165,7 @@ func main() {
 		"out/showcase/popover_triggers.html":  showcase.PopoverTriggers(),
 
 		// Progress
-		"out/showcase/progress_colors.html":  showcase.ProgressVariants(),
+		"out/showcase/progress_variants.html":  showcase.ProgressVariants(),
 		"out/showcase/progress_default.html": showcase.ProgressDefault(),
 		"out/showcase/progress_sizes.html":   showcase.ProgressSizes(),
 
@@ -180,6 +185,9 @@ func main() {
 		"out/showcase/select_box_default.html":    showcase.SelectBoxDefault(),
 		"out/showcase/select_box_disabled.html":   showcase.SelectBoxDisabled(),
 		"out/showcase/select_box_form.html":       showcase.SelectBoxForm(),
+		"out/showcase/select_box_multiple.html":   showcase.SelectBoxMultipleSelect(),
+		"out/showcase/select_box_no_search.html":  showcase.SelectBoxNoSearch(),
+		"out/showcase/select_box_pills.html":      showcase.SelectBoxMultipleSelectPills(),
 		"out/showcase/select_box_with_label.html": showcase.SelectBoxWithLabel(),
 
 		// Separator
@@ -187,6 +195,9 @@ func main() {
 		"out/showcase/separator_default.html":   showcase.SeparatorDefault(),
 		"out/showcase/separator_label.html":     showcase.SeparatorLabel(),
 		"out/showcase/separator_vertical.html":  showcase.SeparatorVertical(),
+
+		// Sidebar
+		"out/showcase/sidebar_default.html":   showcase.SidebarDefault(),
 
 		// Skeleton
 		"out/showcase/skeleton_card.html":      showcase.SkeletonCard(),
@@ -208,10 +219,10 @@ func main() {
 		"out/showcase/tabs_default.html": showcase.TabsDefault(),
 
 		// Tags Input
-		"out/showcase/tags_input_default.html":    showcase.TagsInputDefault(),
-		"out/showcase/tags_input_disabled.html":   showcase.TagsInputDisabled(),
-		"out/showcase/tags_input_form.html":       showcase.TagsInputForm(),
-		"out/showcase/tags_input_with_label.html": showcase.TagsInputWithLabel(),
+		"out/showcase/tagsinput_default.html":    showcase.TagsInputDefault(),
+		"out/showcase/tagsinput_disabled.html":   showcase.TagsInputDisabled(),
+		"out/showcase/tagsinput_form.html":       showcase.TagsInputForm(),
+		"out/showcase/tagsinput_with_label.html": showcase.TagsInputWithLabel(),
 
 		// Textarea
 		"out/showcase/textarea_auto_resize.html": showcase.TextareaAutoResize(),
@@ -227,7 +238,9 @@ func main() {
 		"out/showcase/time_picker_default.html":            showcase.TimePickerDefault(),
 		"out/showcase/time_picker_form.html":               showcase.TimePickerForm(),
 		"out/showcase/time_picker_label.html":              showcase.TimePickerLabel(),
+		"out/showcase/time_picker_min_max.html":            showcase.TimePickerMinMax(),
 		"out/showcase/time_picker_selected_time.html":      showcase.TimePickerSelectedTime(),
+		"out/showcase/time_picker_step.html":               showcase.TimePickerStep(),
 
 		// Toast
 		"out/showcase/toast_default.html":    showcase.ToastDefault(),

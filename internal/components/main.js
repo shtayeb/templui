@@ -14,6 +14,7 @@ import "./popover/popover.js";
 import "./progress/progress.js";
 import "./rating/rating.js";
 import "./selectbox/selectbox.js";
+import "./sidebar/sidebar.js";
 import "./slider/slider.js";
 import "./tabs/tabs.js";
 import "./tagsinput/tagsinput.js";

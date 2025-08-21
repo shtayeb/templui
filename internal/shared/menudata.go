@@ -147,6 +147,10 @@ var Sections = []Section{
 				Href: "/docs/components/separator",
 			},
 			{
+				Text: "Sidebar",
+				Href: "/docs/components/sidebar",
+			},
+			{
 				Text: "Skeleton",
 				Href: "/docs/components/skeleton",
 			},

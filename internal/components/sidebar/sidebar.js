@@ -1,0 +1,123 @@
+/**
+ * Sidebar toggle functionality with event delegation
+ */
+(function () {
+  "use strict";
+
+  // Initialize on DOM ready
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", init);
+  } else {
+    init();
+  }
+
+  function init() {
+    // Set initial state for all sidebars
+    document.querySelectorAll('[data-sidebar="sidebar"]').forEach(setSidebarInitialState);
+    
+    // Setup resize handler
+    setupResizeHandler();
+  }
+
+  function setSidebarInitialState(sidebar) {
+    // Desktop: open, Mobile: closed
+    sidebar.setAttribute("data-sidebar-state", window.innerWidth >= 1024 ? "open" : "closed");
+  }
+
+  function setupResizeHandler() {
+    let resizeTimer;
+    window.addEventListener("resize", () => {
+      clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(() => {
+        document.querySelectorAll('[data-sidebar="sidebar"]').forEach(sidebar => {
+          const isDesktop = window.innerWidth >= 1024;
+          const isOpen = sidebar.getAttribute("data-sidebar-state") === "open";
+          
+          // Adjust sidebar state on breakpoint change
+          if (isDesktop && !isOpen) {
+            openSidebar(sidebar);
+          } else if (!isDesktop && isOpen) {
+            closeSidebar(sidebar);
+          }
+        });
+      }, 250);
+    });
+  }
+
+  // Event delegation for all sidebar interactions
+  document.addEventListener("click", (e) => {
+    // Handle trigger clicks
+    const trigger = e.target.closest("[data-sidebar-trigger]");
+    if (trigger) {
+      e.preventDefault();
+      const sidebar = findSidebar(trigger);
+      if (sidebar) toggleSidebar(sidebar);
+      return;
+    }
+
+    // Handle backdrop clicks
+    const backdrop = e.target.closest("[data-sidebar-backdrop]");
+    if (backdrop) {
+      const sidebarId = backdrop.getAttribute("data-sidebar-id");
+      const sidebar = document.getElementById(sidebarId);
+      if (sidebar) closeSidebar(sidebar);
+      return;
+    }
+  });
+
+  // Handle escape key
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") {
+      document.querySelectorAll('[data-sidebar="sidebar"][data-sidebar-state="open"]')
+        .forEach(closeSidebar);
+    }
+  });
+
+  function findSidebar(trigger) {
+    // Check for explicit target
+    const targetId = trigger.getAttribute("data-sidebar-target");
+    if (targetId) {
+      return document.getElementById(targetId);
+    }
+
+    // Find nearest sidebar in parent hierarchy
+    const sidebar = trigger.closest('[data-sidebar="sidebar"]');
+    if (sidebar) return sidebar;
+
+    // Find sibling sidebar
+    let parent = trigger.parentElement;
+    while (parent) {
+      const sidebar = parent.querySelector('[data-sidebar="sidebar"]');
+      if (sidebar) return sidebar;
+      parent = parent.parentElement;
+    }
+
+    // Fallback to first sidebar
+    return document.querySelector('[data-sidebar="sidebar"]');
+  }
+
+  function toggleSidebar(sidebar) {
+    const isOpen = sidebar.getAttribute("data-sidebar-state") === "open";
+    isOpen ? closeSidebar(sidebar) : openSidebar(sidebar);
+  }
+
+  function openSidebar(sidebar) {
+    sidebar.setAttribute("data-sidebar-state", "open");
+
+    // Mobile: show backdrop and prevent scroll
+    if (window.innerWidth < 1024) {
+      const backdrop = document.querySelector(`[data-sidebar-backdrop][data-sidebar-id="${sidebar.id}"]`);
+      if (backdrop) backdrop.classList.remove("hidden");
+      document.body.style.overflow = "hidden";
+    }
+  }
+
+  function closeSidebar(sidebar) {
+    sidebar.setAttribute("data-sidebar-state", "closed");
+
+    // Hide backdrop and restore scroll
+    const backdrop = document.querySelector(`[data-sidebar-backdrop][data-sidebar-id="${sidebar.id}"]`);
+    if (backdrop) backdrop.classList.add("hidden");
+    document.body.style.overflow = "";
+  }
+})();
