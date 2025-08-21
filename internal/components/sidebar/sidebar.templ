@@ -4,56 +4,75 @@ import "github.com/templui/templui/internal/utils"
 import "github.com/templui/templui/internal/components/icon"
 import "github.com/templui/templui/internal/components/button"
 
-// Main sidebar container props
+type SidebarSide string
+
+const (
+	SidebarSideLeft  SidebarSide = "left" // default
+	SidebarSideRight SidebarSide = "right"
+)
+
 type SidebarProps struct {
-	ID         string
-	Class      string
-	Attributes templ.Attributes
+	ID          string
+	Class       string
+	Attributes  templ.Attributes
+	Side        SidebarSide // default: "left"
+	DefaultOpen bool        // default: true for desktop, false for mobile
 }
 
-// Sidebar trigger button props
 type TriggerProps struct {
 	ID         string
 	Class      string
 	Attributes templ.Attributes
 }
 
-// Sidebar header props
 type HeaderProps struct {
 	ID         string
 	Class      string
 	Attributes templ.Attributes
 }
 
-// Sidebar footer props
-type FooterProps struct {
-	ID         string
-	Class      string
-	Attributes templ.Attributes
-}
-
-// Sidebar content props
 type ContentProps struct {
 	ID         string
 	Class      string
 	Attributes templ.Attributes
 }
 
-// Sidebar menu props
+type FooterProps struct {
+	ID         string
+	Class      string
+	Attributes templ.Attributes
+}
+
+type InsetProps struct {
+	ID         string
+	Class      string
+	Attributes templ.Attributes
+}
+
+type GroupProps struct {
+	ID         string
+	Class      string
+	Attributes templ.Attributes
+}
+
+type GroupLabelProps struct {
+	ID         string
+	Class      string
+	Attributes templ.Attributes
+}
+
 type MenuProps struct {
 	ID         string
 	Class      string
 	Attributes templ.Attributes
 }
 
-// Sidebar menu item props
 type MenuItemProps struct {
 	ID         string
 	Class      string
 	Attributes templ.Attributes
 }
 
-// Sidebar menu button props
 type MenuButtonProps struct {
 	ID         string
 	Class      string
@@ -62,7 +81,38 @@ type MenuButtonProps struct {
 	IsActive   bool
 }
 
-// Main sidebar container
+type MenuBadgeProps struct {
+	ID         string
+	Class      string
+	Attributes templ.Attributes
+}
+
+type MenuSubProps struct {
+	ID         string
+	Class      string
+	Attributes templ.Attributes
+}
+
+type MenuSubItemProps struct {
+	ID         string
+	Class      string
+	Attributes templ.Attributes
+}
+
+type MenuSubButtonProps struct {
+	ID         string
+	Class      string
+	Attributes templ.Attributes
+	Href       string
+	IsActive   bool
+}
+
+type SeparatorProps struct {
+	ID         string
+	Class      string
+	Attributes templ.Attributes
+}
+
 templ Sidebar(props ...SidebarProps) {
 	{{ var p SidebarProps }}
 	if len(props) > 0 {
@@ -70,6 +120,9 @@ templ Sidebar(props ...SidebarProps) {
 	}
 	if p.ID == "" {
 		{{ p.ID = utils.RandomID() }}
+	}
+	if p.Side == "" {
+		{{ p.Side = SidebarSideLeft }}
 	}
 	<!-- Backdrop for mobile -->
 	<div
@@ -82,10 +135,17 @@ templ Sidebar(props ...SidebarProps) {
 		id={ p.ID }
 		class={ utils.TwMerge(
 			// Base styles
-			"h-full bg-sidebar text-sidebar-foreground border-r border-sidebar-border flex-shrink-0 transition-all duration-200",
+			"h-full bg-sidebar text-sidebar-foreground flex-shrink-0 transition-all duration-200",
+			// Border based on side
+			utils.IfElse(p.Side == SidebarSideRight, "border-l border-sidebar-border", "border-r border-sidebar-border"),
 			// Mobile: fixed width, absolute position, transform for show/hide
-			"w-64 absolute inset-y-0 left-0 z-50",
-			"transform -translate-x-full data-[sidebar-state=open]:translate-x-0",
+			"w-64 absolute inset-y-0 z-50",
+			// Position based on side
+			utils.IfElse(p.Side == SidebarSideRight, "right-0", "left-0"),
+			// Transform based on side
+			utils.IfElse(p.Side == SidebarSideRight,
+				"transform translate-x-full data-[sidebar-state=open]:-translate-x-0",
+				"transform -translate-x-full data-[sidebar-state=open]:translate-x-0"),
 			// Desktop: relative position, width changes
 			"lg:relative lg:z-0 lg:translate-x-0",
 			"lg:w-64 lg:data-[sidebar-state=closed]:w-0",
@@ -94,7 +154,9 @@ templ Sidebar(props ...SidebarProps) {
 			p.Class,
 		) }
 		data-sidebar="sidebar"
+		data-sidebar-side={ string(p.Side) }
 		data-sidebar-state="closed"
+		data-sidebar-default-open={ utils.IfElse(len(props) > 0 && !p.DefaultOpen, "false", "true") }
 		{ p.Attributes... }
 	>
 		<div class="flex h-full flex-col">
@@ -103,7 +165,6 @@ templ Sidebar(props ...SidebarProps) {
 	</aside>
 }
 
-// Sidebar trigger button
 templ Trigger(props ...TriggerProps) {
 	{{ var p TriggerProps }}
 	if len(props) > 0 {
@@ -126,7 +187,6 @@ templ Trigger(props ...TriggerProps) {
 	}
 }
 
-// Sidebar header
 templ Header(props ...HeaderProps) {
 	{{ var p HeaderProps }}
 	if len(props) > 0 {
@@ -144,7 +204,6 @@ templ Header(props ...HeaderProps) {
 	</div>
 }
 
-// Sidebar footer
 templ Footer(props ...FooterProps) {
 	{{ var p FooterProps }}
 	if len(props) > 0 {
@@ -162,7 +221,6 @@ templ Footer(props ...FooterProps) {
 	</div>
 }
 
-// Sidebar content
 templ Content(props ...ContentProps) {
 	{{ var p ContentProps }}
 	if len(props) > 0 {
@@ -180,7 +238,6 @@ templ Content(props ...ContentProps) {
 	</div>
 }
 
-// Sidebar menu container
 templ Menu(props ...MenuProps) {
 	{{ var p MenuProps }}
 	if len(props) > 0 {
@@ -198,7 +255,6 @@ templ Menu(props ...MenuProps) {
 	</ul>
 }
 
-// Sidebar menu item
 templ MenuItem(props ...MenuItemProps) {
 	{{ var p MenuItemProps }}
 	if len(props) > 0 {
@@ -216,7 +272,6 @@ templ MenuItem(props ...MenuItemProps) {
 	</li>
 }
 
-// Sidebar menu button
 templ MenuButton(props ...MenuButtonProps) {
 	{{ var p MenuButtonProps }}
 	if len(props) > 0 {
@@ -267,14 +322,6 @@ templ MenuButton(props ...MenuButtonProps) {
 	}
 }
 
-// Sidebar submenu props
-type MenuSubProps struct {
-	ID         string
-	Class      string
-	Attributes templ.Attributes
-}
-
-// Sidebar submenu container (styling only, animation handled by Collapsible)
 templ MenuSub(props ...MenuSubProps) {
 	{{ var p MenuSubProps }}
 	if len(props) > 0 {
@@ -295,14 +342,6 @@ templ MenuSub(props ...MenuSubProps) {
 	</ul>
 }
 
-// Sidebar submenu item props
-type MenuSubItemProps struct {
-	ID         string
-	Class      string
-	Attributes templ.Attributes
-}
-
-// Sidebar submenu item
 templ MenuSubItem(props ...MenuSubItemProps) {
 	{{ var p MenuSubItemProps }}
 	if len(props) > 0 {
@@ -320,16 +359,6 @@ templ MenuSubItem(props ...MenuSubItemProps) {
 	</li>
 }
 
-// Sidebar submenu button props
-type MenuSubButtonProps struct {
-	ID         string
-	Class      string
-	Attributes templ.Attributes
-	Href       string
-	IsActive   bool
-}
-
-// Sidebar submenu button
 templ MenuSubButton(props ...MenuSubButtonProps) {
 	{{ var p MenuSubButtonProps }}
 	if len(props) > 0 {
@@ -380,16 +409,8 @@ templ MenuSubButton(props ...MenuSubButtonProps) {
 	}
 }
 
-// Sidebar inset props (main content wrapper)
-type SidebarInsetProps struct {
-	ID         string
-	Class      string
-	Attributes templ.Attributes
-}
-
-// SidebarInset - main content wrapper that adapts to sidebar state
-templ SidebarInset(props ...SidebarInsetProps) {
-	{{ var p SidebarInsetProps }}
+templ Inset(props ...InsetProps) {
+	{{ var p InsetProps }}
 	if len(props) > 0 {
 		{{ p = props[0] }}
 	}
@@ -408,16 +429,8 @@ templ SidebarInset(props ...SidebarInsetProps) {
 	</main>
 }
 
-// Sidebar group props
-type SidebarGroupProps struct {
-	ID         string
-	Class      string
-	Attributes templ.Attributes
-}
-
-// SidebarGroup - groups related menu items together
-templ SidebarGroup(props ...SidebarGroupProps) {
-	{{ var p SidebarGroupProps }}
+templ Group(props ...GroupProps) {
+	{{ var p GroupProps }}
 	if len(props) > 0 {
 		{{ p = props[0] }}
 	}
@@ -433,16 +446,8 @@ templ SidebarGroup(props ...SidebarGroupProps) {
 	</div>
 }
 
-// Sidebar group label props
-type SidebarGroupLabelProps struct {
-	ID         string
-	Class      string
-	Attributes templ.Attributes
-}
-
-// SidebarGroupLabel - label for a sidebar group
-templ SidebarGroupLabel(props ...SidebarGroupLabelProps) {
-	{{ var p SidebarGroupLabelProps }}
+templ GroupLabel(props ...GroupLabelProps) {
+	{{ var p GroupLabelProps }}
 	if len(props) > 0 {
 		{{ p = props[0] }}
 	}
@@ -461,16 +466,8 @@ templ SidebarGroupLabel(props ...SidebarGroupLabelProps) {
 	</div>
 }
 
-// Sidebar menu badge props
-type SidebarMenuBadgeProps struct {
-	ID         string
-	Class      string
-	Attributes templ.Attributes
-}
-
-// SidebarMenuBadge - badge within a menu item
-templ SidebarMenuBadge(props ...SidebarMenuBadgeProps) {
-	{{ var p SidebarMenuBadgeProps }}
+templ MenuBadge(props ...MenuBadgeProps) {
+	{{ var p MenuBadgeProps }}
 	if len(props) > 0 {
 		{{ p = props[0] }}
 	}
@@ -490,16 +487,8 @@ templ SidebarMenuBadge(props ...SidebarMenuBadgeProps) {
 	</span>
 }
 
-// Sidebar separator props
-type SidebarSeparatorProps struct {
-	ID         string
-	Class      string
-	Attributes templ.Attributes
-}
-
-// SidebarSeparator - visual separator between sections
-templ SidebarSeparator(props ...SidebarSeparatorProps) {
-	{{ var p SidebarSeparatorProps }}
+templ Separator(props ...SeparatorProps) {
+	{{ var p SeparatorProps }}
 	if len(props) > 0 {
 		{{ p = props[0] }}
 	}

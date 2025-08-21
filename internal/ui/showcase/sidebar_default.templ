@@ -14,8 +14,8 @@ templ SidebarDefault() {
 				<span class="font-semibold">Acme Inc</span>
 			}
 			@sidebar.Content() {
-				@sidebar.SidebarGroup() {
-					@sidebar.SidebarGroupLabel() {
+				@sidebar.Group() {
+					@sidebar.GroupLabel() {
 						Platform
 					}
 					@sidebar.Menu() {
@@ -33,7 +33,7 @@ templ SidebarDefault() {
 							}) {
 								@icon.Inbox(icon.Props{Class: "size-4"})
 								<span>Inbox</span>
-								@sidebar.SidebarMenuBadge() {
+								@sidebar.MenuBadge() {
 									3
 								}
 							}
@@ -82,9 +82,9 @@ templ SidebarDefault() {
 						}
 					}
 				}
-				@sidebar.SidebarSeparator()
-				@sidebar.SidebarGroup() {
-					@sidebar.SidebarGroupLabel() {
+				@sidebar.Separator()
+				@sidebar.Group() {
+					@sidebar.GroupLabel() {
 						Projects
 					}
 					@sidebar.Menu() {
@@ -94,7 +94,7 @@ templ SidebarDefault() {
 							}) {
 								@icon.Folder(icon.Props{Class: "size-4"})
 								<span>Project Alpha</span>
-								@sidebar.SidebarMenuBadge() {
+								@sidebar.MenuBadge() {
 									12
 								}
 							}
@@ -132,8 +132,8 @@ templ SidebarDefault() {
 						}
 					}
 				}
-				@sidebar.SidebarSeparator()
-				@sidebar.SidebarGroup() {
+				@sidebar.Separator()
+				@sidebar.Group() {
 					@sidebar.Menu() {
 						@sidebar.MenuItem() {
 							@sidebar.MenuButton(sidebar.MenuButtonProps{
@@ -201,7 +201,7 @@ templ SidebarDefault() {
 				</div>
 			}
 		}
-		@sidebar.SidebarInset() {
+		@sidebar.Inset() {
 			<div class="flex h-full flex-col">
 				<div class="flex h-14 items-center gap-4 px-6">
 					@sidebar.Trigger()

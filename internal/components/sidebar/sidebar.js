@@ -59,10 +59,14 @@
   });
 
   function setSidebarInitialState(sidebar) {
-    // Desktop: open, Mobile: closed
+    // Get default open state from data attribute
+    const defaultOpen = sidebar.getAttribute("data-sidebar-default-open") === "true";
+    
+    // Mobile: always closed, Desktop: respect DefaultOpen prop
+    const isMobile = window.innerWidth < 1024;
     sidebar.setAttribute(
       "data-sidebar-state",
-      window.innerWidth >= 1024 ? "open" : "closed",
+      isMobile ? "closed" : (defaultOpen ? "open" : "closed"),
     );
   }
 
