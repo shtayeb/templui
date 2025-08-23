@@ -117,7 +117,6 @@ func main() {
 			http.Error(w, "Robots.txt not found", http.StatusNotFound)
 			return
 		}
-
 		w.Header().Set("Content-Type", "text/plain")
 		w.Write(content)
 	})
@@ -186,7 +185,7 @@ func main() {
 		fmt.Printf("interests (multiple checkboxes): %v\n", r.Form["interests"])
 		fmt.Printf("features (multiple switches): %v\n", r.Form["features"])
 		fmt.Println("============================")
-		
+
 		// Redirect back to form
 		http.Redirect(w, r, "/docs/test-form-items", http.StatusSeeOther)
 	})
