@@ -14,7 +14,6 @@ import (
 	"github.com/templui/templui/internal/config"
 	"github.com/templui/templui/internal/middleware"
 	"github.com/templui/templui/internal/ui/pages"
-	"github.com/templui/templui/internal/ui/showcase"
 	"github.com/templui/templui/static"
 )
 
@@ -135,9 +134,7 @@ func main() {
 	mux.Handle("GET /docs/components/switch", htmxHandler(pages.Switch()))
 	mux.Handle("GET /docs/components/tooltip", htmxHandler(pages.Tooltip()))
 	mux.Handle("GET /docs/components/popover", htmxHandler(pages.Popover()))
-	// Showcase demo pages (for iframe embeds)
-	mux.Handle("GET /showcase/sidebar-demo", templ.Handler(showcase.SidebarDemoPage()))
-	
+
 	// Showcase API
 	mux.Handle("POST /docs/toast/demo", http.HandlerFunc(toastDemoHandler))
 
