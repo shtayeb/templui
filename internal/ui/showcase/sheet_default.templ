@@ -3,13 +3,13 @@ package showcase
 import (
 	"github.com/templui/templui/internal/components/button"
 	"github.com/templui/templui/internal/components/card"
-	"github.com/templui/templui/internal/components/drawer"
+	"github.com/templui/templui/internal/components/sheet"
 	"github.com/templui/templui/internal/components/input"
 )
 
-templ DrawerDefault() {
-	@drawer.Trigger(drawer.TriggerProps{
-		For: "default-drawer",
+templ SheetDefault() {
+	@sheet.Trigger(sheet.TriggerProps{
+		For: "default-sheet",
 	}) {
 		@button.Button(button.Props{
 			Variant: button.VariantOutline,
@@ -17,15 +17,15 @@ templ DrawerDefault() {
 			Open
 		}
 	}
-	@drawer.Content(drawer.ContentProps{
-		Position: drawer.PositionRight,
-		ID:       "default-drawer",
+	@sheet.Content(sheet.ContentProps{
+		Position: sheet.PositionRight,
+		ID:       "default-sheet",
 	}) {
-		@drawer.Header() {
-			@drawer.Title() {
+		@sheet.Header() {
+			@sheet.Title() {
 				Account
 			}
-			@drawer.Description() {
+			@sheet.Description() {
 				Make changes to your account here. Click save when you are done.
 			}
 		}
@@ -47,8 +47,8 @@ templ DrawerDefault() {
 				</div>
 			}
 		}
-		@drawer.Footer() {
-			@drawer.Close() {
+		@sheet.Footer() {
+			@sheet.Close() {
 				Cancel
 			}
 			@button.Button() {

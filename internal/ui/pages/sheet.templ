@@ -6,10 +6,10 @@ import (
 	"github.com/templui/templui/internal/ui/showcase"
 )
 
-templ Drawer() {
+templ Sheet() {
 	@layouts.DocsLayout(
-		"Drawer",
-		"Side-anchored panel that slides in from screen edges.",
+		"Sheet",
+		"Extends the Dialog component to display content that complements the main content of the screen.",
 		[]modules.TableOfContentsItem{
 			{
 				ID:   "installation",
@@ -63,8 +63,8 @@ templ Drawer() {
 		},
 	) {
 		@modules.PageWrapper(modules.PageWrapperProps{
-			Name:        "Drawer",
-			Description: templ.Raw("Side-anchored panel that slides in from screen edges."),
+			Name:        "Sheet",
+			Description: templ.Raw("Extends the Dialog component to display content that complements the main content of the screen."),
 			Tailwind:    true,
 			VanillaJS:   true,
 			Breadcrumbs: modules.Breadcrumbs{
@@ -78,22 +78,22 @@ templ Drawer() {
 						Path: "/docs/components",
 					},
 					{
-						Text: "Drawer",
+						Text: "Sheet",
 					},
 				},
 			},
 		}) {
 			@modules.ExampleWrapper(modules.ExampleWrapperProps{
-				ShowcaseFile:    showcase.DrawerDefault(),
-				PreviewCodeFile: "drawer_default.templ",
+				ShowcaseFile:    showcase.SheetDefault(),
+				PreviewCodeFile: "sheet_default.templ",
 			})
 			@modules.ContainerWrapper(modules.ContainerWrapperProps{
 				Title: "Installation",
 				ID:    "installation",
 			}) {
 				@modules.ComponentUsage(modules.ComponentUsageProps{
-					ComponentName: "drawer",
-					JSFiles:       []string{"drawer"},
+					ComponentName: "sheet",
+					JSFiles:       []string{"sheet"},
 				})
 			}
 			@modules.ContainerWrapper(modules.ContainerWrapperProps{
@@ -102,8 +102,8 @@ templ Drawer() {
 			}) {
 				@modules.ExampleWrapper(modules.ExampleWrapperProps{
 					SectionName:     "Positions",
-					ShowcaseFile:    showcase.DrawerPositions(),
-					PreviewCodeFile: "drawer_positions.templ",
+					ShowcaseFile:    showcase.SheetPositions(),
+					PreviewCodeFile: "sheet_positions.templ",
 					ID:              "positions",
 				})
 			}
@@ -138,7 +138,7 @@ templ Drawer() {
 								Name:        "For",
 								Type:        "string",
 								Default:     "\"\"",
-								Description: "ID of the drawer to trigger when clicked",
+								Description: "ID of the sheet to trigger when clicked",
 							},
 						},
 					})
@@ -151,7 +151,7 @@ templ Drawer() {
 								Name:        "ID",
 								Type:        "string",
 								Default:     "randomID",
-								Description: "Unique identifier for the drawer content",
+								Description: "Unique identifier for the sheet content",
 							},
 							{
 								Name:        "Class",
@@ -169,13 +169,13 @@ templ Drawer() {
 								Name:        "Position",
 								Type:        "Position",
 								Default:     "\"\"",
-								Description: "Position from which the drawer slides in",
+								Description: "Position from which the sheet slides in",
 							},
 							{
 								Name:        "InitialOpen",
 								Type:        "bool",
 								Default:     "false",
-								Description: "Whether the drawer should be open initially",
+								Description: "Whether the sheet should be open initially",
 							},
 						},
 					})
@@ -306,7 +306,7 @@ templ Drawer() {
 								Name:        "For",
 								Type:        "string",
 								Default:     "\"\"",
-								Description: "ID of the drawer to close (defaults to closest drawer if empty)",
+								Description: "ID of the sheet to close (defaults to closest sheet if empty)",
 							},
 						},
 					})

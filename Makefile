@@ -69,7 +69,7 @@ minify-js-components:
 		internal/components/code/code.js \
 		internal/components/collapsible/collapsible.js \
 		internal/components/datepicker/datepicker.js \
-		internal/components/drawer/drawer.js \
+		internal/components/sheet/sheet.js \
 		internal/components/dropdown/dropdown.js \
 		internal/components/input/input.js \
 		internal/components/inputotp/inputotp.js \

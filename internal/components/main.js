@@ -5,7 +5,7 @@ import "./chart/chart.js";
 import "./code/code.js";
 import "./collapsible/collapsible.js";
 import "./datepicker/datepicker.js";
-import "./drawer/drawer.js";
+import "./sheet/sheet.js";
 import "./dropdown/dropdown.js";
 import "./input/input.js";
 import "./inputotp/inputotp.js";
