@@ -98,9 +98,9 @@
       "hasJS": true
     },
     {
-      "name": "drawer",
-      "description": "Sliding side panel",
-      "files": ["internal/components/drawer/drawer.templ"],
+      "name": "sheet",
+      "description": "Extends the Dialog component to display content that complements the main content",
+      "files": ["internal/components/sheet/sheet.templ"],
       "dependencies": [],
       "hasJS": true
     },

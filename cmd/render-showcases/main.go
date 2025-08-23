@@ -125,9 +125,9 @@ func main() {
 		"out/showcase/date_picker_selected_date.html":      showcase.DatePickerSelectedDate(),
 		"out/showcase/date_picker_with_label.html":         showcase.DatePickerWithLabel(),
 
-		// Drawer
-		"out/showcase/drawer_default.html":   showcase.DrawerDefault(),
-		"out/showcase/drawer_positions.html": showcase.DrawerPositions(),
+		// Sheet
+		"out/showcase/sheet_default.html":   showcase.SheetDefault(),
+		"out/showcase/sheet_positions.html": showcase.SheetPositions(),
 
 		// Dropdown
 		"out/showcase/dropdown_default.html": showcase.DropdownDefault(),
@@ -168,9 +168,9 @@ func main() {
 		"out/showcase/popover_triggers.html":  showcase.PopoverTriggers(),
 
 		// Progress
-		"out/showcase/progress_variants.html":  showcase.ProgressVariants(),
-		"out/showcase/progress_default.html": showcase.ProgressDefault(),
-		"out/showcase/progress_sizes.html":   showcase.ProgressSizes(),
+		"out/showcase/progress_variants.html": showcase.ProgressVariants(),
+		"out/showcase/progress_default.html":  showcase.ProgressDefault(),
+		"out/showcase/progress_sizes.html":    showcase.ProgressSizes(),
 
 		// Radio
 		"out/showcase/radio_default.html": showcase.RadioDefault(),
@@ -200,7 +200,7 @@ func main() {
 		"out/showcase/separator_vertical.html":  showcase.SeparatorVertical(),
 
 		// Sidebar
-		"out/showcase/sidebar_default.html":   showcase.SidebarDefault(),
+		"out/showcase/sidebar_default.html": showcase.SidebarDefault(),
 
 		// Skeleton
 		"out/showcase/skeleton_card.html":      showcase.SkeletonCard(),

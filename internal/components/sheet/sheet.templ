@@ -1,4 +1,4 @@
-package drawer
+package sheet
 
 import "github.com/templui/templui/internal/utils"
 
@@ -15,7 +15,7 @@ type TriggerProps struct {
 	ID         string
 	Class      string
 	Attributes templ.Attributes
-	For        string // ID of the drawer to trigger
+	For        string // ID of the sheet to trigger
 }
 
 type ContentProps struct {
@@ -54,7 +54,7 @@ type CloseProps struct {
 	ID         string
 	Class      string
 	Attributes templ.Attributes
-	For        string // ID of the drawer to close (optional, defaults to closest drawer)
+	For        string // ID of the sheet to close (optional, defaults to closest sheet)
 }
 
 templ Trigger(props ...TriggerProps) {
@@ -68,9 +68,9 @@ templ Trigger(props ...TriggerProps) {
 		}
 		class={ utils.TwMerge("group cursor-pointer", p.Class) }
 		if p.For != "" {
-			data-tui-drawer-trigger={ p.For }
+			data-tui-sheet-trigger={ p.For }
 		}
-		data-tui-drawer-open="false"
+		data-tui-sheet-open="false"
 		{ p.Attributes... }
 	>
 		{ children... }
@@ -89,19 +89,19 @@ templ Content(props ...ContentProps) {
 		if p.ID != "" {
 			id={ p.ID }
 		}
-		class="fixed inset-0 z-50 bg-background/80 backdrop-blur-xs templui-drawer-backdrop hidden"
-		data-tui-drawer-backdrop
-		data-tui-drawer-component="drawer"
-		data-tui-drawer-open="false"
+		class="fixed inset-0 z-50 bg-background/80 backdrop-blur-xs templui-sheet-backdrop hidden"
+		data-tui-sheet-backdrop
+		data-tui-sheet-component="sheet"
+		data-tui-sheet-open="false"
 		if p.InitialOpen {
-			data-tui-drawer-initial-open="true"
+			data-tui-sheet-initial-open="true"
 		}
 	></div>
 	<div
 		id={ p.ID + "-content" }
 		class={
 			utils.TwMerge(
-				"fixed z-50 templui-drawer-content hidden",
+				"fixed z-50 templui-sheet-content hidden",
 				p.Class,
 				utils.If(p.Position == PositionRight, "inset-y-0 right-0 w-3/4 md:w-1/2 lg:w-1/3"),
 				utils.If(p.Position == PositionLeft, "inset-y-0 left-0 w-3/4 md:w-1/2 lg:w-1/3"),
@@ -109,8 +109,8 @@ templ Content(props ...ContentProps) {
 				utils.If(p.Position == PositionBottom, "inset-x-0 bottom-0 h-auto sm:h-1/2"),
 			),
 		}
-		data-tui-drawer-content
-		data-tui-drawer-position={ string(p.Position) }
+		data-tui-sheet-content
+		data-tui-sheet-position={ string(p.Position) }
 		{ p.Attributes... }
 	>
 		<div
@@ -123,7 +123,7 @@ templ Content(props ...ContentProps) {
 					utils.If(p.Position == PositionTop, "border-b"),
 				),
 			}
-			data-tui-drawer-inner
+			data-tui-sheet-inner
 		>
 			{ children... }
 		</div>
@@ -213,9 +213,9 @@ templ Close(props ...CloseProps) {
 			),
 		}
 		if p.For != "" {
-			data-tui-drawer-close={ p.For }
+			data-tui-sheet-close={ p.For }
 		} else {
-			data-tui-drawer-close
+			data-tui-sheet-close
 		}
 		{ p.Attributes... }
 	>

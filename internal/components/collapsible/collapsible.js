@@ -5,17 +5,17 @@
   "use strict";
 
   function toggle(trigger) {
-    const root = trigger.closest('[data-collapsible="root"]');
-    const content = root?.querySelector('[data-collapsible="content"]');
+    const root = trigger.closest('[data-tui-collapsible="root"]');
+    const content = root?.querySelector('[data-tui-collapsible="content"]');
     if (!root || !content) return;
     
-    const isOpen = root.getAttribute("data-state") === "open";
+    const isOpen = root.getAttribute("data-tui-collapsible-state") === "open";
     const newState = isOpen ? "closed" : "open";
     
     // Update states
-    root.setAttribute("data-state", newState);
+    root.setAttribute("data-tui-collapsible-state", newState);
     trigger.setAttribute("aria-expanded", !isOpen);
-    content.setAttribute("data-state", newState);
+    content.setAttribute("data-tui-collapsible-state", newState);
     
     // Animate height
     if (!isOpen) {
@@ -30,7 +30,7 @@
 
   // Click handler
   document.addEventListener("click", (e) => {
-    const trigger = e.target.closest('[data-collapsible="trigger"]');
+    const trigger = e.target.closest('[data-tui-collapsible="trigger"]');
     if (trigger) {
       e.preventDefault();
       toggle(trigger);
@@ -40,7 +40,7 @@
   // Keyboard handler
   document.addEventListener("keydown", (e) => {
     if (e.key !== " " && e.key !== "Enter") return;
-    const trigger = e.target.closest('[data-collapsible="trigger"]');
+    const trigger = e.target.closest('[data-tui-collapsible="trigger"]');
     if (trigger) {
       e.preventDefault();
       toggle(trigger);
@@ -49,14 +49,14 @@
 
   // Init existing collapsibles
   function init() {
-    document.querySelectorAll('[data-collapsible="root"]').forEach(root => {
-      const trigger = root.querySelector('[data-collapsible="trigger"]');
-      const content = root.querySelector('[data-collapsible="content"]');
+    document.querySelectorAll('[data-tui-collapsible="root"]').forEach(root => {
+      const trigger = root.querySelector('[data-tui-collapsible="trigger"]');
+      const content = root.querySelector('[data-tui-collapsible="content"]');
       if (!trigger || !content) return;
       
-      const isOpen = root.getAttribute("data-state") === "open";
+      const isOpen = root.getAttribute("data-tui-collapsible-state") === "open";
       trigger.setAttribute("aria-expanded", isOpen);
-      content.setAttribute("data-state", isOpen ? "open" : "closed");
+      content.setAttribute("data-tui-collapsible-state", isOpen ? "open" : "closed");
       content.style.height = isOpen ? "auto" : "0";
     });
   }

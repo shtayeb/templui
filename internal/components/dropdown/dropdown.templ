@@ -7,6 +7,23 @@ import (
 	"github.com/templui/templui/internal/utils"
 )
 
+type Placement = popover.Placement
+
+const (
+	PlacementTop         = popover.PlacementTop
+	PlacementTopStart    = popover.PlacementTopStart
+	PlacementTopEnd      = popover.PlacementTopEnd
+	PlacementRight       = popover.PlacementRight
+	PlacementRightStart  = popover.PlacementRightStart
+	PlacementRightEnd    = popover.PlacementRightEnd
+	PlacementBottom      = popover.PlacementBottom
+	PlacementBottomStart = popover.PlacementBottomStart
+	PlacementBottomEnd   = popover.PlacementBottomEnd
+	PlacementLeft        = popover.PlacementLeft
+	PlacementLeftStart   = popover.PlacementLeftStart
+	PlacementLeftEnd     = popover.PlacementLeftEnd
+)
+
 type contextKey string
 
 var (
@@ -32,8 +49,7 @@ type ContentProps struct {
 	Attributes templ.Attributes
 	Width      string
 	MaxHeight  string
-	Align      string
-	Side       string
+	Placement  Placement
 }
 
 type GroupProps struct {
@@ -125,7 +141,7 @@ templ Trigger(props ...TriggerProps) {
 		For: contentID, TriggerType: popover.TriggerTypeClick,
 	}) {
 		<span
-			class={ utils.TwMerge("inline-block", p.Class) }
+			class={ utils.TwMerge("", p.Class) }
 			{ p.Attributes... }
 		>
 			{ children... }
@@ -149,9 +165,15 @@ templ Content(props ...ContentProps) {
 		}
 		maxHeightClass := fmt.Sprintf("max-h-[%s]", maxHeight)
 	}}
+	{{
+		placement := p.Placement
+		if placement == "" {
+			placement = PlacementBottomStart
+		}
+	}}
 	@popover.Content(popover.ContentProps{
 		ID:        contentID,
-		Placement: popover.PlacementBottomStart,
+		Placement: placement,
 		Offset:    4,
 		Class: utils.TwMerge(
 			"z-50 rounded-md bg-popover p-1 shadow-md focus:outline-none overflow-auto",

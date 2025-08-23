@@ -3,7 +3,7 @@ package modules
 import (
 	"fmt"
 	"github.com/templui/templui/internal/components/button"
-	"github.com/templui/templui/internal/components/drawer"
+	"github.com/templui/templui/internal/components/sheet"
 	"github.com/templui/templui/internal/components/icon"
 	"github.com/templui/templui/internal/components/separator"
 	"github.com/templui/templui/internal/ctxkeys"
@@ -82,7 +82,7 @@ templ Navbar() {
 }
 
 templ NavbarMobileMenu() {
-	@drawer.Trigger(drawer.TriggerProps{
+	@sheet.Trigger(sheet.TriggerProps{
 		For: "mobile-menu",
 	}) {
 		<button
@@ -91,8 +91,8 @@ templ NavbarMobileMenu() {
 			@icon.Menu()
 		</button>
 	}
-	@drawer.Content(drawer.ContentProps{
-		Position: drawer.PositionLeft,
+	@sheet.Content(sheet.ContentProps{
+		Position: sheet.PositionLeft,
 		ID:       "mobile-menu",
 	}) {
 		<div class="space-y-4">
