@@ -16,8 +16,6 @@ import (
 	"github.com/templui/templui/internal/ui/pages"
 	"github.com/templui/templui/internal/ui/showcase"
 	"github.com/templui/templui/static"
-
-	datastar "github.com/starfederation/datastar/sdk/go"
 )
 
 func toastDemoHandler(w http.ResponseWriter, r *http.Request) {
@@ -38,39 +36,6 @@ func toastDemoHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	toast.Toast(toastProps).Render(r.Context(), w)
-}
-
-func handleLoadDatastarExample(w http.ResponseWriter, r *http.Request) {
-	sse := datastar.NewSSE(w, r)
-
-	sse.MergeFragmentTempl(
-		showcase.ModalDefault(),
-		datastar.WithUseViewTransitions(true),
-	)
-}
-
-func handleLoadModalHtmx(w http.ResponseWriter, r *http.Request) {
-	showcase.AvatarFallback().Render(r.Context(), w)
-	showcase.CalendarDefault().Render(r.Context(), w)
-	showcase.CarouselDefault().Render(r.Context(), w)
-	showcase.ChartDefault().Render(r.Context(), w)
-	showcase.CodeDefault().Render(r.Context(), w)
-	showcase.DatePickerDefault().Render(r.Context(), w)
-	showcase.DrawerDefault().Render(r.Context(), w)
-	showcase.DropdownDefault().Render(r.Context(), w)
-	showcase.InputPassword().Render(r.Context(), w)
-	showcase.InputOTPDefault().Render(r.Context(), w)
-	showcase.ModalDefault().Render(r.Context(), w)
-	showcase.PopoverDefault().Render(r.Context(), w)
-	showcase.ProgressDefault().Render(r.Context(), w)
-	showcase.RatingDefault().Render(r.Context(), w)
-	showcase.SelectBoxDefault().Render(r.Context(), w)
-	showcase.SliderValue().Render(r.Context(), w)
-	showcase.TabsDefault().Render(r.Context(), w)
-	showcase.TagsInputDefault().Render(r.Context(), w)
-	showcase.TextareaAutoResize().Render(r.Context(), w)
-	showcase.TimePickerDefault().Render(r.Context(), w)
-	showcase.ToastDefault().Render(r.Context(), w)
 }
 
 // htmxHandler wraps a templ component to support HTMX fragment requests
@@ -171,6 +136,9 @@ func main() {
 	mux.Handle("GET /docs/components/switch", htmxHandler(pages.Switch()))
 	mux.Handle("GET /docs/components/tooltip", htmxHandler(pages.Tooltip()))
 	mux.Handle("GET /docs/components/popover", htmxHandler(pages.Popover()))
+	// Showcase demo pages (for iframe embeds)
+	mux.Handle("GET /showcase/sidebar-demo", templ.Handler(showcase.SidebarDemoPage()))
+	
 	// Showcase API
 	mux.Handle("POST /docs/toast/demo", http.HandlerFunc(toastDemoHandler))
 
@@ -186,18 +154,10 @@ func main() {
 		fmt.Printf("interests (multiple checkboxes): %v\n", r.Form["interests"])
 		fmt.Printf("features (multiple switches): %v\n", r.Form["features"])
 		fmt.Println("============================")
-		
+
 		// Redirect back to form
 		http.Redirect(w, r, "/docs/test-form-items", http.StatusSeeOther)
 	})
-
-	// Datastar Example
-	mux.Handle("GET /docs/datastar-example", htmxHandler(pages.ExampleDatastar()))
-	mux.Handle("GET /api/load-datepicker", http.HandlerFunc(handleLoadDatastarExample))
-
-	// HTMX Example
-	mux.Handle("GET /docs/htmx-example", htmxHandler(pages.ExampleHtmx()))
-	mux.Handle("GET /api/load-modal-htmx", http.HandlerFunc(handleLoadModalHtmx))
 
 	// 404 handler - using Go 1.22+ wildcard syntax
 	// The {$} ensures this only matches exactly "/" and not as a prefix
