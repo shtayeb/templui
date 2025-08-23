@@ -191,16 +191,10 @@ templ Dropdown() {
 								Description: "Maximum height for the dropdown content",
 							},
 							{
-								Name:        "Align",
-								Type:        "string",
-								Default:     "\"\"",
-								Description: "Alignment of the dropdown relative to trigger",
-							},
-							{
-								Name:        "Side",
-								Type:        "string",
-								Default:     "\"\"",
-								Description: "Side placement of the dropdown",
+								Name:        "Placement",
+								Type:        "dropdown.Placement",
+								Default:     "PlacementBottomStart",
+								Description: "Position of the dropdown relative to trigger (e.g., PlacementBottomEnd, PlacementTopStart)",
 							},
 						},
 					})
