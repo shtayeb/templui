@@ -29,9 +29,9 @@ func toastDemoHandler(w http.ResponseWriter, r *http.Request) {
 		Variant:       toast.Variant(r.FormValue("type")),
 		Position:      toast.Position(r.FormValue("position")),
 		Duration:      duration,
-		Dismissible:   r.FormValue("dismissible") == "true",
-		ShowIndicator: r.FormValue("indicator") == "true",
-		Icon:          r.FormValue("icon") == "true",
+		Dismissible:   r.FormValue("dismissible") == "on",
+		ShowIndicator: r.FormValue("indicator") == "on",
+		Icon:          r.FormValue("icon") == "on",
 	}
 
 	toast.Toast(toastProps).Render(r.Context(), w)
