@@ -110,7 +110,8 @@ templ Sidebar() {
 		}) {
 			@modules.ExampleWrapper(modules.ExampleWrapperProps{
 				ShowcaseFile:    showcase.SidebarDefault(),
-				PreviewCodeFile: "sidebar_default.templ",
+				PreviewCodeFile: "sidebar_showcase.templ",
+				UseIframe:       true,
 			})
 			@modules.ContainerWrapper(modules.ContainerWrapperProps{
 				Title: "Installation",

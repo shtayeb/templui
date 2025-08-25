@@ -2,16 +2,24 @@ package showcase
 
 import "github.com/templui/templui/internal/components/sidebar"
 import "github.com/templui/templui/internal/components/icon"
-import "github.com/templui/templui/internal/components/avatar"
 import "github.com/templui/templui/internal/components/collapsible"
+import "github.com/templui/templui/internal/components/dropdown"
+import "github.com/templui/templui/internal/components/avatar"
 
 templ SidebarDefault() {
-	<!-- Container that holds both sidebar and content -->
-	<div class="relative flex h-[600px] w-full overflow-hidden rounded-lg border">
+	@sidebar.SidebarLayout() {
 		@sidebar.Sidebar() {
 			@sidebar.Header() {
-				@icon.LayoutPanelLeft(icon.Props{Class: "size-6"})
-				<span class="font-semibold">Acme Inc</span>
+				@sidebar.Menu() {
+					@sidebar.MenuItem() {
+						@sidebar.MenuButton(sidebar.MenuButtonProps{
+							Href: "#",
+						}) {
+							@icon.LayoutPanelLeft(icon.Props{Class: "size-4"})
+							<span class="font-semibold">Acme Inc</span>
+						}
+					}
+				}
 			}
 			@sidebar.Content() {
 				@sidebar.Group() {
@@ -153,7 +161,7 @@ templ SidebarDefault() {
 										@icon.Settings(icon.Props{Class: "size-4"})
 										<span>Settings</span>
 										@icon.ChevronRight(icon.Props{
-											Class: "ml-auto size-4 transition-transform group-data-[state=open]/collapsible:rotate-90",
+											Class: "ml-auto size-4 transition-transform group-data-[tui-collapsible-state=open]/collapsible:rotate-90",
 										})
 									}
 								}
@@ -188,17 +196,56 @@ templ SidebarDefault() {
 				}
 			}
 			@sidebar.Footer() {
-				<div class="flex items-center gap-3">
-					@avatar.Avatar() {
-						@avatar.Image(avatar.ImageProps{
-							Src: "https://avatars.githubusercontent.com/u/26936893?v=4",
-						})
+				@sidebar.Menu() {
+					@sidebar.MenuItem() {
+						@dropdown.Dropdown() {
+							@dropdown.Trigger() {
+								@sidebar.MenuButton() {
+									<div class="flex items-center gap-2 w-full">
+										@avatar.Avatar(avatar.Props{Class: "size-8"}) {
+											@avatar.Image(avatar.ImageProps{
+												Src: "https://avatars.githubusercontent.com/u/26936893?v=4",
+											})
+										}
+										<div class="flex flex-col flex-1 text-left">
+											<span class="text-sm font-medium">John Doe</span>
+											<span class="text-xs text-muted-foreground">john@example.com</span>
+										</div>
+										@icon.ChevronsUpDown(icon.Props{Class: "ml-auto size-4"})
+									</div>
+								}
+							}
+							@dropdown.Content(dropdown.ContentProps{
+								Width:     "w-56",
+								Placement: dropdown.PlacementRightEnd,
+							}) {
+								@dropdown.Label() {
+									John Doe
+								}
+								@dropdown.Separator()
+								@dropdown.Item() {
+									<span class="flex items-center">
+										@icon.User(icon.Props{Size: 16, Class: "mr-2"})
+										Profile
+									</span>
+								}
+								@dropdown.Item() {
+									<span class="flex items-center">
+										@icon.Settings(icon.Props{Size: 16, Class: "mr-2"})
+										Settings
+									</span>
+								}
+								@dropdown.Separator()
+								@dropdown.Item() {
+									<span class="flex items-center">
+										@icon.LogOut(icon.Props{Size: 16, Class: "mr-2"})
+										Log out
+									</span>
+								}
+							}
+						}
 					}
-					<div class="flex flex-col">
-						<span class="text-sm font-medium">John Doe</span>
-						<span class="text-xs text-gray-500">john@example.com</span>
-					</div>
-				</div>
+				}
 			}
 		}
 		@sidebar.Inset() {
@@ -207,7 +254,8 @@ templ SidebarDefault() {
 					@sidebar.Trigger()
 					<span class="text-sm text-muted-foreground">Press Ctrl+B to toggle sidebar</span>
 				</div>
+				<div class="flex-1 p-6"></div>
 			</div>
 		}
-	</div>
+	}
 }
