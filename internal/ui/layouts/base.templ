@@ -39,6 +39,32 @@ templ BaseLayout(title, description string) {
 			    "inlineScriptNonce": "%s"
 			}`, templ.GetNonce(ctx)) }
 			/>
+			// Theme initialization - must run before body renders to prevent flash
+			<script nonce={ templ.GetNonce(ctx) }>
+				(function() {
+					// Get current theme preference (system, light, or dark)
+					function getThemePreference() {
+						return localStorage.getItem('themePreference') || 'system';
+					}
+					
+					// Apply theme based on preference
+					const preference = getThemePreference();
+					let isDark = false;
+					
+					if (preference === 'system') {
+						// Use system preference
+						isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+					} else {
+						// Use explicit preference
+						isDark = preference === 'dark';
+					}
+					
+					// Apply theme immediately to prevent flash
+					if (isDark) {
+						document.documentElement.classList.add('dark');
+					}
+				})();
+			</script>
 		</head>
 		<body
 			class="transition-colors duration-200"
