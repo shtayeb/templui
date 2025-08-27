@@ -205,7 +205,7 @@
       "name": "sidebar",
       "description": "Navigation sidebar panel",
       "files": ["internal/components/sidebar/sidebar.templ"],
-      "dependencies": ["button", "icon"],
+      "dependencies": ["button", "icon", "sheet", "tooltip"],
       "hasJS": true
     },
     {
