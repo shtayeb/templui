@@ -115,7 +115,6 @@ templ SimplePreviewLayout(content templ.Component) {
 					min-height: 100vh;
 					height: 100%;
 				}
-				[x-cloak] { display: none !important; }
 			</style>
 			// Override window.innerWidth to force desktop mode in iframe
 			<script>
@@ -140,7 +139,6 @@ templ SimplePreviewLayout(content templ.Component) {
 			<link href="/assets/css/themes.css" rel="stylesheet"/>
 			// JavaScript
 			<script defer src="/assets/js/templui.min.js"></script>
-			<script defer src="https://cdn.jsdelivr.net/npm/@alpinejs/csp@3.x.x/dist/cdn.min.js"></script>
 			// Sync theme with parent and prevent navigation
 			<script nonce={ templ.GetNonce(ctx) }>
 				// Sync theme immediately on load
