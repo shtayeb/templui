@@ -5,6 +5,7 @@ import "github.com/templui/templui/internal/utils"
 import "github.com/templui/templui/internal/components/icon"
 import "github.com/templui/templui/internal/components/button"
 import "github.com/templui/templui/internal/components/sheet"
+import "github.com/templui/templui/internal/components/tooltip"
 
 type contextKey string
 
@@ -113,6 +114,7 @@ type MenuButtonProps struct {
 	Href       string
 	IsActive   bool
 	Size       MenuButtonSize // default: "default"
+	Tooltip    string         // Tooltip text to show when sidebar is collapsed
 }
 
 type MenuBadgeProps struct {
@@ -416,11 +418,45 @@ templ MenuButton(props ...MenuButtonProps) {
 	if p.Size == "" {
 		{{ p.Size = MenuButtonSizeDefault }}
 	}
+	{{ buttonID := utils.RandomID() }}
+	if p.Tooltip != "" {
+		// When collapsed to icon mode - show with tooltip
+		<div class="group-data-[tui-sidebar-state=collapsed]:group-data-[tui-sidebar-collapsible=icon]:block hidden">
+			@tooltip.Tooltip() {
+				@tooltip.Trigger(tooltip.TriggerProps{
+					For: buttonID + "-tooltip",
+				}) {
+					@menuButtonContent(p, buttonID) {
+						{ children... }
+					}
+				}
+				@tooltip.Content(tooltip.ContentProps{
+					ID:            buttonID + "-tooltip",
+					Position:      tooltip.PositionRight,
+					HoverDelay:    200,
+					HoverOutDelay: 100,
+				}) {
+					{ p.Tooltip }
+				}
+			}
+		</div>
+		// When expanded - show without tooltip
+		<div class="group-data-[tui-sidebar-state=collapsed]:group-data-[tui-sidebar-collapsible=icon]:hidden">
+			@menuButtonContent(p, buttonID) {
+				{ children... }
+			}
+		</div>
+	} else {
+		@menuButtonContent(p, buttonID) {
+			{ children... }
+		}
+	}
+}
+
+templ menuButtonContent(p MenuButtonProps, buttonID string) {
 	if p.Href != "" {
 		<a
-			if p.ID != "" {
-				id={ p.ID }
-			}
+			id={ buttonID }
 			href={ templ.SafeURL(p.Href) }
 			class={ utils.TwMerge(
 				"flex w-full items-center gap-2 rounded-md p-2 text-left overflow-hidden",
@@ -449,9 +485,7 @@ templ MenuButton(props ...MenuButtonProps) {
 		</a>
 	} else {
 		<button
-			if p.ID != "" {
-				id={ p.ID }
-			}
+			id={ buttonID }
 			type="button"
 			class={ utils.TwMerge(
 				"flex w-full items-center gap-2 rounded-md p-2 text-left overflow-hidden",

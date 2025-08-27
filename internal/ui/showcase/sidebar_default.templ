@@ -15,7 +15,8 @@ templ SidebarDefault() {
 				@sidebar.Menu() {
 					@sidebar.MenuItem() {
 						@sidebar.MenuButton(sidebar.MenuButtonProps{
-							Href: "#",
+							Href:    "#",
+							Tooltip: "Acme Inc",
 						}) {
 							@icon.LayoutPanelLeft(icon.Props{Class: "size-4"})
 							<span class="font-semibold">Acme Inc</span>
@@ -31,7 +32,8 @@ templ SidebarDefault() {
 					@sidebar.Menu() {
 						@sidebar.MenuItem() {
 							@sidebar.MenuButton(sidebar.MenuButtonProps{
-								Href: "#",
+								Href:    "#",
+								Tooltip: "Home",
 							}) {
 								@icon.House(icon.Props{Class: "size-4"})
 								<span>Home</span>
@@ -39,7 +41,8 @@ templ SidebarDefault() {
 						}
 						@sidebar.MenuItem() {
 							@sidebar.MenuButton(sidebar.MenuButtonProps{
-								Href: "#",
+								Href:    "#",
+								Tooltip: "Inbox",
 							}) {
 								@icon.Inbox(icon.Props{Class: "size-4"})
 								<span>Inbox</span>
@@ -54,7 +57,9 @@ templ SidebarDefault() {
 								Class:       "group/collapsible w-full",
 							}) {
 								@collapsible.Trigger() {
-									@sidebar.MenuButton() {
+									@sidebar.MenuButton(sidebar.MenuButtonProps{
+										Tooltip: "Documents",
+									}) {
 										@icon.FileText(icon.Props{Class: "size-4"})
 										<span>Documents</span>
 										@icon.ChevronRight(icon.Props{
@@ -100,7 +105,8 @@ templ SidebarDefault() {
 					@sidebar.Menu() {
 						@sidebar.MenuItem() {
 							@sidebar.MenuButton(sidebar.MenuButtonProps{
-								Href: "#",
+								Href:    "#",
+								Tooltip: "Project Alpha",
 							}) {
 								@icon.Folder(icon.Props{Class: "size-4"})
 								<span>Project Alpha</span>
@@ -111,7 +117,9 @@ templ SidebarDefault() {
 						}
 						@sidebar.MenuItem() {
 							<div class="w-full">
-								@sidebar.MenuButton() {
+								@sidebar.MenuButton(sidebar.MenuButtonProps{
+									Tooltip: "Project Beta",
+								}) {
 									@icon.Folder(icon.Props{Class: "size-4"})
 									<span>Project Beta</span>
 								}
@@ -147,7 +155,8 @@ templ SidebarDefault() {
 					@sidebar.Menu() {
 						@sidebar.MenuItem() {
 							@sidebar.MenuButton(sidebar.MenuButtonProps{
-								Href: "#",
+								Href:    "#",
+								Tooltip: "Team",
 							}) {
 								@icon.Users(icon.Props{Class: "size-4"})
 								<span>Team</span>
@@ -159,7 +168,9 @@ templ SidebarDefault() {
 								Class:       "group/collapsible w-full",
 							}) {
 								@collapsible.Trigger() {
-									@sidebar.MenuButton() {
+									@sidebar.MenuButton(sidebar.MenuButtonProps{
+										Tooltip: "Settings",
+									}) {
 										@icon.Settings(icon.Props{Class: "size-4"})
 										<span>Settings</span>
 										@icon.ChevronRight(icon.Props{
@@ -203,7 +214,8 @@ templ SidebarDefault() {
 						@dropdown.Dropdown() {
 							@dropdown.Trigger() {
 								@sidebar.MenuButton(sidebar.MenuButtonProps{
-									Size: sidebar.MenuButtonSizeLg,
+									Size:    sidebar.MenuButtonSizeLg,
+									Tooltip: "John Doe",
 								}) {
 									@avatar.Avatar(avatar.Props{Class: "size-8 rounded-lg"}) {
 										@avatar.Image(avatar.ImageProps{
