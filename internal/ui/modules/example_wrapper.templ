@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"io"
+	"github.com/templui/templui/internal/components/icon"
 	"github.com/templui/templui/internal/components/tabs"
 	"github.com/templui/templui/internal/ui/showcase"
 )
@@ -24,6 +25,7 @@ type ExampleWrapperProps struct {
 	PreviewCodeFile string
 	ID              string // For #id in URL Link
 	UseIframe       bool   // Whether to render preview in iframe
+	FullscreenURL   string // Optional URL for fullscreen view
 }
 
 templ ExampleWrapper(p ExampleWrapperProps) {
@@ -36,21 +38,34 @@ templ ExampleWrapper(p ExampleWrapperProps) {
 		@tabs.Tabs(tabs.Props{
 			ID: "example-" + p.ID,
 		}) {
-			@tabs.List(tabs.ListProps{
-				Class: "md:w-1/2",
-			}) {
-				@tabs.Trigger(tabs.TriggerProps{
-					Value:    "preview",
-					IsActive: true,
+			<div class="flex items-center justify-between">
+				@tabs.List(tabs.ListProps{
+					Class: "md:w-1/2",
 				}) {
-					Preview
+					@tabs.Trigger(tabs.TriggerProps{
+						Value:    "preview",
+						IsActive: true,
+					}) {
+						Preview
+					}
+					@tabs.Trigger(tabs.TriggerProps{
+						Value: "code",
+					}) {
+						Code
+					}
 				}
-				@tabs.Trigger(tabs.TriggerProps{
-					Value: "code",
-				}) {
-					Code
+				if p.FullscreenURL != "" {
+					<a
+						href={ templ.SafeURL(p.FullscreenURL) }
+						target="_blank"
+						title="Open in fullscreen"
+						class="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 hover:bg-accent hover:text-accent-foreground h-10 px-3"
+					>
+						@icon.ExternalLink(icon.Props{Size: 16})
+						<span class="ml-2 hidden sm:inline">Fullscreen</span>
+					</a>
 				}
-			}
+			</div>
 			<div class="w-full relative mt-2">
 				@tabs.Content(tabs.ContentProps{
 					Value:    "preview",

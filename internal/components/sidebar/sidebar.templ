@@ -22,6 +22,7 @@ type Variant string
 const (
 	VariantSidebar  Variant = "sidebar" // default
 	VariantFloating Variant = "floating"
+	VariantInset    Variant = "inset"
 )
 
 type Props struct {
@@ -200,26 +201,28 @@ templ Sidebar(props ...Props) {
 		</div>
 	}
 	<!-- Desktop: Sidebar for >= 768px -->
-	<div class="group peer hidden md:flex" data-tui-sidebar-wrapper data-tui-sidebar-state="open" data-tui-sidebar-id={ p.ID }>
+	<div class="group peer hidden md:flex" data-tui-sidebar-wrapper data-tui-sidebar-state="open" data-tui-sidebar-id={ p.ID } data-tui-sidebar-variant={ string(p.Variant) }>
 		<!-- Gap element for document flow -->
 		<div
 			class={ utils.TwMerge(
 				"flex-shrink-0 transition-[width] duration-200",
 				p.Width,
 				"group-data-[tui-sidebar-state=closed]:w-0",
+				// Add padding for floating/inset variants when not collapsed
+				utils.If(p.Variant == VariantFloating || p.Variant == VariantInset,
+					"group-data-[tui-sidebar-state=open]:pr-2"),
 			) }
 		></div>
-		<!-- Sidebar -->
+		<!-- Sidebar Container -->
 		<aside
 			id={ p.ID }
 			class={ utils.TwMerge(
-				"fixed inset-y-0 z-10",
+				"fixed inset-y-0 z-10 flex",
 				p.Width,
-				"bg-sidebar text-sidebar-foreground h-svh flex flex-col",
+				"transition-[transform,width] duration-200",
 				utils.IfElse(p.Side == SideRight, "right-0", "left-0"),
-				utils.If(p.Variant != VariantFloating,
-					utils.IfElse(p.Side == SideRight, "border-l border-sidebar-border", "border-r border-sidebar-border")),
-				"transition-transform duration-200",
+				// Add padding for floating and inset variants
+				utils.If(p.Variant == VariantFloating || p.Variant == VariantInset, "p-2"),
 				"group-data-[tui-sidebar-state=open]:translate-x-0",
 				utils.IfElse(p.Side == SideRight,
 					"group-data-[tui-sidebar-state=closed]:translate-x-full",
@@ -227,9 +230,23 @@ templ Sidebar(props ...Props) {
 				p.Class,
 			) }
 			data-tui-sidebar="sidebar"
+			data-tui-sidebar-variant={ string(p.Variant) }
 			{ p.Attributes... }
 		>
-			{ children... }
+			<!-- Inner sidebar with variant-specific styling -->
+			<div
+				class={ utils.TwMerge(
+					"w-full bg-sidebar text-sidebar-foreground h-full flex flex-col",
+					// Floating variant: rounded corners, border, and shadow
+					utils.If(p.Variant == VariantFloating,
+						"rounded-lg border border-sidebar-border shadow-sm"),
+					// Regular sidebar variant: side borders
+					utils.If(p.Variant == VariantSidebar,
+						utils.IfElse(p.Side == SideRight, "border-l border-sidebar-border", "border-r border-sidebar-border")),
+				) }
+			>
+				{ children... }
+			</div>
 		</aside>
 	</div>
 }
@@ -517,7 +534,14 @@ templ Inset(props ...InsetProps) {
 			id={ p.ID }
 		}
 		class={ utils.TwMerge(
-			"flex-1",
+			"relative flex w-full flex-1 flex-col bg-background",
+			// Add special styling when peer sidebar has variant="inset"
+			"md:peer-data-[tui-sidebar-variant=inset]:m-2",
+			"md:peer-data-[tui-sidebar-variant=inset]:ml-0",
+			"md:peer-data-[tui-sidebar-variant=inset]:rounded-xl",
+			"md:peer-data-[tui-sidebar-variant=inset]:shadow-sm",
+			// When sidebar is closed and variant is inset, add left margin back
+			"md:peer-data-[tui-sidebar-variant=inset]:peer-data-[tui-sidebar-state=closed]:ml-2",
 			p.Class,
 		) }
 		data-tui-sidebar="inset"

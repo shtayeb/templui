@@ -16,9 +16,27 @@ templ Sidebar() {
 				Text: "Installation",
 			},
 			{
+				ID:   "examples",
+				Text: "Examples",
+				Children: []modules.TableOfContentsItem{
+					{
+						ID:   "floating",
+						Text: "Floating",
+					},
+					{
+						ID:   "inset",
+						Text: "Inset",
+					},
+				},
+			},
+			{
 				ID:   "api",
 				Text: "API Reference",
 				Children: []modules.TableOfContentsItem{
+					{
+						ID:   "sidebar-layout",
+						Text: "SidebarLayout",
+					},
 					{
 						ID:   "sidebar",
 						Text: "Sidebar",
@@ -112,6 +130,7 @@ templ Sidebar() {
 				ShowcaseFile:    showcase.SidebarDefault(),
 				PreviewCodeFile: "sidebar_showcase.templ",
 				UseIframe:       true,
+				FullscreenURL:   "/docs/components/sidebar-fullscreen-sidebar",
 			})
 			@modules.ContainerWrapper(modules.ContainerWrapperProps{
 				Title: "Installation",
@@ -123,10 +142,60 @@ templ Sidebar() {
 				})
 			}
 			@modules.ContainerWrapper(modules.ContainerWrapperProps{
+				Title: "Examples",
+				ID:    "examples",
+			}) {
+				@modules.ExampleWrapper(modules.ExampleWrapperProps{
+					SectionName:     "Floating",
+					ShowcaseFile:    showcase.SidebarFloating(),
+					PreviewCodeFile: "sidebar_floating.templ",
+					UseIframe:       true,
+					ID:              "floating",
+					FullscreenURL:   "/docs/components/sidebar-fullscreen-floating",
+				})
+				@modules.ExampleWrapper(modules.ExampleWrapperProps{
+					SectionName:     "Inset",
+					ShowcaseFile:    showcase.SidebarInset(),
+					PreviewCodeFile: "sidebar_inset.templ",
+					UseIframe:       true,
+					ID:              "inset",
+					FullscreenURL:   "/docs/components/sidebar-fullscreen-inset",
+				})
+			}
+			@modules.ContainerWrapper(modules.ContainerWrapperProps{
 				Title: "API Reference",
 				ID:    "api",
 			}) {
 				@modules.APILegend()
+				<div id="sidebar-layout" class="mb-8">
+					@modules.APITable(modules.APITableProps{
+						Title:       "SidebarLayout",
+						Description: "Root layout container that manages sidebar and main content layout.",
+						Items: []modules.APITableItem{
+							{
+								Name:        "ID",
+								Type:        "string",
+								Default:     "auto-generated",
+								Description: "Unique identifier for the layout container.",
+								Required:    false,
+							},
+							{
+								Name:        "Class",
+								Type:        "string",
+								Default:     "",
+								Description: "Additional CSS classes to apply to the layout container.",
+								Required:    false,
+							},
+							{
+								Name:        "Attributes",
+								Type:        "templ.Attributes",
+								Default:     "",
+								Description: "Additional HTML attributes to apply to the layout element.",
+								Required:    false,
+							},
+						},
+					})
+				</div>
 				<div id="sidebar" class="mb-8">
 					@modules.APITable(modules.APITableProps{
 						Title:       "Sidebar",
@@ -155,16 +224,30 @@ templ Sidebar() {
 							},
 							{
 								Name:        "Side",
-								Type:        "SidebarSide",
+								Type:        "Side",
 								Default:     "left",
 								Description: "Position of the sidebar. Options: 'left' or 'right'.",
 								Required:    false,
 							},
 							{
-								Name:        "DefaultOpen",
+								Name:        "Variant",
+								Type:        "Variant",
+								Default:     "sidebar",
+								Description: "Visual style variant. Options: 'sidebar' (default), 'floating', 'inset'.",
+								Required:    false,
+							},
+							{
+								Name:        "Width",
+								Type:        "string",
+								Default:     "w-64",
+								Description: "Width of the sidebar (Tailwind class).",
+								Required:    false,
+							},
+							{
+								Name:        "Collapsed",
 								Type:        "bool",
-								Default:     "true",
-								Description: "Whether the sidebar is open by default on desktop. Mobile always starts closed.",
+								Default:     "false",
+								Description: "Whether the sidebar starts in collapsed state.",
 								Required:    false,
 							},
 						},

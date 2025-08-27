@@ -1,0 +1,15 @@
+package pages
+
+import (
+	"github.com/templui/templui/internal/ui/layouts"
+	"github.com/templui/templui/internal/ui/showcase"
+)
+
+templ SidebarFullscreenInset() {
+	@layouts.BaseLayout(
+		"Sidebar Inset",
+		"A sidebar with inset variant where main content appears as a card.",
+	) {
+		@showcase.SidebarInset()
+	}
+}

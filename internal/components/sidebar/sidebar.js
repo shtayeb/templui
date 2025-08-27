@@ -1,4 +1,4 @@
-/**
+/*
  * Sidebar toggle functionality with event delegation
  */
 (function () {
@@ -53,7 +53,6 @@
     subtree: true,
   });
 
-
   function setupResizeHandler() {
     // Resize handler for future use if needed
   }
@@ -93,14 +92,16 @@
     }
   });
 
-
   function toggleSidebar(sidebarId) {
     const wrapper = document.querySelector(
       `[data-tui-sidebar-wrapper][data-tui-sidebar-id="${sidebarId}"]`,
     );
     if (wrapper) {
       const isOpen = wrapper.getAttribute("data-tui-sidebar-state") === "open";
-      wrapper.setAttribute("data-tui-sidebar-state", isOpen ? "closed" : "open");
+      wrapper.setAttribute(
+        "data-tui-sidebar-state",
+        isOpen ? "closed" : "open",
+      );
     }
   }
 

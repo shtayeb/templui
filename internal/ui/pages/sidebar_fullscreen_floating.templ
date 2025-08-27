@@ -1,0 +1,15 @@
+package pages
+
+import (
+	"github.com/templui/templui/internal/ui/layouts"
+	"github.com/templui/templui/internal/ui/showcase"
+)
+
+templ SidebarFullscreenFloating() {
+	@layouts.BaseLayout(
+		"Sidebar Floating",
+		"A sidebar with floating variant that adds padding and rounded corners.",
+	) {
+		@showcase.SidebarFloating()
+	}
+}
