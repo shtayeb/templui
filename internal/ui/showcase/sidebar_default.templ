@@ -10,13 +10,13 @@ templ SidebarDefault() {
 	@sidebar.Layout() {
 		@sidebar.Sidebar(sidebar.Props{
 			Collapsible: sidebar.CollapsibleIcon,
+			Variant:     sidebar.VariantFloating,
 		}) {
 			@sidebar.Header() {
 				@sidebar.Menu() {
 					@sidebar.MenuItem() {
 						@sidebar.MenuButton(sidebar.MenuButtonProps{
-							Href:    "#",
-							Tooltip: "Acme Inc",
+							Href: "#",
 						}) {
 							@icon.LayoutPanelLeft(icon.Props{Class: "size-4"})
 							<span class="font-semibold">Acme Inc</span>
@@ -214,8 +214,7 @@ templ SidebarDefault() {
 						@dropdown.Dropdown() {
 							@dropdown.Trigger() {
 								@sidebar.MenuButton(sidebar.MenuButtonProps{
-									Size:    sidebar.MenuButtonSizeLg,
-									Tooltip: "John Doe",
+									Size: sidebar.MenuButtonSizeLg,
 								}) {
 									@avatar.Avatar(avatar.Props{Class: "size-8 rounded-lg"}) {
 										@avatar.Image(avatar.ImageProps{
