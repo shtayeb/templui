@@ -57,58 +57,18 @@ import "./floating_ui_core.js";
     computePosition(ref, content, { placement, middleware }).then(({ x, y, placement: finalPlacement, middlewareData }) => {
       Object.assign(content.style, { left: `${x}px`, top: `${y}px` });
       
-      // Handle arrow positioning with proper styling
+      // Handle arrow positioning
       if (arrowEl && middlewareData.arrow) {
         const { x: arrowX, y: arrowY } = middlewareData.arrow;
         
-        // Determine the static side (opposite of placement)
-        const staticSide = {
-          top: 'bottom',
-          right: 'left', 
-          bottom: 'top',
-          left: 'right'
-        }[finalPlacement.split('-')[0]];
+        // Set placement attribute for CSS styling
+        arrowEl.setAttribute('data-tui-popover-placement', finalPlacement);
         
-        // Position the arrow
+        // Position the arrow (X/Y only, rest handled by CSS)
         Object.assign(arrowEl.style, {
           left: arrowX != null ? `${arrowX}px` : '',
-          top: arrowY != null ? `${arrowY}px` : '',
-          right: '',
-          bottom: '',
-          [staticSide]: '-5px'
+          top: arrowY != null ? `${arrowY}px` : ''
         });
-        
-        // Get popover styles for border color
-        const popoverStyle = window.getComputedStyle(content);
-        const borderColor = popoverStyle.borderColor;
-        const backgroundColor = popoverStyle.backgroundColor;
-        
-        // Set background and all borders first
-        arrowEl.style.backgroundColor = backgroundColor;
-        arrowEl.style.borderTopColor = borderColor;
-        arrowEl.style.borderRightColor = borderColor;
-        arrowEl.style.borderBottomColor = borderColor;
-        arrowEl.style.borderLeftColor = borderColor;
-        
-        // Make specific borders transparent based on placement
-        switch (staticSide) {
-          case 'top':
-            arrowEl.style.borderBottomColor = 'transparent';
-            arrowEl.style.borderRightColor = 'transparent';
-            break;
-          case 'bottom':
-            arrowEl.style.borderTopColor = 'transparent';
-            arrowEl.style.borderLeftColor = 'transparent';
-            break;
-          case 'left':
-            arrowEl.style.borderTopColor = 'transparent';
-            arrowEl.style.borderRightColor = 'transparent';
-            break;
-          case 'right':
-            arrowEl.style.borderBottomColor = 'transparent';
-            arrowEl.style.borderLeftColor = 'transparent';
-            break;
-        }
       }
       
       // Match trigger width if requested
