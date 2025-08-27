@@ -16,20 +16,6 @@ templ Sidebar() {
 				Text: "Installation",
 			},
 			{
-				ID:   "examples",
-				Text: "Examples",
-				Children: []modules.TableOfContentsItem{
-					{
-						ID:   "floating",
-						Text: "Floating",
-					},
-					{
-						ID:   "inset",
-						Text: "Inset",
-					},
-				},
-			},
-			{
 				ID:   "api",
 				Text: "API Reference",
 				Children: []modules.TableOfContentsItem{
@@ -130,7 +116,7 @@ templ Sidebar() {
 				ShowcaseFile:    showcase.SidebarDefault(),
 				PreviewCodeFile: "sidebar_default.templ",
 				UseIframe:       true,
-				FullscreenURL:   "/docs/components/sidebar-fullscreen-sidebar",
+				FullscreenURL:   "/docs/components/sidebar-fullscreen",
 			})
 			@modules.ContainerWrapper(modules.ContainerWrapperProps{
 				Title: "Installation",
@@ -139,27 +125,6 @@ templ Sidebar() {
 				@modules.ComponentUsage(modules.ComponentUsageProps{
 					ComponentName: "sidebar",
 					JSFiles:       []string{"sidebar"},
-				})
-			}
-			@modules.ContainerWrapper(modules.ContainerWrapperProps{
-				Title: "Examples",
-				ID:    "examples",
-			}) {
-				@modules.ExampleWrapper(modules.ExampleWrapperProps{
-					SectionName:     "Floating",
-					ShowcaseFile:    showcase.SidebarFloating(),
-					PreviewCodeFile: "sidebar_floating.templ",
-					UseIframe:       true,
-					ID:              "floating",
-					FullscreenURL:   "/docs/components/sidebar-fullscreen-floating",
-				})
-				@modules.ExampleWrapper(modules.ExampleWrapperProps{
-					SectionName:     "Inset",
-					ShowcaseFile:    showcase.SidebarInset(),
-					PreviewCodeFile: "sidebar_inset.templ",
-					UseIframe:       true,
-					ID:              "inset",
-					FullscreenURL:   "/docs/components/sidebar-fullscreen-inset",
 				})
 			}
 			@modules.ContainerWrapper(modules.ContainerWrapperProps{
