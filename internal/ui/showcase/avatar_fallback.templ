@@ -7,9 +7,10 @@ templ AvatarFallback() {
 		@avatar.Image(avatar.ImageProps{
 			// simulate a broken image
 			Src: "broken-image.jpg",
+			Alt: "John Doe avatar",
 		})
 		@avatar.Fallback() {
-			{ avatar.Initials("John Doe") }
+			JD
 		}
 	}
 }
