@@ -135,7 +135,7 @@ type LayoutProps struct {
 	Attributes templ.Attributes
 }
 
-templ SidebarLayout(props ...LayoutProps) {
+templ Layout(props ...LayoutProps) {
 	{{ var p LayoutProps }}
 	if len(props) > 0 {
 		{{ p = props[0] }}
@@ -205,7 +205,7 @@ templ Sidebar(props ...Props) {
 		<!-- Gap element for document flow -->
 		<div
 			class={ utils.TwMerge(
-				"flex-shrink-0 transition-[width] duration-200",
+				"flex-shrink-0 transition-[width] duration-200 ease-linear",
 				p.Width,
 				"group-data-[tui-sidebar-state=closed]:w-0",
 				// Add padding for floating/inset variants when not collapsed
@@ -219,7 +219,7 @@ templ Sidebar(props ...Props) {
 			class={ utils.TwMerge(
 				"fixed inset-y-0 z-10 flex",
 				p.Width,
-				"transition-[transform,width] duration-200",
+				"transition-transform duration-200 ease-in-out",
 				utils.IfElse(p.Side == SideRight, "right-0", "left-0"),
 				// Add padding for floating and inset variants
 				utils.If(p.Variant == VariantFloating || p.Variant == VariantInset, "p-2"),

@@ -35,7 +35,7 @@ templ Sidebar() {
 				Children: []modules.TableOfContentsItem{
 					{
 						ID:   "sidebar-layout",
-						Text: "SidebarLayout",
+						Text: "Layout",
 					},
 					{
 						ID:   "sidebar",
@@ -128,7 +128,7 @@ templ Sidebar() {
 		}) {
 			@modules.ExampleWrapper(modules.ExampleWrapperProps{
 				ShowcaseFile:    showcase.SidebarDefault(),
-				PreviewCodeFile: "sidebar_showcase.templ",
+				PreviewCodeFile: "sidebar_default.templ",
 				UseIframe:       true,
 				FullscreenURL:   "/docs/components/sidebar-fullscreen-sidebar",
 			})
@@ -169,7 +169,7 @@ templ Sidebar() {
 				@modules.APILegend()
 				<div id="sidebar-layout" class="mb-8">
 					@modules.APITable(modules.APITableProps{
-						Title:       "SidebarLayout",
+						Title:       "Layout",
 						Description: "Root layout container that manages sidebar and main content layout.",
 						Items: []modules.APITableItem{
 							{
