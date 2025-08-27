@@ -465,9 +465,10 @@ templ menuButtonContent(p MenuButtonProps, buttonID string) {
 				// Size variants
 				utils.IfElse(p.Size == MenuButtonSizeSm, "h-7 text-xs",
 					utils.IfElse(p.Size == MenuButtonSizeLg, "h-12 text-sm", "h-8 text-sm")),
-				// Collapsed icon mode styles
-				"group-data-[tui-sidebar-state=collapsed]:group-data-[tui-sidebar-collapsible=icon]:!size-8 group-data-[tui-sidebar-state=collapsed]:group-data-[tui-sidebar-collapsible=icon]:!p-2",
-				// Override padding for lg size
+				// Collapsed icon mode styles - matching shadcn exactly
+				"group-data-[tui-sidebar-state=collapsed]:group-data-[tui-sidebar-collapsible=icon]:!size-8",
+				"group-data-[tui-sidebar-state=collapsed]:group-data-[tui-sidebar-collapsible=icon]:!p-2",
+				// Override padding for lg size (avatars)
 				utils.If(p.Size == MenuButtonSizeLg,
 					"group-data-[tui-sidebar-state=collapsed]:group-data-[tui-sidebar-collapsible=icon]:!p-0"),
 				"[&>span:last-child]:truncate [&>svg]:size-4 [&>svg]:shrink-0",
@@ -494,9 +495,10 @@ templ menuButtonContent(p MenuButtonProps, buttonID string) {
 				// Size variants
 				utils.IfElse(p.Size == MenuButtonSizeSm, "h-7 text-xs",
 					utils.IfElse(p.Size == MenuButtonSizeLg, "h-12 text-sm", "h-8 text-sm")),
-				// Collapsed icon mode styles
-				"group-data-[tui-sidebar-state=collapsed]:group-data-[tui-sidebar-collapsible=icon]:!size-8 group-data-[tui-sidebar-state=collapsed]:group-data-[tui-sidebar-collapsible=icon]:!p-2",
-				// Override padding for lg size
+				// Collapsed icon mode styles - matching shadcn exactly
+				"group-data-[tui-sidebar-state=collapsed]:group-data-[tui-sidebar-collapsible=icon]:!size-8",
+				"group-data-[tui-sidebar-state=collapsed]:group-data-[tui-sidebar-collapsible=icon]:!p-2",
+				// Override padding for lg size (avatars)
 				utils.If(p.Size == MenuButtonSizeLg,
 					"group-data-[tui-sidebar-state=collapsed]:group-data-[tui-sidebar-collapsible=icon]:!p-0"),
 				"[&>span:last-child]:truncate [&>svg]:size-4 [&>svg]:shrink-0",
