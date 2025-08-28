@@ -8,64 +8,63 @@ import (
 )
 
 templ SheetDefault() {
-	@sheet.Trigger(sheet.TriggerProps{
-		For: "default-sheet",
+	@sheet.Sheet(sheet.Props{
+		Side: sheet.SideRight,
 	}) {
-		@button.Button(button.Props{
-			Variant: button.VariantOutline,
-		}) {
-			Open
-		}
-	}
-	@sheet.Content(sheet.ContentProps{
-		Position: sheet.PositionRight,
-		ID:       "default-sheet",
-	}) {
-		@sheet.Header() {
-			@sheet.Title() {
-				Edit profile
-			}
-			@sheet.Description() {
-				Make changes to your profile here. Click save when you're done.
-			}
-		}
-		<div class="grid flex-1 auto-rows-min gap-6 px-4">
-			<div class="grid gap-3">
-				@label.Label(label.Props{
-					For: "sheet-demo-name",
-				}) {
-					Name
-				}
-				@input.Input(input.Props{
-					ID:    "sheet-demo-name",
-					Type:  input.TypeText,
-					Value: "Pedro Duarte",
-				})
-			</div>
-			<div class="grid gap-3">
-				@label.Label(label.Props{
-					For: "sheet-demo-username",
-				}) {
-					Username
-				}
-				@input.Input(input.Props{
-					ID:    "sheet-demo-username",
-					Type:  input.TypeText,
-					Value: "@peduarte",
-				})
-			</div>
-		</div>
-		@sheet.Footer() {
+		@sheet.Trigger() {
 			@button.Button(button.Props{
-				Type: "submit",
+				Variant: button.VariantOutline,
 			}) {
-				Save changes
+				Open
 			}
-			@sheet.Close() {
+		}
+		@sheet.Content() {
+			@sheet.Header() {
+				@sheet.Title() {
+					Edit profile
+				}
+				@sheet.Description() {
+					Make changes to your profile here. Click save when you're done.
+				}
+			}
+			<div class="grid flex-1 auto-rows-min gap-6 px-4">
+				<div class="grid gap-3">
+					@label.Label(label.Props{
+						For: "sheet-demo-name",
+					}) {
+						Name
+					}
+					@input.Input(input.Props{
+						ID:    "sheet-demo-name",
+						Type:  input.TypeText,
+						Value: "Pedro Duarte",
+					})
+				</div>
+				<div class="grid gap-3">
+					@label.Label(label.Props{
+						For: "sheet-demo-username",
+					}) {
+						Username
+					}
+					@input.Input(input.Props{
+						ID:    "sheet-demo-username",
+						Type:  input.TypeText,
+						Value: "@peduarte",
+					})
+				</div>
+			</div>
+			@sheet.Footer() {
 				@button.Button(button.Props{
-					Variant: button.VariantOutline,
+					Type: "submit",
 				}) {
-					Close
+					Save changes
+				}
+				@sheet.Close() {
+					@button.Button(button.Props{
+						Variant: button.VariantOutline,
+					}) {
+						Close
+					}
 				}
 			}
 		}

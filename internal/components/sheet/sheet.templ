@@ -1,32 +1,47 @@
 package sheet
 
 import (
+	"context"
 	"github.com/templui/templui/internal/utils"
 	"github.com/templui/templui/internal/components/icon"
 )
 
-type Position string
+type Side string
 
 const (
-	PositionTop    Position = "top"
-	PositionRight  Position = "right"
-	PositionBottom Position = "bottom"
-	PositionLeft   Position = "left"
+	SideTop    Side = "top"
+	SideRight  Side = "right"
+	SideBottom Side = "bottom"
+	SideLeft   Side = "left"
 )
+
+type contextKey string
+
+const (
+	instanceKey contextKey = "sheetInstance"
+	sideKey     contextKey = "sheetSide"
+	openKey     contextKey = "sheetOpen"
+)
+
+type Props struct {
+	ID               string
+	Class            string
+	Attributes       templ.Attributes
+	Side             Side
+	Open             bool
+	DisableClickAway bool
+	DisableESC       bool
+}
 
 type TriggerProps struct {
 	ID         string
 	Class      string
 	Attributes templ.Attributes
-	For        string // ID of the sheet to trigger
 }
 
 type ContentProps struct {
-	ID              string
 	Class           string
 	Attributes      templ.Attributes
-	Position        Position
-	InitialOpen     bool
 	HideCloseButton bool
 }
 
@@ -58,7 +73,40 @@ type CloseProps struct {
 	ID         string
 	Class      string
 	Attributes templ.Attributes
-	For        string // ID of the sheet to close (optional, defaults to closest sheet)
+}
+
+templ Sheet(props ...Props) {
+	{{ var p Props }}
+	if len(props) > 0 {
+		{{ p = props[0] }}
+	}
+	if p.Side == "" {
+		{{ p.Side = SideRight }}
+	}
+	{{ instanceID := p.ID }}
+	if instanceID == "" {
+		{{ instanceID = utils.RandomID() }}
+	}
+	{{ ctx = context.WithValue(ctx, instanceKey, instanceID) }}
+	{{ ctx = context.WithValue(ctx, sideKey, p.Side) }}
+	{{ ctx = context.WithValue(ctx, openKey, p.Open) }}
+	<div
+		if p.ID != "" {
+			id={ p.ID }
+		}
+		class={ utils.TwMerge("", p.Class) }
+		data-tui-sheet
+		data-sheet-instance={ instanceID }
+		if p.DisableClickAway {
+			data-tui-sheet-disable-clickaway="true"
+		}
+		if p.DisableESC {
+			data-tui-sheet-disable-esc="true"
+		}
+		{ p.Attributes... }
+	>
+		{ children... }
+	</div>
 }
 
 templ Trigger(props ...TriggerProps) {
@@ -66,15 +114,14 @@ templ Trigger(props ...TriggerProps) {
 	if len(props) > 0 {
 		{{ p = props[0] }}
 	}
+	{{ instanceID := ctx.Value(instanceKey).(string) }}
 	<div
 		if p.ID != "" {
 			id={ p.ID }
 		}
 		class={ utils.TwMerge("group cursor-pointer", p.Class) }
-		if p.For != "" {
-			data-tui-sheet-trigger={ p.For }
-		}
-		data-tui-sheet-open="false"
+		data-tui-sheet-trigger
+		data-sheet-instance={ instanceID }
 		{ p.Attributes... }
 	>
 		{ children... }
@@ -86,37 +133,88 @@ templ Content(props ...ContentProps) {
 	if len(props) > 0 {
 		{{ p = props[0] }}
 	}
-	if p.ID == "" {
-		{{ p.ID = utils.RandomID() }}
-	}
+	{{ instanceID := ctx.Value(instanceKey).(string) }}
+	{{ side := ctx.Value(sideKey).(Side) }}
+	{{ open := ctx.Value(openKey).(bool) }}
 	<!-- Overlay -->
 	<div
-		if p.ID != "" {
-			id={ p.ID }
-		}
-		class="fixed inset-0 z-50 bg-black/50 hidden"
+		class={ utils.TwMerge(
+				"fixed inset-0 z-50 bg-black/50",
+				"transition-opacity duration-300",
+				"data-[tui-sheet-open=false]:opacity-0",
+				"data-[tui-sheet-open=true]:opacity-100",
+				"data-[tui-sheet-open=false]:pointer-events-none",
+				"data-[tui-sheet-open=true]:pointer-events-auto",
+			) }
 		data-tui-sheet-backdrop
-		data-tui-sheet-component="sheet"
-		data-tui-sheet-open="false"
-		if p.InitialOpen {
-			data-tui-sheet-initial-open="true"
+		data-sheet-instance={ instanceID }
+		if open {
+			data-tui-sheet-open="true"
+		} else {
+			data-tui-sheet-open="false"
 		}
 	></div>
 	<!-- Content -->
 	<div
-		id={ p.ID + "-content" }
 		class={
 			utils.TwMerge(
-				"fixed z-50 bg-background shadow-lg transition ease-in-out hidden",
-				utils.If(p.Position == PositionRight, "inset-y-0 right-0 h-full w-3/4 border-l sm:max-w-sm"),
-				utils.If(p.Position == PositionLeft, "inset-y-0 left-0 h-full w-3/4 border-r sm:max-w-sm"),
-				utils.If(p.Position == PositionTop, "inset-x-0 top-0 h-auto border-b"),
-				utils.If(p.Position == PositionBottom, "inset-x-0 bottom-0 h-auto border-t"),
+				// Base styles
+				"fixed z-50 bg-background shadow-lg",
+				"transition-all duration-300 ease-in-out",
+		
+				// Side: right
+				"data-[tui-sheet-side=right]:inset-y-0",
+				"data-[tui-sheet-side=right]:right-0",
+				"data-[tui-sheet-side=right]:h-full",
+				"data-[tui-sheet-side=right]:w-3/4",
+				"data-[tui-sheet-side=right]:sm:max-w-sm",
+				"data-[tui-sheet-side=right]:border-l",
+		
+				// Side: left
+				"data-[tui-sheet-side=left]:inset-y-0",
+				"data-[tui-sheet-side=left]:left-0",
+				"data-[tui-sheet-side=left]:h-full",
+				"data-[tui-sheet-side=left]:w-3/4",
+				"data-[tui-sheet-side=left]:sm:max-w-sm",
+				"data-[tui-sheet-side=left]:border-r",
+		
+				// Side: top
+				"data-[tui-sheet-side=top]:inset-x-0",
+				"data-[tui-sheet-side=top]:top-0",
+				"data-[tui-sheet-side=top]:h-auto",
+				"data-[tui-sheet-side=top]:border-b",
+		
+				// Side: bottom
+				"data-[tui-sheet-side=bottom]:inset-x-0",
+				"data-[tui-sheet-side=bottom]:bottom-0",
+				"data-[tui-sheet-side=bottom]:h-auto",
+				"data-[tui-sheet-side=bottom]:border-t",
+		
+				// Transform animations based on side and open state
+				"data-[tui-sheet-side=right]:data-[tui-sheet-open=false]:translate-x-full",
+				"data-[tui-sheet-side=left]:data-[tui-sheet-open=false]:-translate-x-full",
+				"data-[tui-sheet-side=top]:data-[tui-sheet-open=false]:-translate-y-full",
+				"data-[tui-sheet-side=bottom]:data-[tui-sheet-open=false]:translate-y-full",
+				"data-[tui-sheet-open=true]:translate-x-0",
+				"data-[tui-sheet-open=true]:translate-y-0",
+		
+				// Opacity and pointer events
+				"data-[tui-sheet-open=false]:opacity-0",
+				"data-[tui-sheet-open=true]:opacity-100",
+				"data-[tui-sheet-open=false]:pointer-events-none",
+				"data-[tui-sheet-open=true]:pointer-events-auto",
+		
 				p.Class,
 			),
 		}
 		data-tui-sheet-content
-		data-tui-sheet-position={ string(p.Position) }
+		data-tui-sheet-side={ string(side) }
+		data-sheet-instance={ instanceID }
+		if open {
+			data-tui-sheet-open="true"
+		} else {
+			data-tui-sheet-open="false"
+		}
 		{ p.Attributes... }
 	>
 		<div class="flex flex-col gap-4 h-full overflow-y-auto">
@@ -124,7 +222,22 @@ templ Content(props ...ContentProps) {
 		</div>
 		if !p.HideCloseButton {
 			<button
-				class="absolute top-4 right-4 z-10 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none"
+				class={
+					utils.TwMerge(
+						// Positioning
+						"absolute top-4 right-4 z-10",
+						// Style
+						"rounded-sm opacity-70",
+						// Interactions
+						"transition-opacity hover:opacity-100",
+						// Focus states
+						"focus:outline-none focus:ring-2",
+						"focus:ring-ring focus:ring-offset-2",
+						"ring-offset-background",
+						// Disabled state
+						"disabled:pointer-events-none",
+					)
+				}
 				data-tui-sheet-close
 				aria-label="Close"
 			>
@@ -209,11 +322,7 @@ templ Close(props ...CloseProps) {
 			id={ p.ID }
 		}
 		class={ utils.TwMerge("contents", p.Class) }
-		if p.For != "" {
-			data-tui-sheet-close={ p.For }
-		} else {
-			data-tui-sheet-close
-		}
+		data-tui-sheet-close
 		{ p.Attributes... }
 	>
 		{ children... }
