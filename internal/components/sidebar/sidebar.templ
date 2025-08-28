@@ -207,15 +207,15 @@ templ Sidebar(props ...Props) {
 	// Use the sidebar's ID for mobile sheet and trigger targeting
 	{{ var sidebarId string = p.ID }}
 	<!-- Mobile: Sheet Component for < 768px -->
-	{{ var sheetPosition sheet.Position }}
+	{{ var sheetSide sheet.Side }}
 	if p.Side == SideRight {
-		{{ sheetPosition = sheet.PositionRight }}
+		{{ sheetSide = sheet.SideRight }}
 	} else {
-		{{ sheetPosition = sheet.PositionLeft }}
+		{{ sheetSide = sheet.SideLeft }}
 	}
 	@sheet.Content(sheet.ContentProps{
 		ID:              sidebarId + "-mobile",
-		Position:        sheetPosition,
+		Side:            sheetSide,
 		Class:           "md:hidden bg-sidebar text-sidebar-foreground p-0", // Only visible on mobile
 		HideCloseButton: true,
 	}) {
