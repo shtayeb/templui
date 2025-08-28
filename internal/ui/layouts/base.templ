@@ -18,8 +18,31 @@ templ BaseLayout(title, description string) {
 			// Preload fonts to prevent flickering
 			<link rel="preload" href="/assets/fonts/geist/geist-variable.woff2" as="font" type="font/woff2" crossorigin="anonymous"/>
 			<link rel="preload" href="/assets/fonts/geist/geist-mono-variable.woff2" as="font" type="font/woff2" crossorigin="anonymous"/>
-			// templui.min.js
-			<script defer nonce={ templ.GetNonce(ctx) } src="/assets/js/templui.min.js"></script>
+			// Component JS files
+			<script defer nonce={ templ.GetNonce(ctx) } src="/components/js/avatar/avatar.min.js"></script>
+			<script defer nonce={ templ.GetNonce(ctx) } src="/components/js/calendar/calendar.min.js"></script>
+			<script defer nonce={ templ.GetNonce(ctx) } src="/components/js/carousel/carousel.min.js"></script>
+			<script defer nonce={ templ.GetNonce(ctx) } src="/components/js/chart/chart.min.js"></script>
+			<script defer nonce={ templ.GetNonce(ctx) } src="/components/js/code/code.min.js"></script>
+			<script defer nonce={ templ.GetNonce(ctx) } src="/components/js/collapsible/collapsible.min.js"></script>
+			<script defer nonce={ templ.GetNonce(ctx) } src="/components/js/datepicker/datepicker.min.js"></script>
+			<script defer nonce={ templ.GetNonce(ctx) } src="/components/js/sheet/sheet.min.js"></script>
+			<script defer nonce={ templ.GetNonce(ctx) } src="/components/js/dropdown/dropdown.min.js"></script>
+			<script defer nonce={ templ.GetNonce(ctx) } src="/components/js/input/input.min.js"></script>
+			<script defer nonce={ templ.GetNonce(ctx) } src="/components/js/inputotp/inputotp.min.js"></script>
+			<script defer nonce={ templ.GetNonce(ctx) } src="/components/js/label/label.min.js"></script>
+			<script defer nonce={ templ.GetNonce(ctx) } src="/components/js/modal/modal.min.js"></script>
+			<script defer nonce={ templ.GetNonce(ctx) } src="/components/js/popover/popover.min.js"></script>
+			<script defer nonce={ templ.GetNonce(ctx) } src="/components/js/progress/progress.min.js"></script>
+			<script defer nonce={ templ.GetNonce(ctx) } src="/components/js/rating/rating.min.js"></script>
+			<script defer nonce={ templ.GetNonce(ctx) } src="/components/js/selectbox/selectbox.min.js"></script>
+			<script defer nonce={ templ.GetNonce(ctx) } src="/components/js/sidebar/sidebar.min.js"></script>
+			<script defer nonce={ templ.GetNonce(ctx) } src="/components/js/slider/slider.min.js"></script>
+			<script defer nonce={ templ.GetNonce(ctx) } src="/components/js/tabs/tabs.min.js"></script>
+			<script defer nonce={ templ.GetNonce(ctx) } src="/components/js/tagsinput/tagsinput.min.js"></script>
+			<script defer nonce={ templ.GetNonce(ctx) } src="/components/js/textarea/textarea.min.js"></script>
+			<script defer nonce={ templ.GetNonce(ctx) } src="/components/js/timepicker/timepicker.min.js"></script>
+			<script defer nonce={ templ.GetNonce(ctx) } src="/components/js/toast/toast.min.js"></script>
 			// Plausible Analytics
 			if config.AppConfig.GoEnv == "production" {
 				<script defer data-domain="templui.io" src="https://plausible.axeladrian.com/js/script.js" nonce={ templ.GetNonce(ctx) }></script>
