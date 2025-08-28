@@ -1,23 +1,24 @@
-/**
- * Sidebar toggle functionality with event delegation
+/*
+ * Sidebar toggle functionality with collapsible modes support
  */
 (function () {
   "use strict";
+
+  const SIDEBAR_COOKIE_NAME = "sidebar_state";
+  const SIDEBAR_COOKIE_MAX_AGE = 60 * 60 * 24 * 7; // 7 days
 
   let resizeHandlerSetup = false;
 
   // Initialize all sidebars
   function initSidebars() {
-    // Set initial state for all sidebars
-    document
-      .querySelectorAll('[data-sidebar="sidebar"]')
-      .forEach(setSidebarInitialState);
-
     // Setup resize handler only once
     if (!resizeHandlerSetup) {
       setupResizeHandler();
       resizeHandlerSetup = true;
     }
+
+    // Restore sidebar states from cookies
+    restoreSidebarStates();
   }
 
   // Initialize on DOM ready
@@ -58,129 +59,134 @@
     subtree: true,
   });
 
-  function setSidebarInitialState(sidebar) {
-    // Get default open state from data attribute
-    const defaultOpen = sidebar.getAttribute("data-sidebar-default-open") === "true";
-    
-    // Mobile: always closed, Desktop: respect DefaultOpen prop
-    const isMobile = window.innerWidth < 1024;
-    sidebar.setAttribute(
-      "data-sidebar-state",
-      isMobile ? "closed" : (defaultOpen ? "open" : "closed"),
-    );
-  }
-
   function setupResizeHandler() {
-    let resizeTimer;
-    window.addEventListener("resize", () => {
-      clearTimeout(resizeTimer);
-      resizeTimer = setTimeout(() => {
-        document
-          .querySelectorAll('[data-sidebar="sidebar"]')
-          .forEach((sidebar) => {
-            const isDesktop = window.innerWidth >= 1024;
-            const isOpen =
-              sidebar.getAttribute("data-sidebar-state") === "open";
-
-            // Adjust sidebar state on breakpoint change
-            if (isDesktop && !isOpen) {
-              openSidebar(sidebar);
-            } else if (!isDesktop && isOpen) {
-              closeSidebar(sidebar);
-            }
-          });
-      }, 250);
-    });
+    // Resize handler for future use if needed
   }
 
-  // Event delegation for all sidebar interactions
+  // Event delegation for sidebar interactions (Desktop only - Mobile uses Sheet)
   document.addEventListener("click", (e) => {
-    // Handle trigger clicks
-    const trigger = e.target.closest("[data-sidebar-trigger]");
+    // Handle trigger clicks - Desktop only
+    const trigger = e.target.closest("[data-tui-sidebar-trigger]");
     if (trigger) {
       e.preventDefault();
-      const sidebar = findSidebar(trigger);
-      if (sidebar) toggleSidebar(sidebar);
-      return;
-    }
-
-    // Handle backdrop clicks
-    const backdrop = e.target.closest("[data-sidebar-backdrop]");
-    if (backdrop) {
-      const sidebarId = backdrop.getAttribute("data-sidebar-id");
-      const sidebar = document.getElementById(sidebarId);
-      if (sidebar) closeSidebar(sidebar);
+      const targetId = trigger.getAttribute("data-tui-sidebar-target");
+      if (targetId) {
+        toggleSidebar(targetId);
+      }
       return;
     }
   });
 
   // Handle keyboard shortcuts
   document.addEventListener("keydown", (e) => {
-    // Escape key - close sidebar
+    // Escape key - close sidebar (only for offcanvas mode)
     if (e.key === "Escape") {
       document
-        .querySelectorAll('[data-sidebar="sidebar"][data-sidebar-state="open"]')
-        .forEach(closeSidebar);
+        .querySelectorAll(
+          '[data-tui-sidebar-wrapper][data-tui-sidebar-state="expanded"][data-tui-sidebar-collapsible="offcanvas"]',
+        )
+        .forEach((wrapper) => {
+          const sidebarId = wrapper.getAttribute("data-tui-sidebar-id");
+          if (sidebarId) {
+            setSidebarState(sidebarId, "collapsed");
+          }
+        });
     }
 
     // Ctrl+B or Cmd+B - toggle sidebar
     if ((e.ctrlKey || e.metaKey) && e.key === "b") {
       e.preventDefault();
       const sidebar = document.querySelector('[data-sidebar="sidebar"]');
-      if (sidebar) toggleSidebar(sidebar);
+      if (sidebar && sidebar.id) {
+        toggleSidebar(sidebar.id);
+      }
     }
   });
 
-  function findSidebar(trigger) {
-    // Check for explicit target
-    const targetId = trigger.getAttribute("data-sidebar-target");
-    if (targetId) {
-      return document.getElementById(targetId);
-    }
-
-    // Find nearest sidebar in parent hierarchy
-    const sidebar = trigger.closest('[data-sidebar="sidebar"]');
-    if (sidebar) return sidebar;
-
-    // Find sibling sidebar
-    let parent = trigger.parentElement;
-    while (parent) {
-      const sidebar = parent.querySelector('[data-sidebar="sidebar"]');
-      if (sidebar) return sidebar;
-      parent = parent.parentElement;
-    }
-
-    // Fallback to first sidebar
-    return document.querySelector('[data-sidebar="sidebar"]');
-  }
-
-  function toggleSidebar(sidebar) {
-    const isOpen = sidebar.getAttribute("data-sidebar-state") === "open";
-    isOpen ? closeSidebar(sidebar) : openSidebar(sidebar);
-  }
-
-  function openSidebar(sidebar) {
-    sidebar.setAttribute("data-sidebar-state", "open");
-
-    // Mobile: show backdrop and prevent scroll
-    if (window.innerWidth < 1024) {
-      const backdrop = document.querySelector(
-        `[data-sidebar-backdrop][data-sidebar-id="${sidebar.id}"]`,
-      );
-      if (backdrop) backdrop.classList.remove("hidden");
-      document.body.style.overflow = "hidden";
-    }
-  }
-
-  function closeSidebar(sidebar) {
-    sidebar.setAttribute("data-sidebar-state", "closed");
-
-    // Hide backdrop and restore scroll
-    const backdrop = document.querySelector(
-      `[data-sidebar-backdrop][data-sidebar-id="${sidebar.id}"]`,
+  function toggleSidebar(sidebarId) {
+    const wrapper = document.querySelector(
+      `[data-tui-sidebar-wrapper][data-tui-sidebar-id="${sidebarId}"]`,
     );
-    if (backdrop) backdrop.classList.add("hidden");
-    document.body.style.overflow = "";
+    if (!wrapper) return;
+
+    // Check collapsible mode
+    const collapsible = wrapper.getAttribute("data-tui-sidebar-collapsible");
+    
+    // Don't toggle if collapsible is "none"
+    if (collapsible === "none") {
+      return;
+    }
+
+    const currentState = wrapper.getAttribute("data-tui-sidebar-state");
+    const newState = currentState === "expanded" ? "collapsed" : "expanded";
+    
+    setSidebarState(sidebarId, newState);
+  }
+
+  function setSidebarState(sidebarId, state) {
+    const wrapper = document.querySelector(
+      `[data-tui-sidebar-wrapper][data-tui-sidebar-id="${sidebarId}"]`,
+    );
+    if (!wrapper) return;
+
+    const collapsible = wrapper.getAttribute("data-tui-sidebar-collapsible");
+    
+    // Don't change state if collapsible is "none"
+    if (collapsible === "none") {
+      return;
+    }
+
+    // Update data-tui-sidebar-state attribute
+    wrapper.setAttribute("data-tui-sidebar-state", state);
+
+    // For icon mode, also set data-tui-sidebar-collapsible when collapsed
+    if (state === "collapsed" && collapsible) {
+      wrapper.setAttribute("data-tui-sidebar-collapsible", collapsible);
+    }
+
+    // Save state to cookie
+    saveSidebarState(sidebarId, state);
+  }
+
+  function saveSidebarState(sidebarId, state) {
+    document.cookie = `${SIDEBAR_COOKIE_NAME}_${sidebarId}=${state}; path=/; max-age=${SIDEBAR_COOKIE_MAX_AGE}`;
+  }
+
+  function getSidebarState(sidebarId) {
+    const name = `${SIDEBAR_COOKIE_NAME}_${sidebarId}=`;
+    const decodedCookie = decodeURIComponent(document.cookie);
+    const ca = decodedCookie.split(';');
+    
+    for (let i = 0; i < ca.length; i++) {
+      let c = ca[i];
+      while (c.charAt(0) === ' ') {
+        c = c.substring(1);
+      }
+      if (c.indexOf(name) === 0) {
+        return c.substring(name.length, c.length);
+      }
+    }
+    return null;
+  }
+
+  function restoreSidebarStates() {
+    document.querySelectorAll("[data-tui-sidebar-wrapper]").forEach((wrapper) => {
+      const sidebarId = wrapper.getAttribute("data-tui-sidebar-id");
+      const collapsible = wrapper.getAttribute("data-tui-sidebar-collapsible");
+      
+      // Skip if collapsible is "none"
+      if (collapsible === "none") {
+        wrapper.setAttribute("data-tui-sidebar-state", "expanded");
+        return;
+      }
+
+      const savedState = getSidebarState(sidebarId);
+      if (savedState) {
+        wrapper.setAttribute("data-tui-sidebar-state", savedState);
+        if (savedState === "collapsed" && collapsible) {
+          wrapper.setAttribute("data-tui-sidebar-collapsible", collapsible);
+        }
+      }
+    });
   }
 })();
-

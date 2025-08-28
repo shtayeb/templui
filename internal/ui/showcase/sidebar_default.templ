@@ -2,16 +2,27 @@ package showcase
 
 import "github.com/templui/templui/internal/components/sidebar"
 import "github.com/templui/templui/internal/components/icon"
-import "github.com/templui/templui/internal/components/avatar"
 import "github.com/templui/templui/internal/components/collapsible"
+import "github.com/templui/templui/internal/components/dropdown"
+import "github.com/templui/templui/internal/components/avatar"
 
 templ SidebarDefault() {
-	<!-- Container that holds both sidebar and content -->
-	<div class="relative flex h-[600px] w-full overflow-hidden rounded-lg border">
-		@sidebar.Sidebar() {
+	@sidebar.Layout() {
+		@sidebar.Sidebar(sidebar.Props{
+			Collapsible: sidebar.CollapsibleIcon,
+			Variant:     sidebar.VariantFloating,
+		}) {
 			@sidebar.Header() {
-				@icon.LayoutPanelLeft(icon.Props{Class: "size-6"})
-				<span class="font-semibold">Acme Inc</span>
+				@sidebar.Menu() {
+					@sidebar.MenuItem() {
+						@sidebar.MenuButton(sidebar.MenuButtonProps{
+							Href: "#",
+						}) {
+							@icon.LayoutPanelLeft(icon.Props{Class: "size-4"})
+							<span class="font-semibold">Acme Inc</span>
+						}
+					}
+				}
 			}
 			@sidebar.Content() {
 				@sidebar.Group() {
@@ -21,7 +32,8 @@ templ SidebarDefault() {
 					@sidebar.Menu() {
 						@sidebar.MenuItem() {
 							@sidebar.MenuButton(sidebar.MenuButtonProps{
-								Href: "#",
+								Href:    "#",
+								Tooltip: "Home",
 							}) {
 								@icon.House(icon.Props{Class: "size-4"})
 								<span>Home</span>
@@ -29,7 +41,8 @@ templ SidebarDefault() {
 						}
 						@sidebar.MenuItem() {
 							@sidebar.MenuButton(sidebar.MenuButtonProps{
-								Href: "#",
+								Href:    "#",
+								Tooltip: "Inbox",
 							}) {
 								@icon.Inbox(icon.Props{Class: "size-4"})
 								<span>Inbox</span>
@@ -44,7 +57,9 @@ templ SidebarDefault() {
 								Class:       "group/collapsible w-full",
 							}) {
 								@collapsible.Trigger() {
-									@sidebar.MenuButton() {
+									@sidebar.MenuButton(sidebar.MenuButtonProps{
+										Tooltip: "Documents",
+									}) {
 										@icon.FileText(icon.Props{Class: "size-4"})
 										<span>Documents</span>
 										@icon.ChevronRight(icon.Props{
@@ -90,7 +105,8 @@ templ SidebarDefault() {
 					@sidebar.Menu() {
 						@sidebar.MenuItem() {
 							@sidebar.MenuButton(sidebar.MenuButtonProps{
-								Href: "#",
+								Href:    "#",
+								Tooltip: "Project Alpha",
 							}) {
 								@icon.Folder(icon.Props{Class: "size-4"})
 								<span>Project Alpha</span>
@@ -101,7 +117,9 @@ templ SidebarDefault() {
 						}
 						@sidebar.MenuItem() {
 							<div class="w-full">
-								@sidebar.MenuButton() {
+								@sidebar.MenuButton(sidebar.MenuButtonProps{
+									Tooltip: "Project Beta",
+								}) {
 									@icon.Folder(icon.Props{Class: "size-4"})
 									<span>Project Beta</span>
 								}
@@ -137,7 +155,8 @@ templ SidebarDefault() {
 					@sidebar.Menu() {
 						@sidebar.MenuItem() {
 							@sidebar.MenuButton(sidebar.MenuButtonProps{
-								Href: "#",
+								Href:    "#",
+								Tooltip: "Team",
 							}) {
 								@icon.Users(icon.Props{Class: "size-4"})
 								<span>Team</span>
@@ -149,11 +168,13 @@ templ SidebarDefault() {
 								Class:       "group/collapsible w-full",
 							}) {
 								@collapsible.Trigger() {
-									@sidebar.MenuButton() {
+									@sidebar.MenuButton(sidebar.MenuButtonProps{
+										Tooltip: "Settings",
+									}) {
 										@icon.Settings(icon.Props{Class: "size-4"})
 										<span>Settings</span>
 										@icon.ChevronRight(icon.Props{
-											Class: "ml-auto size-4 transition-transform group-data-[state=open]/collapsible:rotate-90",
+											Class: "ml-auto size-4 transition-transform group-data-[tui-collapsible-state=open]/collapsible:rotate-90",
 										})
 									}
 								}
@@ -188,17 +209,56 @@ templ SidebarDefault() {
 				}
 			}
 			@sidebar.Footer() {
-				<div class="flex items-center gap-3">
-					@avatar.Avatar() {
-						@avatar.Image(avatar.ImageProps{
-							Src: "https://avatars.githubusercontent.com/u/26936893?v=4",
-						})
+				@sidebar.Menu() {
+					@sidebar.MenuItem() {
+						@dropdown.Dropdown() {
+							@dropdown.Trigger() {
+								@sidebar.MenuButton(sidebar.MenuButtonProps{
+									Size: sidebar.MenuButtonSizeLg,
+								}) {
+									@avatar.Avatar(avatar.Props{Class: "size-8 rounded-lg"}) {
+										@avatar.Image(avatar.ImageProps{
+											Src: "https://avatars.githubusercontent.com/u/26936893?v=4",
+										})
+									}
+									<div class="grid flex-1 text-left text-sm leading-tight">
+										<span class="truncate font-medium">John Doe</span>
+										<span class="truncate text-xs">john@example.com</span>
+									</div>
+									@icon.ChevronsUpDown(icon.Props{Class: "ml-auto size-4"})
+								}
+							}
+							@dropdown.Content(dropdown.ContentProps{
+								Width:     "w-56",
+								Placement: dropdown.PlacementTopStart,
+							}) {
+								@dropdown.Label() {
+									John Doe
+								}
+								@dropdown.Separator()
+								@dropdown.Item() {
+									<span class="flex items-center">
+										@icon.User(icon.Props{Size: 16, Class: "mr-2"})
+										Profile
+									</span>
+								}
+								@dropdown.Item() {
+									<span class="flex items-center">
+										@icon.Settings(icon.Props{Size: 16, Class: "mr-2"})
+										Settings
+									</span>
+								}
+								@dropdown.Separator()
+								@dropdown.Item() {
+									<span class="flex items-center">
+										@icon.LogOut(icon.Props{Size: 16, Class: "mr-2"})
+										Log out
+									</span>
+								}
+							}
+						}
 					}
-					<div class="flex flex-col">
-						<span class="text-sm font-medium">John Doe</span>
-						<span class="text-xs text-gray-500">john@example.com</span>
-					</div>
-				</div>
+				}
 			}
 		}
 		@sidebar.Inset() {
@@ -207,7 +267,8 @@ templ SidebarDefault() {
 					@sidebar.Trigger()
 					<span class="text-sm text-muted-foreground">Press Ctrl+B to toggle sidebar</span>
 				</div>
+				<div class="flex-1 p-6"></div>
 			</div>
 		}
-	</div>
+	}
 }

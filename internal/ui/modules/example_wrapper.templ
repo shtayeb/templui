@@ -1,6 +1,10 @@
 package modules
 
 import (
+	"bytes"
+	"context"
+	"io"
+	"github.com/templui/templui/internal/components/icon"
 	"github.com/templui/templui/internal/components/tabs"
 	"github.com/templui/templui/internal/ui/showcase"
 )
@@ -20,6 +24,8 @@ type ExampleWrapperProps struct {
 	ShowcaseFile    templ.Component
 	PreviewCodeFile string
 	ID              string // For #id in URL Link
+	UseIframe       bool   // Whether to render preview in iframe
+	FullscreenURL   string // Optional URL for fullscreen view
 }
 
 templ ExampleWrapper(p ExampleWrapperProps) {
@@ -32,29 +38,56 @@ templ ExampleWrapper(p ExampleWrapperProps) {
 		@tabs.Tabs(tabs.Props{
 			ID: "example-" + p.ID,
 		}) {
-			@tabs.List(tabs.ListProps{
-				Class: "md:w-1/2",
-			}) {
-				@tabs.Trigger(tabs.TriggerProps{
-					Value:    "preview",
-					IsActive: true,
+			<div class="flex items-center justify-between">
+				@tabs.List(tabs.ListProps{
+					Class: "md:w-1/2",
 				}) {
-					Preview
+					@tabs.Trigger(tabs.TriggerProps{
+						Value:    "preview",
+						IsActive: true,
+					}) {
+						Preview
+					}
+					@tabs.Trigger(tabs.TriggerProps{
+						Value: "code",
+					}) {
+						Code
+					}
 				}
-				@tabs.Trigger(tabs.TriggerProps{
-					Value: "code",
-				}) {
-					Code
+				if p.FullscreenURL != "" {
+					<a
+						href={ templ.SafeURL(p.FullscreenURL) }
+						target="_blank"
+						title="Open in fullscreen"
+						class="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 hover:bg-accent hover:text-accent-foreground h-10 px-3"
+					>
+						@icon.ExternalLink(icon.Props{Size: 16})
+						<span class="ml-2 hidden sm:inline">Fullscreen</span>
+					</a>
 				}
-			}
+			</div>
 			<div class="w-full relative mt-2">
 				@tabs.Content(tabs.ContentProps{
 					Value:    "preview",
 					IsActive: true,
 				}) {
-					@showcaseWrapper(showcaseWrapperProps{
-						Content: p.ShowcaseFile,
-					})
+					if p.UseIframe {
+						<div class="border rounded-md overflow-hidden">
+							<div class="w-[1600px]">
+								<iframe
+									class="w-full h-[600px] border-0"
+									srcDoc={ renderToHTML(p.ShowcaseFile, ctx) }
+									title="Component Preview"
+									loading="lazy"
+									scrolling="no"
+								></iframe>
+							</div>
+						</div>
+					} else {
+						@showcaseWrapper(showcaseWrapperProps{
+							Content: p.ShowcaseFile,
+						})
+					}
 				}
 				@tabs.Content(tabs.ContentProps{
 					Value: "code",
@@ -64,4 +97,185 @@ templ ExampleWrapper(p ExampleWrapperProps) {
 			</div>
 		}
 	</div>
+}
+
+// renderToHTML renders a component to an HTML string for iframe srcDoc
+func renderToHTML(component templ.Component, parentCtx context.Context) (string, error) {
+	var buf bytes.Buffer
+
+	// Create wrapper component with layout
+	tempComponent := templ.ComponentFunc(func(ctx context.Context, w io.Writer) error {
+		return SimplePreviewLayout(component).Render(ctx, w)
+	})
+
+	err := tempComponent.Render(parentCtx, &buf)
+	if err != nil {
+		return "", err
+	}
+
+	return buf.String(), nil
+}
+
+// SimplePreviewLayout provides minimal HTML wrapper for iframe content
+templ SimplePreviewLayout(content templ.Component) {
+	<!DOCTYPE html>
+	<html lang="en" class="h-full" x-data>
+		<head>
+			<meta charset="UTF-8"/>
+			<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+			<style>
+				html, body {
+					margin: 0;
+					padding: 0;
+					min-height: 100vh;
+					height: 100%;
+				}
+			</style>
+			// Override window.innerWidth to force desktop mode in iframe
+			<script>
+				// Override innerWidth before any other scripts run (768px is md breakpoint)
+				Object.defineProperty(window, 'innerWidth', {
+					writable: true,
+					configurable: true,
+					value: 800
+				});
+				// Also override for consistency
+				Object.defineProperty(window, 'outerWidth', {
+					writable: true,
+					configurable: true,
+					value: 800
+				});
+			</script>
+			// Preload fonts
+			<link rel="preload" href="/assets/fonts/geist/geist-variable.woff2" as="font" type="font/woff2" crossorigin="anonymous"/>
+			<link rel="preload" href="/assets/fonts/geist/geist-mono-variable.woff2" as="font" type="font/woff2" crossorigin="anonymous"/>
+			// CSS
+			<link href="/assets/css/output.css" rel="stylesheet"/>
+			<link href="/assets/css/themes.css" rel="stylesheet"/>
+			// JavaScript
+			<script defer src="/assets/js/templui.min.js"></script>
+			// Sync theme with parent and prevent navigation
+			<script nonce={ templ.GetNonce(ctx) }>
+				// Sync theme immediately on load
+				(function() {
+					if (window.parent && window.parent !== window) {
+						try {
+							const parentHtml = window.parent.document.documentElement;
+							const isDark = parentHtml.classList.contains('dark');
+							if (isDark) {
+								document.documentElement.classList.add('dark');
+							}
+						} catch (e) {
+							// Ignore if we can't access parent
+						}
+					}
+				})();
+				
+				document.addEventListener('DOMContentLoaded', function() {
+					// Ensure sidebar and wrapper are in open state after initialization
+					setTimeout(function() {
+						// Find all sidebars and their wrappers
+						const sidebars = document.querySelectorAll('[data-tui-sidebar="sidebar"]');
+						sidebars.forEach(function(sidebar) {
+							// Find and update the wrapper
+							const wrapper = document.querySelector('[data-tui-sidebar-wrapper][data-tui-sidebar-id="' + sidebar.id + '"]');
+							if (wrapper) {
+								wrapper.setAttribute('data-tui-sidebar-state', 'open');
+							}
+						});
+					}, 50); // Small delay to ensure sidebar.js has initialized
+					
+					// Prevent all link clicks and form submissions
+					document.addEventListener('click', function(e) {
+						const link = e.target.closest('a');
+						if (link && link.getAttribute('href')) {
+							e.preventDefault();
+							console.log('Link click prevented:', link.getAttribute('href'));
+						}
+					}, true);
+					
+					// Also prevent form submissions
+					document.addEventListener('submit', function(e) {
+						e.preventDefault();
+						console.log('Form submission prevented');
+					}, true);
+				});
+			</script>
+		</head>
+		<body class="bg-background transition-colors duration-200 h-full">
+			@content
+		</body>
+	</html>
+}
+
+// Script for syncing themes between parent and iframe
+templ IframeThemeSync() {
+	<script nonce={ templ.GetNonce(ctx) }>
+		(function() {
+			function syncIframeThemes() {
+				const htmlElement = document.documentElement;
+				const isDark = htmlElement.classList.contains('dark');
+				
+				document.querySelectorAll('iframe').forEach(iframe => {
+					// Wait for iframe to be ready
+					if (iframe.contentWindow) {
+						try {
+							// Try immediate sync
+							if (iframe.contentWindow.document && iframe.contentWindow.document.documentElement) {
+								const iframeHtml = iframe.contentWindow.document.documentElement;
+								iframeHtml.classList.toggle('dark', isDark);
+							} else {
+								// If document not ready, wait for load
+								iframe.addEventListener('load', function() {
+									if (iframe.contentWindow && iframe.contentWindow.document) {
+										const iframeHtml = iframe.contentWindow.document.documentElement;
+										iframeHtml.classList.toggle('dark', isDark);
+									}
+								});
+							}
+						} catch (e) {
+							// Ignore cross-origin errors
+						}
+					}
+				});
+			}
+			
+			// Initial sync on DOMContentLoaded
+			if (document.readyState === 'loading') {
+				document.addEventListener('DOMContentLoaded', syncIframeThemes);
+			} else {
+				syncIframeThemes();
+			}
+			
+			// Observe theme changes on parent
+			const observer = new MutationObserver(() => syncIframeThemes());
+			observer.observe(document.documentElement, { 
+				attributes: true, 
+				attributeFilter: ['class'] 
+			});
+			
+			// Listen for HTMX events
+			document.addEventListener('htmx:afterSwap', function() {
+				// Small delay to ensure new content is rendered
+				setTimeout(syncIframeThemes, 10);
+			});
+			
+			// Also observe for new iframes being added
+			const iframeObserver = new MutationObserver(function(mutations) {
+				for (const mutation of mutations) {
+					for (const node of mutation.addedNodes) {
+						if (node.tagName === 'IFRAME' || (node.querySelector && node.querySelector('iframe'))) {
+							setTimeout(syncIframeThemes, 10);
+							break;
+						}
+					}
+				}
+			});
+			
+			iframeObserver.observe(document.body, {
+				childList: true,
+				subtree: true
+			});
+		})();
+	</script>
 }

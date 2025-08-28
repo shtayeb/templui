@@ -123,7 +123,7 @@ templ ThemeShowcase() {
 		<!-- Left Column - spans more on larger screens -->
 		<div class="grid gap-4 auto-rows-min md:col-span-1 lg:col-span-4 xl:col-span-5">
 			<!-- Input Fields -->
-			@card.Card(card.Props{}) {
+			@card.Card() {
 				@card.Content(card.ContentProps{Class: "p-6 space-y-4"}) {
 					<div class="flex flex-col gap-3">
 						@form.Label(form.LabelProps{For: "email"}) {
@@ -148,7 +148,7 @@ templ ThemeShowcase() {
 				}
 			}
 			<!-- Action Buttons Card -->
-			@card.Card(card.Props{}) {
+			@card.Card() {
 				@card.Header() {
 					@card.Title() {
 						Save Changes
@@ -171,7 +171,7 @@ templ ThemeShowcase() {
 				}
 			}
 			<!-- Delete Account Card -->
-			@card.Card(card.Props{}) {
+			@card.Card() {
 				@card.Header() {
 					@card.Title() {
 						Danger Zone
@@ -191,7 +191,7 @@ templ ThemeShowcase() {
 				}
 			}
 			<!-- Social Media Actions Card -->
-			@card.Card(card.Props{}) {
+			@card.Card() {
 				@card.Header() {
 					@card.Title() {
 						Share Article
@@ -224,7 +224,7 @@ templ ThemeShowcase() {
 				}
 			}
 			<!-- Loading States Card -->
-			@card.Card(card.Props{}) {
+			@card.Card() {
 				@card.Header() {
 					@card.Title() {
 						Processing
@@ -243,7 +243,7 @@ templ ThemeShowcase() {
 		<!-- Middle Column -->
 		<div class="grid gap-4 auto-rows-min md:col-span-1 lg:col-span-3">
 			<!-- Calendar -->
-			@card.Card(card.Props{}) {
+			@card.Card() {
 				{{ threeDaysFromNow := time.Now().AddDate(0, 0, 3) }}
 				@card.Content() {
 					@calendar.Calendar(calendar.Props{
@@ -252,13 +252,13 @@ templ ThemeShowcase() {
 				}
 			}
 			<!-- Go Framework Select -->
-			@card.Card(card.Props{}) {
+			@card.Card() {
 				@card.Content(card.ContentProps{Class: "p-6"}) {
 					<div class="flex flex-col gap-3">
 						@form.Label(form.LabelProps{For: "go-framework"}) {
 							Go Framework
 						}
-						@selectbox.SelectBox(selectbox.Props{}) {
+						@selectbox.SelectBox() {
 							@selectbox.Trigger(selectbox.TriggerProps{
 								ID: "go-framework",
 							}) {
@@ -288,7 +288,7 @@ templ ThemeShowcase() {
 				}
 			}
 			<!-- Status Card with Badges -->
-			@card.Card(card.Props{}) {
+			@card.Card() {
 				@card.Header() {
 					@card.Title() {
 						Project Status
@@ -319,7 +319,7 @@ templ ThemeShowcase() {
 				}
 			}
 			<!-- OTP Verification Card -->
-			@card.Card(card.Props{}) {
+			@card.Card() {
 				@card.Header() {
 					@card.Title() {
 						Verification Code
@@ -350,7 +350,7 @@ templ ThemeShowcase() {
 		<!-- Right Column -->
 		<div class="grid gap-4 auto-rows-min md:col-span-2 lg:col-span-3">
 			<!-- Sliders & Progress -->
-			@card.Card(card.Props{}) {
+			@card.Card() {
 				@card.Content(card.ContentProps{Class: "p-6 space-y-6"}) {
 					<div class="flex flex-col gap-3">
 						@form.Label(form.LabelProps{For: "volume"}) {
@@ -377,7 +377,7 @@ templ ThemeShowcase() {
 				}
 			}
 			<!-- Radio Groups -->
-			@card.Card(card.Props{}) {
+			@card.Card() {
 				@card.Content(card.ContentProps{Class: "p-6"}) {
 					<div class="space-y-4">
 						<h3 class="text-sm font-medium">Select plan</h3>
@@ -415,7 +415,7 @@ templ ThemeShowcase() {
 				}
 			}
 			<!-- Switches & Checkboxes -->
-			@card.Card(card.Props{}) {
+			@card.Card() {
 				@card.Content(card.ContentProps{Class: "p-6 space-y-4"}) {
 					<div class="flex items-center justify-between">
 						@form.Label(form.LabelProps{For: "notifications"}) {
@@ -454,7 +454,7 @@ templ ThemeShowcase() {
 				}
 			}
 			<!-- Tags Input Card -->
-			@card.Card(card.Props{}) {
+			@card.Card() {
 				@card.Header() {
 					@card.Title() {
 						Project Tags
@@ -476,7 +476,7 @@ templ ThemeShowcase() {
 				}
 			}
 			<!-- Tabs Navigation Card -->
-			@card.Card(card.Props{}) {
+			@card.Card() {
 				@card.Content(card.ContentProps{Class: "p-6"}) {
 					@tabs.Tabs() {
 						@tabs.List() {

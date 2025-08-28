@@ -54,12 +54,17 @@ import "./floating_ui_core.js";
       }
     }
     
-    computePosition(ref, content, { placement, middleware }).then(({ x, y, middlewareData }) => {
+    computePosition(ref, content, { placement, middleware }).then(({ x, y, placement: finalPlacement, middlewareData }) => {
       Object.assign(content.style, { left: `${x}px`, top: `${y}px` });
       
-      // Handle arrow positioning with CSS
+      // Handle arrow positioning
       if (arrowEl && middlewareData.arrow) {
         const { x: arrowX, y: arrowY } = middlewareData.arrow;
+        
+        // Set placement attribute for CSS styling
+        arrowEl.setAttribute('data-tui-popover-placement', finalPlacement);
+        
+        // Position the arrow (X/Y only, rest handled by CSS)
         Object.assign(arrowEl.style, {
           left: arrowX != null ? `${arrowX}px` : '',
           top: arrowY != null ? `${arrowY}px` : ''

@@ -20,6 +20,10 @@ templ Sidebar() {
 				Text: "API Reference",
 				Children: []modules.TableOfContentsItem{
 					{
+						ID:   "sidebar-layout",
+						Text: "Layout",
+					},
+					{
 						ID:   "sidebar",
 						Text: "Sidebar",
 					},
@@ -111,6 +115,8 @@ templ Sidebar() {
 			@modules.ExampleWrapper(modules.ExampleWrapperProps{
 				ShowcaseFile:    showcase.SidebarDefault(),
 				PreviewCodeFile: "sidebar_default.templ",
+				UseIframe:       true,
+				FullscreenURL:   "/docs/components/sidebar-fullscreen",
 			})
 			@modules.ContainerWrapper(modules.ContainerWrapperProps{
 				Title: "Installation",
@@ -118,7 +124,7 @@ templ Sidebar() {
 			}) {
 				@modules.ComponentUsage(modules.ComponentUsageProps{
 					ComponentName: "sidebar",
-					JSFiles:       []string{"sidebar"},
+					JSFiles:       []string{"sidebar", "sheet", "popover"},
 				})
 			}
 			@modules.ContainerWrapper(modules.ContainerWrapperProps{
@@ -126,6 +132,35 @@ templ Sidebar() {
 				ID:    "api",
 			}) {
 				@modules.APILegend()
+				<div id="sidebar-layout" class="mb-8">
+					@modules.APITable(modules.APITableProps{
+						Title:       "Layout",
+						Description: "Root layout container that manages sidebar and main content layout.",
+						Items: []modules.APITableItem{
+							{
+								Name:        "ID",
+								Type:        "string",
+								Default:     "auto-generated",
+								Description: "Unique identifier for the layout container.",
+								Required:    false,
+							},
+							{
+								Name:        "Class",
+								Type:        "string",
+								Default:     "",
+								Description: "Additional CSS classes to apply to the layout container.",
+								Required:    false,
+							},
+							{
+								Name:        "Attributes",
+								Type:        "templ.Attributes",
+								Default:     "",
+								Description: "Additional HTML attributes to apply to the layout element.",
+								Required:    false,
+							},
+						},
+					})
+				</div>
 				<div id="sidebar" class="mb-8">
 					@modules.APITable(modules.APITableProps{
 						Title:       "Sidebar",
@@ -154,16 +189,37 @@ templ Sidebar() {
 							},
 							{
 								Name:        "Side",
-								Type:        "SidebarSide",
+								Type:        "Side",
 								Default:     "left",
 								Description: "Position of the sidebar. Options: 'left' or 'right'.",
 								Required:    false,
 							},
 							{
-								Name:        "DefaultOpen",
+								Name:        "Variant",
+								Type:        "Variant",
+								Default:     "sidebar",
+								Description: "Visual style variant. Options: 'sidebar' (default), 'floating', 'inset'.",
+								Required:    false,
+							},
+							{
+								Name:        "Width",
+								Type:        "string",
+								Default:     "w-64",
+								Description: "Width of the sidebar (Tailwind class).",
+								Required:    false,
+							},
+							{
+								Name:        "Collapsed",
 								Type:        "bool",
-								Default:     "true",
-								Description: "Whether the sidebar is open by default on desktop. Mobile always starts closed.",
+								Default:     "false",
+								Description: "Whether the sidebar starts in collapsed state.",
+								Required:    false,
+							},
+							{
+								Name:        "Collapsible",
+								Type:        "Collapsible",
+								Default:     "offcanvas",
+								Description: "Collapsible behavior. Options: 'offcanvas' (slides off screen), 'icon' (collapses to icon width), 'none' (cannot be collapsed).",
 								Required:    false,
 							},
 						},
@@ -397,6 +453,20 @@ templ Sidebar() {
 								Description: "Whether the submenu is initially expanded (only applies when HasSubmenu is true).",
 								Required:    false,
 							},
+							{
+								Name:        "Size",
+								Type:        "MenuButtonSize",
+								Default:     "default",
+								Description: "Size of the menu button. Options: 'sm', 'default', 'lg'.",
+								Required:    false,
+							},
+							{
+								Name:        "Tooltip",
+								Type:        "string",
+								Default:     "",
+								Description: "Tooltip text to display when sidebar is collapsed to icon mode.",
+								Required:    false,
+							},
 						},
 					})
 				</div>
@@ -496,6 +566,13 @@ templ Sidebar() {
 								Type:        "bool",
 								Default:     "false",
 								Description: "Whether the submenu item is currently active/selected.",
+								Required:    false,
+							},
+							{
+								Name:        "Size",
+								Type:        "MenuSubButtonSize",
+								Default:     "sm",
+								Description: "Size of the submenu button. Options: 'sm', 'md'.",
 								Required:    false,
 							},
 						},

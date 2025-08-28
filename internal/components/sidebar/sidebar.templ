@@ -1,22 +1,48 @@
 package sidebar
 
+import "context"
 import "github.com/templui/templui/internal/utils"
 import "github.com/templui/templui/internal/components/icon"
 import "github.com/templui/templui/internal/components/button"
+import "github.com/templui/templui/internal/components/sheet"
+import "github.com/templui/templui/internal/components/tooltip"
 
-type SidebarSide string
+type contextKey string
+
+const sidebarIDKey contextKey = "sidebar-id"
+
+type Side string
 
 const (
-	SidebarSideLeft  SidebarSide = "left" // default
-	SidebarSideRight SidebarSide = "right"
+	SideLeft  Side = "left" // default
+	SideRight Side = "right"
 )
 
-type SidebarProps struct {
+type Variant string
+
+const (
+	VariantSidebar  Variant = "sidebar" // default
+	VariantFloating Variant = "floating"
+	VariantInset    Variant = "inset"
+)
+
+type Collapsible string
+
+const (
+	CollapsibleOffcanvas Collapsible = "offcanvas" // default
+	CollapsibleIcon      Collapsible = "icon"
+	CollapsibleNone      Collapsible = "none"
+)
+
+type Props struct {
 	ID          string
 	Class       string
 	Attributes  templ.Attributes
-	Side        SidebarSide // default: "left"
-	DefaultOpen bool        // default: true for desktop, false for mobile
+	Side        Side        // default: "left"
+	Variant     Variant     // default: "sidebar"
+	Collapsible Collapsible // default: "offcanvas"
+	Width       string      // default: "w-64"
+	Collapsed   bool        // default: false (sidebar open)
 }
 
 type TriggerProps struct {
@@ -73,12 +99,22 @@ type MenuItemProps struct {
 	Attributes templ.Attributes
 }
 
+type MenuButtonSize string
+
+const (
+	MenuButtonSizeDefault MenuButtonSize = "default" // default
+	MenuButtonSizeSm      MenuButtonSize = "sm"
+	MenuButtonSizeLg      MenuButtonSize = "lg"
+)
+
 type MenuButtonProps struct {
 	ID         string
 	Class      string
 	Attributes templ.Attributes
 	Href       string
 	IsActive   bool
+	Size       MenuButtonSize // default: "default"
+	Tooltip    string         // Tooltip text to show when sidebar is collapsed
 }
 
 type MenuBadgeProps struct {
@@ -113,56 +149,127 @@ type SeparatorProps struct {
 	Attributes templ.Attributes
 }
 
-templ Sidebar(props ...SidebarProps) {
-	{{ var p SidebarProps }}
+type LayoutProps struct {
+	ID         string
+	Class      string
+	Attributes templ.Attributes
+}
+
+templ Layout(props ...LayoutProps) {
+	{{ var p LayoutProps }}
 	if len(props) > 0 {
 		{{ p = props[0] }}
 	}
 	if p.ID == "" {
 		{{ p.ID = utils.RandomID() }}
 	}
-	if p.Side == "" {
-		{{ p.Side = SidebarSideLeft }}
-	}
-	<!-- Backdrop for mobile -->
+	// Set sidebar ID in context for children to access
+	{{ ctx = context.WithValue(ctx, sidebarIDKey, p.ID) }}
+	<!-- Layout Container -->
 	<div
-		class="absolute inset-0 z-40 lg:hidden hidden"
-		data-sidebar-backdrop
-		data-sidebar-id={ p.ID }
-	></div>
-	<!-- Sidebar -->
-	<aside
 		id={ p.ID }
 		class={ utils.TwMerge(
-			// Base styles
-			"h-full bg-sidebar text-sidebar-foreground flex-shrink-0 transition-all duration-200",
-			// Border based on side
-			utils.IfElse(p.Side == SidebarSideRight, "border-l border-sidebar-border", "border-r border-sidebar-border"),
-			// Mobile: fixed width, absolute position, transform for show/hide
-			"w-64 absolute inset-y-0 z-50",
-			// Position based on side
-			utils.IfElse(p.Side == SidebarSideRight, "right-0", "left-0"),
-			// Transform based on side
-			utils.IfElse(p.Side == SidebarSideRight,
-				"transform translate-x-full data-[sidebar-state=open]:-translate-x-0",
-				"transform -translate-x-full data-[sidebar-state=open]:translate-x-0"),
-			// Desktop: relative position, width changes
-			"lg:relative lg:z-0 lg:translate-x-0",
-			"lg:w-64 lg:data-[sidebar-state=closed]:w-0",
-			// Hide overflow and border when closed on desktop
-			"lg:data-[sidebar-state=closed]:overflow-hidden lg:data-[sidebar-state=closed]:border-0",
+			"flex min-h-svh relative",
 			p.Class,
 		) }
-		data-sidebar="sidebar"
-		data-sidebar-side={ string(p.Side) }
-		data-sidebar-state="closed"
-		data-sidebar-default-open={ utils.IfElse(len(props) > 0 && !p.DefaultOpen, "false", "true") }
+		data-tui-sidebar-layout
 		{ p.Attributes... }
 	>
-		<div class="flex h-full flex-col">
+		{ children... }
+	</div>
+}
+
+templ Sidebar(props ...Props) {
+	{{ var p Props }}
+	if len(props) > 0 {
+		{{ p = props[0] }}
+	}
+	// Get sidebar ID from context first (set by parent SidebarLayout)
+	if ctxId := ctx.Value(sidebarIDKey); ctxId != nil {
+		{{ p.ID = ctxId.(string) }}
+	}
+	// Only generate ID if not provided by context or props
+	if p.ID == "" {
+		{{ p.ID = utils.RandomID() }}
+	}
+	if p.Side == "" {
+		{{ p.Side = SideLeft }}
+	}
+	if p.Variant == "" {
+		{{ p.Variant = VariantSidebar }}
+	}
+	if p.Collapsible == "" {
+		{{ p.Collapsible = CollapsibleOffcanvas }}
+	}
+	if p.Width == "" {
+		{{ p.Width = "w-64" }}
+	}
+	// Use the sidebar's ID for mobile sheet and trigger targeting
+	{{ var sidebarId string = p.ID }}
+	<!-- Mobile: Sheet Component for < 768px -->
+	{{ var sheetPosition sheet.Position }}
+	if p.Side == SideRight {
+		{{ sheetPosition = sheet.PositionRight }}
+	} else {
+		{{ sheetPosition = sheet.PositionLeft }}
+	}
+	@sheet.Content(sheet.ContentProps{
+		ID:              sidebarId + "-mobile",
+		Position:        sheetPosition,
+		Class:           "md:hidden bg-sidebar text-sidebar-foreground p-0", // Only visible on mobile
+		HideCloseButton: true,
+	}) {
+		<div class="flex h-full flex-col bg-sidebar text-sidebar-foreground">
 			{ children... }
 		</div>
-	</aside>
+	}
+	<!-- Desktop: Sidebar for >= 768px -->
+	<div class="group peer hidden md:flex" data-tui-sidebar-state="expanded" data-tui-sidebar-collapsible={ string(p.Collapsible) } data-tui-sidebar-variant={ string(p.Variant) } data-tui-sidebar-side={ string(p.Side) } data-tui-sidebar-wrapper data-tui-sidebar-id={ p.ID }>
+		<!-- Gap element for document flow -->
+		<div
+			class={ utils.TwMerge(
+				"relative bg-transparent transition-[width] duration-200 ease-linear",
+				p.Width,
+				"group-data-[tui-sidebar-state=collapsed]:group-data-[tui-sidebar-collapsible=offcanvas]:w-0",
+				"group-data-[tui-sidebar-side=right]:rotate-180",
+				// Add padding for floating/inset variants when collapsed to icon mode
+				"group-data-[tui-sidebar-variant=floating]:group-data-[tui-sidebar-state=collapsed]:group-data-[tui-sidebar-collapsible=icon]:w-[calc(3rem+theme(spacing.4))]",
+				"group-data-[tui-sidebar-variant=inset]:group-data-[tui-sidebar-state=collapsed]:group-data-[tui-sidebar-collapsible=icon]:w-[calc(3rem+theme(spacing.4))]",
+				"group-data-[tui-sidebar-variant=sidebar]:group-data-[tui-sidebar-state=collapsed]:group-data-[tui-sidebar-collapsible=icon]:w-12",
+			) }
+		></div>
+		<!-- Sidebar Container -->
+		<aside
+			id={ p.ID }
+			class={ utils.TwMerge(
+				"fixed inset-y-0 z-10 hidden h-svh transition-[left,right,width] duration-200 ease-linear md:flex",
+				p.Width,
+				// Side positioning with data attributes
+				"group-data-[tui-sidebar-side=right]:right-0 group-data-[tui-sidebar-side=right]:group-data-[tui-sidebar-state=collapsed]:group-data-[tui-sidebar-collapsible=offcanvas]:right-[calc(var(--sidebar-width)*-1)]",
+				"group-data-[tui-sidebar-side=left]:left-0 group-data-[tui-sidebar-side=left]:group-data-[tui-sidebar-state=collapsed]:group-data-[tui-sidebar-collapsible=offcanvas]:left-[calc(var(--sidebar-width)*-1)]",
+				// Adjust padding and width for variants
+				"group-data-[tui-sidebar-variant=floating]:p-2 group-data-[tui-sidebar-variant=floating]:group-data-[tui-sidebar-state=collapsed]:group-data-[tui-sidebar-collapsible=icon]:w-[calc(3rem+(theme(spacing.4))+2px)]",
+				"group-data-[tui-sidebar-variant=inset]:p-2 group-data-[tui-sidebar-variant=inset]:group-data-[tui-sidebar-state=collapsed]:group-data-[tui-sidebar-collapsible=icon]:w-[calc(3rem+(theme(spacing.4))+2px)]",
+				"group-data-[tui-sidebar-variant=sidebar]:group-data-[tui-sidebar-state=collapsed]:group-data-[tui-sidebar-collapsible=icon]:w-12",
+				"group-data-[tui-sidebar-variant=sidebar]:group-data-[tui-sidebar-side=left]:border-r group-data-[tui-sidebar-variant=sidebar]:group-data-[tui-sidebar-side=right]:border-l",
+				p.Class,
+			) }
+			data-sidebar="sidebar"
+			style="--sidebar-width: 16rem; --sidebar-width-icon: 3rem;"
+			{ p.Attributes... }
+		>
+			<!-- Inner sidebar with variant-specific styling -->
+			<div
+				data-sidebar="sidebar"
+				class={ utils.TwMerge(
+					"bg-sidebar group-data-[tui-sidebar-variant=floating]:border-sidebar-border flex h-full w-full flex-col",
+					"group-data-[tui-sidebar-variant=floating]:rounded-lg group-data-[tui-sidebar-variant=floating]:border group-data-[tui-sidebar-variant=floating]:shadow-sm",
+				) }
+			>
+				{ children... }
+			</div>
+		</aside>
+	</div>
 }
 
 templ Trigger(props ...TriggerProps) {
@@ -170,21 +277,49 @@ templ Trigger(props ...TriggerProps) {
 	if len(props) > 0 {
 		{{ p = props[0] }}
 	}
-	@button.Button(button.Props{
-		Size:    button.SizeIcon,
-		Variant: button.VariantGhost,
-		Class: utils.TwMerge(
-			"size-7",
-			p.Class,
-		),
-		Attributes: utils.MergeAttributes(
-			templ.Attributes{"data-sidebar-trigger": true},
-			p.Attributes,
-		)},
-	) {
-		@icon.PanelLeft(icon.Props{Class: "size-4"})
-		<span class="sr-only">Toggle Sidebar</span>
+	// Get sidebar ID from context (set by parent Sidebar component)
+	{{ var sidebarId string }}
+	if ctxId := ctx.Value(sidebarIDKey); ctxId != nil {
+		{{ sidebarId = ctxId.(string) }}
+	} else if attr, ok := p.Attributes["data-tui-sidebar-target"]; ok {
+		// Fallback to attribute if not in context
+		{{ sidebarId = attr.(string) }}
 	}
+	<!-- Mobile: Sheet Trigger -->
+	@sheet.Trigger(sheet.TriggerProps{
+		For:   sidebarId + "-mobile",
+		Class: "md:hidden", // Only visible on mobile
+	}) {
+		@button.Button(button.Props{
+			Size:    button.SizeIcon,
+			Variant: button.VariantGhost,
+			Class:   "size-7",
+		}) {
+			@icon.PanelLeft(icon.Props{Class: "size-4"})
+			<span class="sr-only">Toggle Sidebar</span>
+		}
+	}
+	<!-- Desktop: Sidebar Trigger -->
+	<div class="hidden md:block">
+		@button.Button(button.Props{
+			Size:    button.SizeIcon,
+			Variant: button.VariantGhost,
+			Class: utils.TwMerge(
+				"size-7",
+				p.Class,
+			),
+			Attributes: utils.MergeAttributes(
+				templ.Attributes{
+					"data-tui-sidebar-trigger": true,
+					"data-tui-sidebar-target":  sidebarId,
+				},
+				p.Attributes,
+			)},
+		) {
+			@icon.PanelLeft(icon.Props{Class: "size-4"})
+			<span class="sr-only">Toggle Sidebar</span>
+		}
+	</div>
 }
 
 templ Header(props ...HeaderProps) {
@@ -196,8 +331,8 @@ templ Header(props ...HeaderProps) {
 		if p.ID != "" {
 			id={ p.ID }
 		}
-		class={ utils.TwMerge("flex items-center gap-2 px-4 py-3 border-b border-sidebar-border", p.Class) }
-		data-sidebar="header"
+		class={ utils.TwMerge("flex flex-col gap-2 p-2", p.Class) }
+		data-tui-sidebar="header"
 		{ p.Attributes... }
 	>
 		{ children... }
@@ -213,8 +348,8 @@ templ Footer(props ...FooterProps) {
 		if p.ID != "" {
 			id={ p.ID }
 		}
-		class={ utils.TwMerge("mt-auto px-4 py-3 border-t border-sidebar-border", p.Class) }
-		data-sidebar="footer"
+		class={ utils.TwMerge("flex flex-col gap-2 p-2", p.Class) }
+		data-tui-sidebar="footer"
 		{ p.Attributes... }
 	>
 		{ children... }
@@ -230,8 +365,12 @@ templ Content(props ...ContentProps) {
 		if p.ID != "" {
 			id={ p.ID }
 		}
-		class={ utils.TwMerge("flex-1 overflow-y-auto px-4 py-4", p.Class) }
-		data-sidebar="content"
+		class={ utils.TwMerge(
+			"flex min-h-0 flex-1 flex-col gap-2 overflow-auto",
+			"group-data-[tui-sidebar-state=collapsed]:group-data-[tui-sidebar-collapsible=icon]:overflow-hidden",
+			p.Class,
+		) }
+		data-tui-sidebar="content"
 		{ p.Attributes... }
 	>
 		{ children... }
@@ -247,8 +386,8 @@ templ Menu(props ...MenuProps) {
 		if p.ID != "" {
 			id={ p.ID }
 		}
-		class={ utils.TwMerge("space-y-1", p.Class) }
-		data-sidebar="menu"
+		class={ utils.TwMerge("flex w-full min-w-0 flex-col gap-1", p.Class) }
+		data-tui-sidebar="menu"
 		{ p.Attributes... }
 	>
 		{ children... }
@@ -264,8 +403,8 @@ templ MenuItem(props ...MenuItemProps) {
 		if p.ID != "" {
 			id={ p.ID }
 		}
-		class={ utils.TwMerge("", p.Class) }
-		data-sidebar="menu-item"
+		class={ utils.TwMerge("group/menu-item relative", p.Class) }
+		data-tui-sidebar="menu-item"
 		{ p.Attributes... }
 	>
 		{ children... }
@@ -277,22 +416,71 @@ templ MenuButton(props ...MenuButtonProps) {
 	if len(props) > 0 {
 		{{ p = props[0] }}
 	}
+	if p.Size == "" {
+		{{ p.Size = MenuButtonSizeDefault }}
+	}
+	{{ buttonID := utils.RandomID() }}
+	if p.Tooltip != "" {
+		// When collapsed to icon mode - show with tooltip
+		<div class="group-data-[tui-sidebar-state=collapsed]:group-data-[tui-sidebar-collapsible=icon]:block hidden">
+			@tooltip.Tooltip() {
+				@tooltip.Trigger(tooltip.TriggerProps{
+					For: buttonID + "-tooltip",
+				}) {
+					@menuButtonContent(p, buttonID) {
+						{ children... }
+					}
+				}
+				@tooltip.Content(tooltip.ContentProps{
+					ID:            buttonID + "-tooltip",
+					Position:      tooltip.PositionRight,
+					HoverDelay:    200,
+					HoverOutDelay: 100,
+				}) {
+					{ p.Tooltip }
+				}
+			}
+		</div>
+		// When expanded - show without tooltip
+		<div class="group-data-[tui-sidebar-state=collapsed]:group-data-[tui-sidebar-collapsible=icon]:hidden">
+			@menuButtonContent(p, buttonID) {
+				{ children... }
+			}
+		</div>
+	} else {
+		@menuButtonContent(p, buttonID) {
+			{ children... }
+		}
+	}
+}
+
+templ menuButtonContent(p MenuButtonProps, buttonID string) {
 	if p.Href != "" {
 		<a
-			if p.ID != "" {
-				id={ p.ID }
-			}
+			id={ buttonID }
 			href={ templ.SafeURL(p.Href) }
 			class={ utils.TwMerge(
-				"flex items-center gap-3 rounded-md px-3 py-2 text-sm",
+				"flex w-full items-center gap-2 rounded-md p-2 text-left overflow-hidden",
 				"hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
-				"transition-colors",
-				utils.If(p.IsActive, "bg-sidebar-accent text-sidebar-accent-foreground font-medium"),
+				"transition-[width,height,padding]",
+				// Size variants with data attributes
+				"data-[tui-sidebar-size=sm]:h-7 data-[tui-sidebar-size=sm]:text-xs",
+				"data-[tui-sidebar-size=lg]:h-12 data-[tui-sidebar-size=lg]:text-sm",
+				"data-[tui-sidebar-size=default]:h-8 data-[tui-sidebar-size=default]:text-sm",
+				// Active state with data attributes
+				"data-[tui-sidebar-active=true]:bg-sidebar-accent data-[tui-sidebar-active=true]:text-sidebar-accent-foreground data-[tui-sidebar-active=true]:font-medium",
+				// Collapsed icon mode styles - matching shadcn exactly
+				"group-data-[tui-sidebar-state=collapsed]:group-data-[tui-sidebar-collapsible=icon]:!size-8",
+				"group-data-[tui-sidebar-state=collapsed]:group-data-[tui-sidebar-collapsible=icon]:!p-2",
+				// Override padding for lg size (avatars) in collapsed mode
+				"group-data-[tui-sidebar-state=collapsed]:group-data-[tui-sidebar-collapsible=icon]:data-[tui-sidebar-size=lg]:!p-0",
+				"[&>span:last-child]:truncate [&>svg]:size-4 [&>svg]:shrink-0",
 				p.Class,
 			) }
-			data-sidebar="menu-button"
+			data-tui-sidebar="menu-button"
+			data-tui-sidebar-size={ string(p.Size) }
 			if p.IsActive {
-				data-active="true"
+				data-tui-sidebar-active="true"
 			}
 			{ p.Attributes... }
 		>
@@ -300,20 +488,30 @@ templ MenuButton(props ...MenuButtonProps) {
 		</a>
 	} else {
 		<button
-			if p.ID != "" {
-				id={ p.ID }
-			}
+			id={ buttonID }
 			type="button"
 			class={ utils.TwMerge(
-				"flex w-full items-center gap-3 rounded-md px-3 py-2 text-sm text-left",
+				"flex w-full items-center gap-2 rounded-md p-2 text-left overflow-hidden",
 				"hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
-				"transition-colors",
-				utils.If(p.IsActive, "bg-sidebar-accent text-sidebar-accent-foreground font-medium"),
+				"transition-[width,height,padding]",
+				// Size variants with data attributes
+				"data-[tui-sidebar-size=sm]:h-7 data-[tui-sidebar-size=sm]:text-xs",
+				"data-[tui-sidebar-size=lg]:h-12 data-[tui-sidebar-size=lg]:text-sm",
+				"data-[tui-sidebar-size=default]:h-8 data-[tui-sidebar-size=default]:text-sm",
+				// Active state with data attributes
+				"data-[tui-sidebar-active=true]:bg-sidebar-accent data-[tui-sidebar-active=true]:text-sidebar-accent-foreground data-[tui-sidebar-active=true]:font-medium",
+				// Collapsed icon mode styles - matching shadcn exactly
+				"group-data-[tui-sidebar-state=collapsed]:group-data-[tui-sidebar-collapsible=icon]:!size-8",
+				"group-data-[tui-sidebar-state=collapsed]:group-data-[tui-sidebar-collapsible=icon]:!p-2",
+				// Override padding for lg size (avatars) in collapsed mode
+				"group-data-[tui-sidebar-state=collapsed]:group-data-[tui-sidebar-collapsible=icon]:data-[tui-sidebar-size=lg]:!p-0",
+				"[&>span:last-child]:truncate [&>svg]:size-4 [&>svg]:shrink-0",
 				p.Class,
 			) }
-			data-sidebar="menu-button"
+			data-tui-sidebar="menu-button"
+			data-tui-sidebar-size={ string(p.Size) }
 			if p.IsActive {
-				data-active="true"
+				data-tui-sidebar-active="true"
 			}
 			{ p.Attributes... }
 		>
@@ -332,10 +530,11 @@ templ MenuSub(props ...MenuSubProps) {
 			id={ p.ID }
 		}
 		class={ utils.TwMerge(
-			"ml-4 space-y-1 py-1 pl-4 border-l border-sidebar-border",
+			"mx-3.5 flex min-w-0 translate-x-px flex-col gap-1 border-l border-sidebar-border px-2.5 py-0.5",
+			"group-data-[tui-sidebar-state=collapsed]:group-data-[tui-sidebar-collapsible=icon]:hidden",
 			p.Class,
 		) }
-		data-sidebar="menu-sub"
+		data-tui-sidebar="menu-sub"
 		{ p.Attributes... }
 	>
 		{ children... }
@@ -351,8 +550,8 @@ templ MenuSubItem(props ...MenuSubItemProps) {
 		if p.ID != "" {
 			id={ p.ID }
 		}
-		class={ utils.TwMerge("", p.Class) }
-		data-sidebar="menu-sub-item"
+		class={ utils.TwMerge("group/menu-sub-item relative", p.Class) }
+		data-tui-sidebar="menu-sub-item"
 		{ p.Attributes... }
 	>
 		{ children... }
@@ -371,15 +570,15 @@ templ MenuSubButton(props ...MenuSubButtonProps) {
 			}
 			href={ templ.SafeURL(p.Href) }
 			class={ utils.TwMerge(
-				"flex items-center gap-3 rounded-md px-3 py-1.5 text-sm",
+				"flex items-center gap-2 rounded-md px-2 py-1.5 text-sm",
 				"hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
 				"transition-colors",
-				utils.If(p.IsActive, "bg-sidebar-accent text-sidebar-accent-foreground font-medium"),
+				"data-[tui-sidebar-active=true]:bg-sidebar-accent data-[tui-sidebar-active=true]:text-sidebar-accent-foreground data-[tui-sidebar-active=true]:font-medium",
 				p.Class,
 			) }
-			data-sidebar="menu-sub-button"
+			data-tui-sidebar="menu-sub-button"
 			if p.IsActive {
-				data-active="true"
+				data-tui-sidebar-active="true"
 			}
 			{ p.Attributes... }
 		>
@@ -392,15 +591,15 @@ templ MenuSubButton(props ...MenuSubButtonProps) {
 			}
 			type="button"
 			class={ utils.TwMerge(
-				"flex w-full items-center gap-3 rounded-md px-3 py-1.5 text-sm text-left",
+				"flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-sm text-left",
 				"hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
 				"transition-colors",
-				utils.If(p.IsActive, "bg-sidebar-accent text-sidebar-accent-foreground font-medium"),
+				"data-[tui-sidebar-active=true]:bg-sidebar-accent data-[tui-sidebar-active=true]:text-sidebar-accent-foreground data-[tui-sidebar-active=true]:font-medium",
 				p.Class,
 			) }
-			data-sidebar="menu-sub-button"
+			data-tui-sidebar="menu-sub-button"
 			if p.IsActive {
-				data-active="true"
+				data-tui-sidebar-active="true"
 			}
 			{ p.Attributes... }
 		>
@@ -419,10 +618,17 @@ templ Inset(props ...InsetProps) {
 			id={ p.ID }
 		}
 		class={ utils.TwMerge(
-			"flex-1",
+			"relative flex w-full flex-1 flex-col bg-background",
+			// Add special styling when peer sidebar has variant="inset"
+			"md:peer-data-[tui-sidebar-variant=inset]:m-2",
+			"md:peer-data-[tui-sidebar-variant=inset]:ml-0",
+			"md:peer-data-[tui-sidebar-variant=inset]:rounded-xl",
+			"md:peer-data-[tui-sidebar-variant=inset]:shadow-sm",
+			// When sidebar is closed and variant is inset, add left margin back
+			"md:peer-data-[tui-sidebar-variant=inset]:peer-data-[tui-sidebar-state=closed]:ml-2",
 			p.Class,
 		) }
-		data-sidebar="inset"
+		data-tui-sidebar="inset"
 		{ p.Attributes... }
 	>
 		{ children... }
@@ -438,8 +644,8 @@ templ Group(props ...GroupProps) {
 		if p.ID != "" {
 			id={ p.ID }
 		}
-		class={ utils.TwMerge("space-y-2", p.Class) }
-		data-sidebar="group"
+		class={ utils.TwMerge("relative flex w-full min-w-0 flex-col p-2", p.Class) }
+		data-tui-sidebar="group"
 		{ p.Attributes... }
 	>
 		{ children... }
@@ -456,10 +662,13 @@ templ GroupLabel(props ...GroupLabelProps) {
 			id={ p.ID }
 		}
 		class={ utils.TwMerge(
-			"px-3 py-2 text-xs font-semibold text-sidebar-foreground/70",
+			"flex h-8 shrink-0 items-center rounded-md px-2 text-xs font-medium text-sidebar-foreground/70",
+			"ring-sidebar-ring outline-none transition-[margin,opacity] duration-200 ease-linear",
+			"focus-visible:ring-2 [&>svg]:size-4 [&>svg]:shrink-0",
+			"group-data-[tui-sidebar-state=collapsed]:group-data-[tui-sidebar-collapsible=icon]:-mt-8 group-data-[tui-sidebar-state=collapsed]:group-data-[tui-sidebar-collapsible=icon]:opacity-0",
 			p.Class,
 		) }
-		data-sidebar="group-label"
+		data-tui-sidebar="group-label"
 		{ p.Attributes... }
 	>
 		{ children... }
@@ -476,11 +685,12 @@ templ MenuBadge(props ...MenuBadgeProps) {
 			id={ p.ID }
 		}
 		class={ utils.TwMerge(
-			"ml-auto flex h-5 min-w-5 items-center justify-center rounded-md px-1 text-xs font-medium",
-			"bg-sidebar-accent text-sidebar-accent-foreground",
-			p.Class,
-		) }
-		data-sidebar="menu-badge"
+				"ml-auto flex h-5 min-w-5 items-center justify-center rounded-md px-1 text-xs font-medium",
+				"bg-sidebar-accent text-sidebar-accent-foreground",
+				"group-data-[tui-sidebar-state=collapsed]:group-data-[tui-sidebar-collapsible=icon]:hidden",
+				p.Class,
+			) }
+		data-tui-sidebar="menu-badge"
 		{ p.Attributes... }
 	>
 		{ children... }
@@ -497,10 +707,10 @@ templ Separator(props ...SeparatorProps) {
 			id={ p.ID }
 		}
 		class={ utils.TwMerge(
-			"my-2 border-t border-sidebar-border",
+			"mx-2 my-2 border-t border-sidebar-border",
 			p.Class,
 		) }
-		data-sidebar="separator"
+		data-tui-sidebar="separator"
 		{ p.Attributes... }
 	/>
 }

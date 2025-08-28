@@ -16,17 +16,6 @@ templ Sheet() {
 				Text: "Installation",
 			},
 			{
-				Text: "Examples",
-				ID:   "examples",
-				Children: []modules.TableOfContentsItem{
-	
-					{
-						Text: "Positions",
-						ID:   "positions",
-					},
-				},
-			},
-			{
 				ID:   "api-reference",
 				Text: "API Reference",
 				Children: []modules.TableOfContentsItem{
@@ -94,17 +83,6 @@ templ Sheet() {
 				@modules.ComponentUsage(modules.ComponentUsageProps{
 					ComponentName: "sheet",
 					JSFiles:       []string{"sheet"},
-				})
-			}
-			@modules.ContainerWrapper(modules.ContainerWrapperProps{
-				Title: "Examples",
-				ID:    "examples",
-			}) {
-				@modules.ExampleWrapper(modules.ExampleWrapperProps{
-					SectionName:     "Positions",
-					ShowcaseFile:    showcase.SheetPositions(),
-					PreviewCodeFile: "sheet_positions.templ",
-					ID:              "positions",
 				})
 			}
 			@modules.ContainerWrapper(modules.ContainerWrapperProps{
@@ -176,6 +154,12 @@ templ Sheet() {
 								Type:        "bool",
 								Default:     "false",
 								Description: "Whether the sheet should be open initially",
+							},
+							{
+								Name:        "HideCloseButton",
+								Type:        "bool",
+								Default:     "false",
+								Description: "Hide the close X button in the top right corner",
 							},
 						},
 					})

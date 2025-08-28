@@ -5,6 +5,7 @@ import "github.com/templui/templui/internal/ui/modules"
 templ DocsLayout(title, description string, tocItems []modules.TableOfContentsItem) {
 	@BaseLayout(title, description) {
 		@modules.TableOfContentsScript()
+		@modules.IframeThemeSync()
 		<div class="flex flex-col h-screen">
 			@modules.AnnouncementBar()
 			@modules.Navbar()
