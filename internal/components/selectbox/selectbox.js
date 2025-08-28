@@ -11,7 +11,7 @@
     
     const isMultiple = trigger.getAttribute('data-tui-selectbox-multiple') === 'true';
     const showPills = trigger.getAttribute('data-tui-selectbox-show-pills') === 'true';
-    const placeholder = valueEl.getAttribute('data-placeholder') || 'Select...';
+    const placeholder = valueEl.getAttribute('data-tui-selectbox-placeholder') || 'Select...';
     
     const selectedItems = content.querySelectorAll('.select-item[data-tui-selectbox-selected="true"]');
     
