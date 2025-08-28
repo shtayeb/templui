@@ -160,14 +160,15 @@ templ Layout(props ...LayoutProps) {
 	if len(props) > 0 {
 		{{ p = props[0] }}
 	}
-	if p.ID == "" {
-		{{ p.ID = utils.RandomID() }}
+	// Generate ID for context (children components can use it for targeting)
+	{{ var sidebarId string = p.ID }}
+	if sidebarId == "" {
+		{{ sidebarId = utils.RandomID() }}
 	}
 	// Set sidebar ID in context for children to access
-	{{ ctx = context.WithValue(ctx, sidebarIDKey, p.ID) }}
-	<!-- Layout Container -->
+	{{ ctx = context.WithValue(ctx, sidebarIDKey, sidebarId) }}
+	<!-- Layout Container - No ID needed here -->
 	<div
-		id={ p.ID }
 		class={ utils.TwMerge(
 			"flex min-h-svh relative",
 			p.Class,
@@ -184,13 +185,13 @@ templ Sidebar(props ...Props) {
 	if len(props) > 0 {
 		{{ p = props[0] }}
 	}
-	// Get sidebar ID from context first (set by parent SidebarLayout)
-	if ctxId := ctx.Value(sidebarIDKey); ctxId != nil {
-		{{ p.ID = ctxId.(string) }}
-	}
-	// Only generate ID if not provided by context or props
+	// Get sidebar ID from context or use provided/generate new
 	if p.ID == "" {
-		{{ p.ID = utils.RandomID() }}
+		if ctxId := ctx.Value(sidebarIDKey); ctxId != nil {
+			{{ p.ID = ctxId.(string) }}
+		} else {
+			{{ p.ID = utils.RandomID() }}
+		}
 	}
 	if p.Side == "" {
 		{{ p.Side = SideLeft }}
@@ -245,8 +246,8 @@ templ Sidebar(props ...Props) {
 				"fixed inset-y-0 z-10 hidden h-svh transition-[left,right,width] duration-200 ease-linear md:flex",
 				p.Width,
 				// Side positioning with data attributes
-				"group-data-[tui-sidebar-side=right]:right-0 group-data-[tui-sidebar-side=right]:group-data-[tui-sidebar-state=collapsed]:group-data-[tui-sidebar-collapsible=offcanvas]:right-[calc(var(--sidebar-width)*-1)]",
-				"group-data-[tui-sidebar-side=left]:left-0 group-data-[tui-sidebar-side=left]:group-data-[tui-sidebar-state=collapsed]:group-data-[tui-sidebar-collapsible=offcanvas]:left-[calc(var(--sidebar-width)*-1)]",
+				"group-data-[tui-sidebar-side=right]:right-0 group-data-[tui-sidebar-side=right]:group-data-[tui-sidebar-state=collapsed]:group-data-[tui-sidebar-collapsible=offcanvas]:-right-64",
+				"group-data-[tui-sidebar-side=left]:left-0 group-data-[tui-sidebar-side=left]:group-data-[tui-sidebar-state=collapsed]:group-data-[tui-sidebar-collapsible=offcanvas]:-left-64",
 				// Adjust padding and width for variants
 				"group-data-[tui-sidebar-variant=floating]:p-2 group-data-[tui-sidebar-variant=floating]:group-data-[tui-sidebar-state=collapsed]:group-data-[tui-sidebar-collapsible=icon]:w-[calc(3rem+(theme(spacing.4))+2px)]",
 				"group-data-[tui-sidebar-variant=inset]:p-2 group-data-[tui-sidebar-variant=inset]:group-data-[tui-sidebar-state=collapsed]:group-data-[tui-sidebar-collapsible=icon]:w-[calc(3rem+(theme(spacing.4))+2px)]",
@@ -255,7 +256,6 @@ templ Sidebar(props ...Props) {
 				p.Class,
 			) }
 			data-sidebar="sidebar"
-			style="--sidebar-width: 16rem; --sidebar-width-icon: 3rem;"
 			{ p.Attributes... }
 		>
 			<!-- Inner sidebar with variant-specific styling -->
@@ -419,20 +419,20 @@ templ MenuButton(props ...MenuButtonProps) {
 	if p.Size == "" {
 		{{ p.Size = MenuButtonSizeDefault }}
 	}
-	{{ buttonID := utils.RandomID() }}
 	if p.Tooltip != "" {
+		{{ tooltipID := utils.RandomID() }}
 		// When collapsed to icon mode - show with tooltip
 		<div class="group-data-[tui-sidebar-state=collapsed]:group-data-[tui-sidebar-collapsible=icon]:block hidden">
 			@tooltip.Tooltip() {
 				@tooltip.Trigger(tooltip.TriggerProps{
-					For: buttonID + "-tooltip",
+					For: tooltipID,
 				}) {
-					@menuButtonContent(p, buttonID) {
+					@menuButtonContent(p, "") {
 						{ children... }
 					}
 				}
 				@tooltip.Content(tooltip.ContentProps{
-					ID:            buttonID + "-tooltip",
+					ID:            tooltipID,
 					Position:      tooltip.PositionRight,
 					HoverDelay:    200,
 					HoverOutDelay: 100,
@@ -443,12 +443,12 @@ templ MenuButton(props ...MenuButtonProps) {
 		</div>
 		// When expanded - show without tooltip
 		<div class="group-data-[tui-sidebar-state=collapsed]:group-data-[tui-sidebar-collapsible=icon]:hidden">
-			@menuButtonContent(p, buttonID) {
+			@menuButtonContent(p, "") {
 				{ children... }
 			}
 		</div>
 	} else {
-		@menuButtonContent(p, buttonID) {
+		@menuButtonContent(p, "") {
 			{ children... }
 		}
 	}
@@ -457,7 +457,9 @@ templ MenuButton(props ...MenuButtonProps) {
 templ menuButtonContent(p MenuButtonProps, buttonID string) {
 	if p.Href != "" {
 		<a
-			id={ buttonID }
+			if buttonID != "" {
+				id={ buttonID }
+			}
 			href={ templ.SafeURL(p.Href) }
 			class={ utils.TwMerge(
 				"flex w-full items-center gap-2 rounded-md p-2 text-left overflow-hidden",
@@ -488,7 +490,9 @@ templ menuButtonContent(p MenuButtonProps, buttonID string) {
 		</a>
 	} else {
 		<button
-			id={ buttonID }
+			if buttonID != "" {
+				id={ buttonID }
+			}
 			type="button"
 			class={ utils.TwMerge(
 				"flex w-full items-center gap-2 rounded-md p-2 text-left overflow-hidden",
