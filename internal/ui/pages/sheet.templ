@@ -20,6 +20,10 @@ templ Sheet() {
 				Text: "API Reference",
 				Children: []modules.TableOfContentsItem{
 					{
+						ID:   "sheet",
+						Text: "Sheet",
+					},
+					{
 						ID:   "trigger",
 						Text: "Trigger",
 					},
@@ -90,6 +94,55 @@ templ Sheet() {
 				ID:    "api-reference",
 			}) {
 				@modules.APILegend()
+				<div id="sheet" class="mb-8">
+					@modules.APITable(modules.APITableProps{
+						Title: "Sheet",
+						Items: []modules.APITableItem{
+							{
+								Name:        "ID",
+								Type:        "string",
+								Default:     "randomID",
+								Description: "Unique identifier for the sheet (auto-generated if not provided)",
+							},
+							{
+								Name:        "Class",
+								Type:        "string",
+								Default:     "\"\"",
+								Description: "Additional CSS classes to apply to the sheet wrapper",
+							},
+							{
+								Name:        "Attributes",
+								Type:        "templ.Attributes",
+								Default:     "nil",
+								Description: "Additional HTML attributes to apply to the sheet wrapper",
+							},
+							{
+								Name:        "Side",
+								Type:        "Side",
+								Default:     "SideRight",
+								Description: "Side from which the sheet slides in (top, right, bottom, left)",
+							},
+							{
+								Name:        "Open",
+								Type:        "bool",
+								Default:     "false",
+								Description: "Whether the sheet should be open initially",
+							},
+							{
+								Name:        "DisableClickAway",
+								Type:        "bool",
+								Default:     "false",
+								Description: "Disable closing the sheet when clicking the backdrop",
+							},
+							{
+								Name:        "DisableESC",
+								Type:        "bool",
+								Default:     "false",
+								Description: "Disable closing the sheet with the ESC key",
+							},
+						},
+					})
+				</div>
 				<div id="trigger" class="mb-8">
 					@modules.APITable(modules.APITableProps{
 						Title: "Trigger",
@@ -112,12 +165,6 @@ templ Sheet() {
 								Default:     "nil",
 								Description: "Additional HTML attributes to apply to the trigger",
 							},
-							{
-								Name:        "For",
-								Type:        "string",
-								Default:     "\"\"",
-								Description: "ID of the sheet to trigger when clicked",
-							},
 						},
 					})
 				</div>
@@ -125,12 +172,6 @@ templ Sheet() {
 					@modules.APITable(modules.APITableProps{
 						Title: "Content",
 						Items: []modules.APITableItem{
-							{
-								Name:        "ID",
-								Type:        "string",
-								Default:     "randomID",
-								Description: "Unique identifier for the sheet content",
-							},
 							{
 								Name:        "Class",
 								Type:        "string",
@@ -142,18 +183,6 @@ templ Sheet() {
 								Type:        "templ.Attributes",
 								Default:     "nil",
 								Description: "Additional HTML attributes to apply to the content container",
-							},
-							{
-								Name:        "Position",
-								Type:        "Position",
-								Default:     "\"\"",
-								Description: "Position from which the sheet slides in",
-							},
-							{
-								Name:        "InitialOpen",
-								Type:        "bool",
-								Default:     "false",
-								Description: "Whether the sheet should be open initially",
 							},
 							{
 								Name:        "HideCloseButton",
@@ -285,12 +314,6 @@ templ Sheet() {
 								Type:        "templ.Attributes",
 								Default:     "nil",
 								Description: "Additional HTML attributes to apply to the close button",
-							},
-							{
-								Name:        "For",
-								Type:        "string",
-								Default:     "\"\"",
-								Description: "ID of the sheet to close (defaults to closest sheet if empty)",
 							},
 						},
 					})

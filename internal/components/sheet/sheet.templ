@@ -1,6 +1,7 @@
 package sheet
 
 import (
+	"context"
 	"github.com/templui/templui/internal/utils"
 	"github.com/templui/templui/internal/components/icon"
 )
@@ -14,19 +15,33 @@ const (
 	SideLeft   Side = "left"
 )
 
+type contextKey string
+
+const (
+	instanceKey contextKey = "sheetInstance"
+	sideKey     contextKey = "sheetSide"
+	openKey     contextKey = "sheetOpen"
+)
+
+type Props struct {
+	ID               string
+	Class            string
+	Attributes       templ.Attributes
+	Side             Side
+	Open             bool
+	DisableClickAway bool
+	DisableESC       bool
+}
+
 type TriggerProps struct {
 	ID         string
 	Class      string
 	Attributes templ.Attributes
-	For        string // ID of the sheet to trigger
 }
 
 type ContentProps struct {
-	ID              string
 	Class           string
 	Attributes      templ.Attributes
-	Side            Side
-	InitialOpen     bool
 	HideCloseButton bool
 }
 
@@ -58,7 +73,40 @@ type CloseProps struct {
 	ID         string
 	Class      string
 	Attributes templ.Attributes
-	For        string // ID of the sheet to close (optional, defaults to closest sheet)
+}
+
+templ Sheet(props ...Props) {
+	{{ var p Props }}
+	if len(props) > 0 {
+		{{ p = props[0] }}
+	}
+	if p.Side == "" {
+		{{ p.Side = SideRight }}
+	}
+	{{ instanceID := p.ID }}
+	if instanceID == "" {
+		{{ instanceID = utils.RandomID() }}
+	}
+	{{ ctx = context.WithValue(ctx, instanceKey, instanceID) }}
+	{{ ctx = context.WithValue(ctx, sideKey, p.Side) }}
+	{{ ctx = context.WithValue(ctx, openKey, p.Open) }}
+	<div
+		if p.ID != "" {
+			id={ p.ID }
+		}
+		class={ utils.TwMerge("", p.Class) }
+		data-tui-sheet
+		data-sheet-instance={ instanceID }
+		if p.DisableClickAway {
+			data-tui-sheet-disable-clickaway="true"
+		}
+		if p.DisableESC {
+			data-tui-sheet-disable-esc="true"
+		}
+		{ p.Attributes... }
+	>
+		{ children... }
+	</div>
 }
 
 templ Trigger(props ...TriggerProps) {
@@ -66,15 +114,14 @@ templ Trigger(props ...TriggerProps) {
 	if len(props) > 0 {
 		{{ p = props[0] }}
 	}
+	{{ instanceID := ctx.Value(instanceKey).(string) }}
 	<div
 		if p.ID != "" {
 			id={ p.ID }
 		}
 		class={ utils.TwMerge("group cursor-pointer", p.Class) }
-		if p.For != "" {
-			data-tui-sheet-trigger={ p.For }
-		}
-		data-tui-sheet-open="false"
+		data-tui-sheet-trigger
+		data-sheet-instance={ instanceID }
 		{ p.Attributes... }
 	>
 		{ children... }
@@ -86,17 +133,11 @@ templ Content(props ...ContentProps) {
 	if len(props) > 0 {
 		{{ p = props[0] }}
 	}
-	if p.ID == "" {
-		{{ p.ID = utils.RandomID() }}
-	}
-	if p.Side == "" {
-		{{ p.Side = SideRight }}
-	}
+	{{ instanceID := ctx.Value(instanceKey).(string) }}
+	{{ side := ctx.Value(sideKey).(Side) }}
+	{{ open := ctx.Value(openKey).(bool) }}
 	<!-- Overlay -->
 	<div
-		if p.ID != "" {
-			id={ p.ID }
-		}
 		class={ utils.TwMerge(
 				"fixed inset-0 z-50 bg-black/50",
 				"transition-opacity duration-300",
@@ -106,8 +147,8 @@ templ Content(props ...ContentProps) {
 				"data-[tui-sheet-open=true]:pointer-events-auto",
 			) }
 		data-tui-sheet-backdrop
-		data-tui-sheet-component="sheet"
-		if p.InitialOpen {
+		data-sheet-instance={ instanceID }
+		if open {
 			data-tui-sheet-open="true"
 		} else {
 			data-tui-sheet-open="false"
@@ -115,7 +156,6 @@ templ Content(props ...ContentProps) {
 	></div>
 	<!-- Content -->
 	<div
-		id={ p.ID + "-content" }
 		class={
 			utils.TwMerge(
 				// Base styles
@@ -168,8 +208,9 @@ templ Content(props ...ContentProps) {
 			),
 		}
 		data-tui-sheet-content
-		data-tui-sheet-side={ string(p.Side) }
-		if p.InitialOpen {
+		data-tui-sheet-side={ string(side) }
+		data-sheet-instance={ instanceID }
+		if open {
 			data-tui-sheet-open="true"
 		} else {
 			data-tui-sheet-open="false"
@@ -281,11 +322,7 @@ templ Close(props ...CloseProps) {
 			id={ p.ID }
 		}
 		class={ utils.TwMerge("contents", p.Class) }
-		if p.For != "" {
-			data-tui-sheet-close={ p.For }
-		} else {
-			data-tui-sheet-close
-		}
+		data-tui-sheet-close
 		{ p.Attributes... }
 	>
 		{ children... }

@@ -82,19 +82,18 @@ templ Navbar() {
 }
 
 templ NavbarMobileMenu() {
-	@sheet.Trigger(sheet.TriggerProps{
-		For: "mobile-menu",
-	}) {
-		<button
-			class="mr-2 lg:hidden p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-hidden focus:ring-2 focus:ring-inset focus:ring-indigo-500"
-		>
-			@icon.Menu()
-		</button>
-	}
-	@sheet.Content(sheet.ContentProps{
+	@sheet.Sheet(sheet.Props{
 		Side: sheet.SideLeft,
-		ID:   "mobile-menu",
+		Open: false,
 	}) {
+		@sheet.Trigger() {
+			<button
+				class="mr-2 lg:hidden p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-hidden focus:ring-2 focus:ring-inset focus:ring-indigo-500"
+			>
+				@icon.Menu()
+			</button>
+		}
+		@sheet.Content() {
 		<div class="space-y-4">
 			<div class="pb-4">
 				<h3 class="px-4 text-sm font-bold text-gray-600 dark:text-gray-400">Menu</h3>
@@ -169,5 +168,6 @@ templ NavbarMobileMenu() {
 				</div>
 			}
 		</div>
+		}
 	}
 }

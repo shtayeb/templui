@@ -214,15 +214,20 @@ templ Sidebar(props ...Props) {
 	} else {
 		{{ sheetSide = sheet.SideLeft }}
 	}
-	@sheet.Content(sheet.ContentProps{
-		ID:              sidebarId + "-mobile",
-		Side:            sheetSide,
-		Class:           "md:hidden bg-sidebar text-sidebar-foreground p-0", // Only visible on mobile
-		HideCloseButton: true,
+	// Create a standalone Sheet for mobile (without wrapper since trigger is elsewhere)
+	@sheet.Sheet(sheet.Props{
+		ID:   sidebarId + "-mobile",
+		Side: sheetSide,
+		Open: false,
 	}) {
-		<div class="flex h-full flex-col bg-sidebar text-sidebar-foreground">
-			{ children... }
-		</div>
+		@sheet.Content(sheet.ContentProps{
+			Class:           "md:hidden bg-sidebar text-sidebar-foreground p-0", // Only visible on mobile  
+			HideCloseButton: true,
+		}) {
+			<div class="flex h-full flex-col bg-sidebar text-sidebar-foreground">
+				{ children... }
+			</div>
+		}
 	}
 	<!-- Desktop: Sidebar for >= 768px -->
 	<div class="group peer hidden md:flex" data-tui-sidebar-state="expanded" data-tui-sidebar-collapsible={ string(p.Collapsible) } data-tui-sidebar-variant={ string(p.Variant) } data-tui-sidebar-side={ string(p.Side) } data-tui-sidebar-wrapper data-tui-sidebar-id={ p.ID }>
@@ -285,11 +290,12 @@ templ Trigger(props ...TriggerProps) {
 		// Fallback to attribute if not in context
 		{{ sidebarId = attr.(string) }}
 	}
-	<!-- Mobile: Sheet Trigger -->
-	@sheet.Trigger(sheet.TriggerProps{
-		For:   sidebarId + "-mobile",
-		Class: "md:hidden", // Only visible on mobile
-	}) {
+	<!-- Mobile: Trigger to open the sheet created in Sidebar component -->
+	<div 
+		class="md:hidden"
+		data-tui-sheet-trigger
+		data-sheet-instance={ sidebarId + "-mobile" }
+	>
 		@button.Button(button.Props{
 			Size:    button.SizeIcon,
 			Variant: button.VariantGhost,
@@ -298,7 +304,7 @@ templ Trigger(props ...TriggerProps) {
 			@icon.PanelLeft(icon.Props{Class: "size-4"})
 			<span class="sr-only">Toggle Sidebar</span>
 		}
-	}
+	</div>
 	<!-- Desktop: Sidebar Trigger -->
 	<div class="hidden md:block">
 		@button.Button(button.Props{
