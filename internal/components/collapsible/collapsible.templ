@@ -2,15 +2,25 @@ package collapsible
 
 import "github.com/templui/templui/internal/utils"
 
-// Props for the root container
 type Props struct {
-	ID          string
-	Class       string
-	Attributes  templ.Attributes
-	DefaultOpen bool
+	ID         string
+	Class      string
+	Attributes templ.Attributes
+	Open       bool
 }
 
-// Collapsible - Root container for collapsible content
+type TriggerProps struct {
+	ID         string
+	Class      string
+	Attributes templ.Attributes
+}
+
+type ContentProps struct {
+	ID         string
+	Class      string
+	Attributes templ.Attributes
+}
+
 templ Collapsible(props ...Props) {
 	{{ var p Props }}
 	if len(props) > 0 {
@@ -23,21 +33,13 @@ templ Collapsible(props ...Props) {
 		id={ p.ID }
 		class={ utils.TwMerge("", p.Class) }
 		data-tui-collapsible="root"
-		data-tui-collapsible-state={ utils.IfElse(p.DefaultOpen, "open", "closed") }
+		data-tui-collapsible-state={ utils.IfElse(p.Open, "open", "closed") }
 		{ p.Attributes... }
 	>
 		{ children... }
 	</div>
 }
 
-// Props for the trigger button
-type TriggerProps struct {
-	ID         string
-	Class      string
-	Attributes templ.Attributes
-}
-
-// Trigger - Wrapper for the button that toggles the collapsible
 templ Trigger(props ...TriggerProps) {
 	{{ var p TriggerProps }}
 	if len(props) > 0 {
@@ -55,14 +57,6 @@ templ Trigger(props ...TriggerProps) {
 	</div>
 }
 
-// Props for the expandable content
-type ContentProps struct {
-	ID         string
-	Class      string
-	Attributes templ.Attributes
-}
-
-// Content - Content that expands/collapses
 templ Content(props ...ContentProps) {
 	{{ var p ContentProps }}
 	if len(props) > 0 {
@@ -73,14 +67,14 @@ templ Content(props ...ContentProps) {
 			id={ p.ID }
 		}
 		class={ utils.TwMerge(
-			"overflow-hidden transition-[height] duration-200 ease-out",
+			"grid grid-rows-[0fr] transition-[grid-template-rows] duration-200 ease-out [[data-tui-collapsible-state=open]_&]:grid-rows-[1fr]",
 			p.Class,
 		) }
 		data-tui-collapsible="content"
-		data-tui-collapsible-state="closed"
-		style="height: 0;"
 		{ p.Attributes... }
 	>
-		{ children... }
+		<div class="overflow-hidden">
+			{ children... }
+		</div>
 	</div>
 }

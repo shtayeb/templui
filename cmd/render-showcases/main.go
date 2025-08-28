@@ -126,8 +126,7 @@ func main() {
 		"out/showcase/date_picker_with_label.html":         showcase.DatePickerWithLabel(),
 
 		// Sheet
-		"out/showcase/sheet_default.html":   showcase.SheetDefault(),
-		"out/showcase/sheet_positions.html": showcase.SheetPositions(),
+		"out/showcase/sheet_default.html": showcase.SheetDefault(),
 
 		// Dropdown
 		"out/showcase/dropdown_default.html": showcase.DropdownDefault(),
