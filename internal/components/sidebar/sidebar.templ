@@ -229,8 +229,12 @@ templ Sidebar(props ...Props) {
 			</div>
 		}
 	}
+	{{ sidebarState := "expanded" }}
+	if p.Collapsed {
+		{{ sidebarState = "collapsed" }}
+	}
 	<!-- Desktop: Sidebar for >= 768px -->
-	<div class="group peer hidden md:flex" data-tui-sidebar-state="expanded" data-tui-sidebar-collapsible={ string(p.Collapsible) } data-tui-sidebar-variant={ string(p.Variant) } data-tui-sidebar-side={ string(p.Side) } data-tui-sidebar-wrapper data-tui-sidebar-id={ p.ID }>
+	<div class="group peer hidden md:flex" data-tui-sidebar-state={ sidebarState } data-tui-sidebar-collapsible={ string(p.Collapsible) } data-tui-sidebar-variant={ string(p.Variant) } data-tui-sidebar-side={ string(p.Side) } data-tui-sidebar-wrapper data-tui-sidebar-id={ p.ID }>
 		<!-- Gap element for document flow -->
 		<div
 			class={ utils.TwMerge(

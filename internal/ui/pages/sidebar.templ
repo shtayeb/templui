@@ -16,6 +16,10 @@ templ Sidebar() {
 				Text: "Installation",
 			},
 			{
+				ID:   "persisted-state",
+				Text: "Persisted State",
+			},
+			{
 				ID:   "api",
 				Text: "API Reference",
 				Children: []modules.TableOfContentsItem{
@@ -126,6 +130,54 @@ templ Sidebar() {
 					ComponentName: "sidebar",
 					JSFiles:       []string{"sidebar", "sheet", "popover"},
 				})
+			}
+			@modules.ContainerWrapper(modules.ContainerWrapperProps{
+				Title: "Persisted State",
+				ID:    "persisted-state",
+			}) {
+				<div class="prose prose-sm mb-6">
+					<p class="mb-4">
+						The sidebar supports persisting its state across page reloads using cookies. 
+						When the sidebar state changes, a cookie named <code class="text-xs">sidebar_state</code> is set 
+						with the current open/closed state ("true" for expanded or "false" for collapsed).
+					</p>
+					<p class="mb-4">
+						To persist sidebar state in your Go application and avoid flicker on page loads, 
+						read the cookie server-side and set the <code class="text-xs">Collapsed</code> prop:
+					</p>
+				</div>
+				@modules.Code(modules.CodeProps{
+					Language: "go",
+					CodeContent: `func MyHandler(w http.ResponseWriter, r *http.Request) {
+    // Read sidebar state from cookie
+    cookie, _ := r.Cookie("sidebar_state")
+    // "false" means collapsed, "true" or no cookie means expanded
+    collapsed := cookie != nil && cookie.Value == "false"
+    
+    // Pass to template
+    component := MyPage(collapsed)
+    component.Render(context.Background(), w)
+}
+
+templ MyPage(collapsed bool) {
+    @sidebar.Layout() {
+        @sidebar.Sidebar(sidebar.Props{
+            Collapsed: collapsed,
+        }) {
+            // Sidebar content
+        }
+        @sidebar.Inset() {
+            // Main content
+        }
+    }
+}`,
+				})
+				<div class="prose prose-sm mt-6">
+					<p class="text-sm text-muted-foreground">
+						<strong>Note:</strong> The JavaScript will not automatically restore the state from cookies to prevent flicker. 
+						Always read the cookie server-side for the best user experience.
+					</p>
+				</div>
 			}
 			@modules.ContainerWrapper(modules.ContainerWrapperProps{
 				Title: "API Reference",
@@ -437,20 +489,6 @@ templ Sidebar() {
 								Type:        "bool",
 								Default:     "false",
 								Description: "Whether the menu item is currently active/selected.",
-								Required:    false,
-							},
-							{
-								Name:        "HasSubmenu",
-								Type:        "bool",
-								Default:     "false",
-								Description: "Whether the menu item has a submenu that can be expanded.",
-								Required:    false,
-							},
-							{
-								Name:        "IsOpen",
-								Type:        "bool",
-								Default:     "false",
-								Description: "Whether the submenu is initially expanded (only applies when HasSubmenu is true).",
 								Required:    false,
 							},
 							{

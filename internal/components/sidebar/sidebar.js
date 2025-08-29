@@ -1,71 +1,11 @@
-/*
- * Sidebar toggle functionality with collapsible modes support
- */
 (function () {
   "use strict";
 
   const SIDEBAR_COOKIE_NAME = "sidebar_state";
   const SIDEBAR_COOKIE_MAX_AGE = 60 * 60 * 24 * 7; // 7 days
 
-  let resizeHandlerSetup = false;
-
-  // Initialize all sidebars
-  function initSidebars() {
-    // Setup resize handler only once
-    if (!resizeHandlerSetup) {
-      setupResizeHandler();
-      resizeHandlerSetup = true;
-    }
-
-    // Restore sidebar states from cookies
-    restoreSidebarStates();
-  }
-
-  // Initialize on DOM ready
-  if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", initSidebars);
-  } else {
-    initSidebars();
-  }
-
-  // Watch for dynamically added sidebars (HTMX navigation)
-  const observer = new MutationObserver((mutations) => {
-    let shouldInit = false;
-
-    for (const mutation of mutations) {
-      for (const node of mutation.addedNodes) {
-        if (node.nodeType === 1) {
-          // Element node
-          if (
-            node.querySelector?.('[data-sidebar="sidebar"]') ||
-            node.matches?.('[data-sidebar="sidebar"]')
-          ) {
-            shouldInit = true;
-            break;
-          }
-        }
-      }
-      if (shouldInit) break;
-    }
-
-    if (shouldInit) {
-      // Small delay to ensure DOM is fully updated
-      setTimeout(initSidebars, 10);
-    }
-  });
-
-  observer.observe(document.body, {
-    childList: true,
-    subtree: true,
-  });
-
-  function setupResizeHandler() {
-    // Resize handler for future use if needed
-  }
-
   // Event delegation for sidebar interactions (Desktop only - Mobile uses Sheet)
   document.addEventListener("click", (e) => {
-    // Handle trigger clicks - Desktop only
     const trigger = e.target.closest("[data-tui-sidebar-trigger]");
     if (trigger) {
       e.preventDefault();
@@ -73,7 +13,6 @@
       if (targetId) {
         toggleSidebar(targetId);
       }
-      return;
     }
   });
 
@@ -109,9 +48,8 @@
     );
     if (!wrapper) return;
 
-    // Check collapsible mode
     const collapsible = wrapper.getAttribute("data-tui-sidebar-collapsible");
-    
+
     // Don't toggle if collapsible is "none"
     if (collapsible === "none") {
       return;
@@ -119,7 +57,7 @@
 
     const currentState = wrapper.getAttribute("data-tui-sidebar-state");
     const newState = currentState === "expanded" ? "collapsed" : "expanded";
-    
+
     setSidebarState(sidebarId, newState);
   }
 
@@ -130,7 +68,7 @@
     if (!wrapper) return;
 
     const collapsible = wrapper.getAttribute("data-tui-sidebar-collapsible");
-    
+
     // Don't change state if collapsible is "none"
     if (collapsible === "none") {
       return;
@@ -145,48 +83,12 @@
     }
 
     // Save state to cookie
-    saveSidebarState(sidebarId, state);
+    const cookieValue = state === "expanded" ? "true" : "false";
+    saveSidebarState(sidebarId, cookieValue);
   }
 
-  function saveSidebarState(sidebarId, state) {
-    document.cookie = `${SIDEBAR_COOKIE_NAME}_${sidebarId}=${state}; path=/; max-age=${SIDEBAR_COOKIE_MAX_AGE}`;
-  }
-
-  function getSidebarState(sidebarId) {
-    const name = `${SIDEBAR_COOKIE_NAME}_${sidebarId}=`;
-    const decodedCookie = decodeURIComponent(document.cookie);
-    const ca = decodedCookie.split(';');
-    
-    for (let i = 0; i < ca.length; i++) {
-      let c = ca[i];
-      while (c.charAt(0) === ' ') {
-        c = c.substring(1);
-      }
-      if (c.indexOf(name) === 0) {
-        return c.substring(name.length, c.length);
-      }
-    }
-    return null;
-  }
-
-  function restoreSidebarStates() {
-    document.querySelectorAll("[data-tui-sidebar-wrapper]").forEach((wrapper) => {
-      const sidebarId = wrapper.getAttribute("data-tui-sidebar-id");
-      const collapsible = wrapper.getAttribute("data-tui-sidebar-collapsible");
-      
-      // Skip if collapsible is "none"
-      if (collapsible === "none") {
-        wrapper.setAttribute("data-tui-sidebar-state", "expanded");
-        return;
-      }
-
-      const savedState = getSidebarState(sidebarId);
-      if (savedState) {
-        wrapper.setAttribute("data-tui-sidebar-state", savedState);
-        if (savedState === "collapsed" && collapsible) {
-          wrapper.setAttribute("data-tui-sidebar-collapsible", collapsible);
-        }
-      }
-    });
+  function saveSidebarState(sidebarId, cookieValue) {
+    document.cookie = `${SIDEBAR_COOKIE_NAME}=${cookieValue}; path=/; max-age=${SIDEBAR_COOKIE_MAX_AGE}`;
   }
 })();
+
