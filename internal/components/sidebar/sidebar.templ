@@ -171,6 +171,7 @@ templ Layout(props ...LayoutProps) {
 	<div
 		class={ utils.TwMerge(
 			"flex min-h-svh relative",
+			"has-[[data-tui-sidebar-variant=inset]]:bg-sidebar",
 			p.Class,
 		) }
 		data-tui-sidebar-layout
@@ -213,7 +214,7 @@ templ Sidebar(props ...Props) {
 	}
 	
 	<!-- Combined wrapper for both mobile and desktop -->
-	<div data-tui-sidebar-combined={ sidebarId }>
+	<div data-tui-sidebar-combined={ sidebarId } class="peer" data-tui-sidebar-variant={ string(p.Variant) } data-tui-sidebar-state={ sidebarState }>
 		<!-- Mobile: Sheet Component for < 768px -->
 		{{ var sheetSide sheet.Side }}
 		if p.Side == SideRight {
@@ -647,8 +648,8 @@ templ Inset(props ...InsetProps) {
 			"md:peer-data-[tui-sidebar-variant=inset]:ml-0",
 			"md:peer-data-[tui-sidebar-variant=inset]:rounded-xl",
 			"md:peer-data-[tui-sidebar-variant=inset]:shadow-sm",
-			// When sidebar is closed and variant is inset, add left margin back
-			"md:peer-data-[tui-sidebar-variant=inset]:peer-data-[tui-sidebar-state=closed]:ml-2",
+			// When sidebar is collapsed and variant is inset, add left margin back
+			"md:peer-data-[tui-sidebar-variant=inset]:peer-data-[tui-sidebar-state=collapsed]:ml-2",
 			p.Class,
 		) }
 		data-tui-sidebar="inset"
