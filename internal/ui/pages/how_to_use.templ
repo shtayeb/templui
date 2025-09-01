@@ -257,6 +257,7 @@ templ HowToUse() {
 					{ID: "install-cli", Text: "Install CLI"},
 					{ID: "initialize-project", Text: "Initialize Project"},
 					{ID: "add-components", Text: "Add Components"},
+					{ID: "update-components", Text: "Update Components"},
 					{ID: "list-components", Text: "List Components"},
 					{ID: "upgrade-cli", Text: "Upgrade CLI"},
 					{ID: "copy-paste", Text: "Copy & Paste"},
@@ -560,8 +561,39 @@ templ HowToUse() {
 								<p class="text-sm mt-2 text-muted-foreground">Each component manages its own JavaScript - no global bundle needed!</p>
 							</div>
 						</div>
+						<div id="update-components">
+							<h3 class="text-xl font-semibold mb-2">4. Update Components</h3>
+							<p class="mb-2 text-muted-foreground">To update existing components to a newer version, use the same `add` command. The CLI will detect existing components and prompt for confirmation:</p>
+							@modules.Code(modules.CodeProps{
+								Language:       "shell",
+								ShowCopyButton: true,
+								CodeContent:    "templui add carousel  # Updates carousel if it exists",
+							})
+							<p class="text-sm mt-2 mb-4 text-muted-foreground">When updating, you'll see a prompt like:</p>
+							@modules.Code(modules.CodeProps{
+								Language:       "text",
+								ShowCopyButton: false,
+								CodeContent:    "Confirm: File 'components/carousel/carousel.templ' (Existing Version: v0.93.0) differs from requested ref 'v0.94.0'. Overwrite? [y/N]:",
+							})
+							<br/>
+							<p class="mb-2 text-muted-foreground">To force updates without confirmation prompts:</p>
+							@modules.Code(modules.CodeProps{
+								Language:       "shell",
+								ShowCopyButton: true,
+								CodeContent:    "templui -f add carousel  # Force update without prompts\ntemplui -f add \"*\"       # Force update all components",
+							})
+							<div class="bg-muted p-4 rounded-lg mt-4">
+								<p class="font-medium mb-2 text-muted-foreground">💡 Update Tips:</p>
+								<ul class="list-disc pl-6 space-y-1 text-sm text-muted-foreground">
+									<li>The CLI compares version comments in files to detect updates</li>
+									<li>Use specific versions with `@` to control updates: `templui add@v0.95.0 carousel`</li>
+									<li>Files at the same version are skipped automatically</li>
+									<li>Your custom modifications will be overwritten - backup important changes first</li>
+								</ul>
+							</div>
+						</div>
 						<div id="list-components">
-							<h3 class="text-xl font-semibold mb-2">4. List Available Components</h3>
+							<h3 class="text-xl font-semibold mb-2">5. List Available Components</h3>
 							<p class="mb-2 text-muted-foreground">To see a list of all components and utils available in the manifest (for the default or a specific version):</p>
 							@modules.Code(modules.CodeProps{
 								Language:       "shell",
@@ -570,7 +602,7 @@ templ HowToUse() {
 							})
 						</div>
 						<div id="upgrade-cli">
-							<h3 class="text-xl font-semibold mb-2">5. Upgrade CLI</h3>
+							<h3 class="text-xl font-semibold mb-2">6. Upgrade CLI</h3>
 							<p class="mb-2 text-muted-foreground">Keep your templUI CLI up to date with the latest features and improvements:</p>
 							@modules.Code(modules.CodeProps{
 								Language:       "shell",
@@ -580,13 +612,13 @@ templ HowToUse() {
 							<p class="text-sm mt-2 text-muted-foreground">The upgrade command uses `go install` to update the CLI tool to the specified version.</p>
 						</div>
 						<div id="copy-paste">
-							<h3 class="text-xl font-semibold mb-2">6. Copy & Paste</h3>
+							<h3 class="text-xl font-semibold mb-2">7. Copy & Paste</h3>
 							<p class="mb-4 text-muted-foreground">
 								Alternatively, instead of using our CLI, you can copy any component directly from the docs or the GitHub repository and paste it into your project. Just make sure to manually include any required dependencies and adjust import paths accordingly.
 							</p>
 						</div>
 						<div id="quickstart-template">
-							<h3 class="text-xl font-semibold mb-2">7. Quickstart Template</h3>
+							<h3 class="text-xl font-semibold mb-2">8. Quickstart Template</h3>
 							<p class="mb-4 text-muted-foreground">
 								For a completely new project with everything pre-configured, use our <a href="https://github.com/templui/templui-quickstart" class="text-primary underline" target="_blank">templUI Quickstart</a> template.
 							</p>
