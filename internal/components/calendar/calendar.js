@@ -203,12 +203,12 @@
       const container = prevBtn.closest("[data-tui-calendar-container]");
       if (!container) return;
 
-      let month =
-        parseInt(container.dataset.tuiCalendarCurrentMonth) ||
-        new Date().getMonth();
-      let year =
-        parseInt(container.dataset.tuiCalendarCurrentYear) ||
-        new Date().getFullYear();
+      let month = parseInt(container.dataset.tuiCalendarCurrentMonth, 10);
+      let year = parseInt(container.dataset.tuiCalendarCurrentYear, 10);
+
+      // Only use fallback if truly not initialized (should not happen after init)
+      if (isNaN(month)) month = new Date().getMonth();
+      if (isNaN(year)) year = new Date().getFullYear();
 
       month--;
       if (month < 0) {
@@ -228,12 +228,12 @@
       const container = nextBtn.closest("[data-tui-calendar-container]");
       if (!container) return;
 
-      let month =
-        parseInt(container.dataset.tuiCalendarCurrentMonth) ||
-        new Date().getMonth();
-      let year =
-        parseInt(container.dataset.tuiCalendarCurrentYear) ||
-        new Date().getFullYear();
+      let month = parseInt(container.dataset.tuiCalendarCurrentMonth, 10);
+      let year = parseInt(container.dataset.tuiCalendarCurrentYear, 10);
+
+      // Only use fallback if truly not initialized (should not happen after init)
+      if (isNaN(month)) month = new Date().getMonth();
+      if (isNaN(year)) year = new Date().getFullYear();
 
       month++;
       if (month > 11) {
@@ -253,12 +253,12 @@
       if (!container) return;
 
       const day = parseInt(e.target.dataset.tuiCalendarDay);
-      const month =
-        parseInt(container.dataset.tuiCalendarCurrentMonth) ||
-        new Date().getMonth();
-      const year =
-        parseInt(container.dataset.tuiCalendarCurrentYear) ||
-        new Date().getFullYear();
+      let month = parseInt(container.dataset.tuiCalendarCurrentMonth, 10);
+      let year = parseInt(container.dataset.tuiCalendarCurrentYear, 10);
+
+      // Only use fallback if truly not initialized (should not happen after init)
+      if (isNaN(month)) month = new Date().getMonth();
+      if (isNaN(year)) year = new Date().getFullYear();
       const selectedDate = new Date(Date.UTC(year, month, day));
 
       // Update selected date attribute
@@ -337,4 +337,3 @@
     initCalendars();
   }
 })();
-
