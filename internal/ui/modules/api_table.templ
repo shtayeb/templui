@@ -64,7 +64,7 @@ templ APITable(p APITableProps) {
 										}
 										if item.Description != "" {
 											@popover.Trigger(popover.TriggerProps{
-												For:         "desc-" + item.Name,
+												For:         "desc-" + p.Title + "-" + item.Name,
 												TriggerType: popover.TriggerTypeHover,
 											}) {
 												@icon.Icon("info")(icon.Props{
@@ -73,7 +73,7 @@ templ APITable(p APITableProps) {
 												})
 											}
 											@popover.Content(popover.ContentProps{
-												ID:        "desc-" + item.Name,
+												ID:        "desc-" + p.Title + "-" + item.Name,
 												Placement: popover.PlacementTop,
 												ShowArrow: true,
 												Class:     "max-w-xs p-2",
