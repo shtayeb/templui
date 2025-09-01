@@ -91,12 +91,14 @@
       return;
     }
     
-    // Handle click away
+    // Handle click away - close when clicking on backdrop or modal container (but not content)
     if (openModalId) {
       const modal = document.getElementById(openModalId);
-      const content = modal?.querySelector('[data-tui-modal-content]');
+      const isBackdropClick = e.target.matches('[data-tui-modal-backdrop]');
+      const isModalContainerClick = e.target === modal;
+      
       if (modal?.getAttribute('data-tui-modal-disable-click-away') !== 'true' &&
-          !content?.contains(e.target) && 
+          (isBackdropClick || isModalContainerClick) && 
           !e.target.closest('[data-tui-modal-trigger]')) {
         closeModal(openModalId);
       }
