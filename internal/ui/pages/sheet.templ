@@ -16,6 +16,20 @@ templ Sheet() {
 				Text: "Installation",
 			},
 			{
+				ID:   "examples",
+				Text: "Examples",
+				Children: []modules.TableOfContentsItem{
+					{
+						ID:   "external-trigger",
+						Text: "External Trigger",
+					},
+					{
+						ID:   "standalone-content",
+						Text: "Standalone Content",
+					},
+				},
+			},
+			{
 				ID:   "api-reference",
 				Text: "API Reference",
 				Children: []modules.TableOfContentsItem{
@@ -80,6 +94,23 @@ templ Sheet() {
 				ShowcaseFile:    showcase.SheetDefault(),
 				PreviewCodeFile: "sheet_default.templ",
 			})
+			@modules.ContainerWrapper(modules.ContainerWrapperProps{
+				Title: "Examples",
+				ID:    "examples",
+			}) {
+				@modules.ExampleWrapper(modules.ExampleWrapperProps{
+					SectionName:     "External Trigger",
+					ShowcaseFile:    showcase.SheetExternalTrigger(),
+					PreviewCodeFile: "sheet_external_trigger.templ",
+					ID:              "external-trigger",
+				})
+				@modules.ExampleWrapper(modules.ExampleWrapperProps{
+					SectionName:     "Standalone Content",
+					ShowcaseFile:    showcase.SheetStandalone(),
+					PreviewCodeFile: "sheet_standalone.templ",
+					ID:              "standalone-content",
+				})
+			}
 			@modules.ContainerWrapper(modules.ContainerWrapperProps{
 				Title: "Installation",
 				ID:    "installation",
@@ -165,6 +196,12 @@ templ Sheet() {
 								Default:     "nil",
 								Description: "Additional HTML attributes to apply to the trigger",
 							},
+							{
+								Name:        "For",
+								Type:        "string",
+								Default:     "\"\"",
+								Description: "ID of the sheet to trigger (for external triggers outside Sheet wrapper)",
+							},
 						},
 					})
 				</div>
@@ -189,6 +226,24 @@ templ Sheet() {
 								Type:        "bool",
 								Default:     "false",
 								Description: "Hide the close X button in the top right corner",
+							},
+							{
+								Name:        "ID",
+								Type:        "string",
+								Default:     "\"\"",
+								Description: "Sheet ID for standalone usage (when not wrapped in Sheet component)",
+							},
+							{
+								Name:        "Side",
+								Type:        "Side",
+								Default:     "SideRight",
+								Description: "Side for standalone usage (when not wrapped in Sheet component)",
+							},
+							{
+								Name:        "Open",
+								Type:        "bool",
+								Default:     "false",
+								Description: "Initial open state for standalone usage (when not wrapped in Sheet component)",
 							},
 						},
 					})
