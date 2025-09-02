@@ -49,6 +49,7 @@ type TriggerProps struct {
 	ID         string
 	Class      string
 	Attributes templ.Attributes
+	Target     string // Target sidebar ID to toggle
 }
 
 type HeaderProps struct {
@@ -299,13 +300,12 @@ templ Trigger(props ...TriggerProps) {
 	if len(props) > 0 {
 		{{ p = props[0] }}
 	}
-	// Get sidebar ID from context (set by parent Sidebar component)
+	// Get sidebar ID from: 1. Target prop, 2. Context
 	{{ var sidebarId string }}
-	if ctxId := ctx.Value(sidebarIDKey); ctxId != nil {
+	if p.Target != "" {
+		{{ sidebarId = p.Target }}
+	} else if ctxId := ctx.Value(sidebarIDKey); ctxId != nil {
 		{{ sidebarId = ctxId.(string) }}
-	} else if attr, ok := p.Attributes["data-tui-sidebar-target"]; ok {
-		// Fallback to attribute if not in context
-		{{ sidebarId = attr.(string) }}
 	}
 	<!-- Mobile: Trigger to open the sheet created in Sidebar component -->
 	<div
