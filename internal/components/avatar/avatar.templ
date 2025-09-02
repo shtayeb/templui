@@ -61,7 +61,7 @@ templ Avatar(props ...Props) {
 		}
 		class={
 			utils.TwMerge(
-				"inline-flex shrink-0 items-center justify-center overflow-hidden",
+				"relative inline-flex shrink-0 items-center justify-center overflow-hidden",
 				// Default size (md) - will be overridden if Size prop is set or Class contains size utilities
 				"size-12 text-base",
 				// Size variants with data attributes
@@ -102,8 +102,9 @@ templ Image(props ...ImageProps) {
 		alt={ p.Alt }
 		class={
 			utils.TwMerge(
-				"w-full h-full",
+				"absolute inset-0 w-full h-full",
 				"object-cover",
+				"z-10",
 				p.Class,
 			),
 		}
