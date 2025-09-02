@@ -238,7 +238,10 @@ templ Sidebar(props ...Props) {
 	}
 	<!-- Desktop: Sidebar for >= 768px -->
 	<div
-		class="group peer hidden md:flex"
+		class={ utils.TwMerge(
+			"group peer hidden md:block",
+			p.Class,
+		) }
 		data-tui-sidebar-state={ sidebarState }
 		data-tui-sidebar-collapsible={ string(p.Collapsible) }
 		data-tui-sidebar-variant={ string(p.Variant) }
