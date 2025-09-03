@@ -101,8 +101,7 @@
       "name": "sheet",
       "description": "Extends the Dialog component to display content that complements the main content",
       "files": ["internal/components/sheet/sheet.templ"],
-      "dependencies": [],
-      "hasJS": true
+      "dependencies": ["dialog"]
     },
     {
       "name": "dropdown",
@@ -152,7 +151,7 @@
       "name": "dialog",
       "description": "Overlay dialog windows",
       "files": ["internal/components/dialog/dialog.templ"],
-      "dependencies": [],
+      "dependencies": ["icon"],
       "hasJS": true
     },
     {
