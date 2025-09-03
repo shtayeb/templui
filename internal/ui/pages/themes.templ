@@ -6,11 +6,11 @@ import (
 	"github.com/templui/templui/internal/components/calendar"
 	"github.com/templui/templui/internal/components/card"
 	"github.com/templui/templui/internal/components/checkbox"
+	"github.com/templui/templui/internal/components/dialog"
 	"github.com/templui/templui/internal/components/form"
 	"github.com/templui/templui/internal/components/icon"
 	"github.com/templui/templui/internal/components/input"
 	"github.com/templui/templui/internal/components/inputotp"
-	"github.com/templui/templui/internal/components/modal"
 	"github.com/templui/templui/internal/components/progress"
 	"github.com/templui/templui/internal/components/radio"
 	"github.com/templui/templui/internal/components/selectbox"
@@ -51,8 +51,8 @@ templ Themes() {
 								@icon.RotateCcw(icon.Props{Size: 14})
 								<span class="ml-2">Reset to Default</span>
 							}
-							@modal.Trigger(modal.TriggerProps{
-								For: "css-modal",
+							@dialog.Trigger(dialog.TriggerProps{
+								For: "css-dialog",
 							}) {
 								@button.Button(button.Props{
 									Attributes: templ.Attributes{
@@ -68,35 +68,35 @@ templ Themes() {
 					<div class="w-full">
 						@ThemeShowcase()
 					</div>
-					@modal.Modal(modal.Props{
-						ID:    "css-modal",
-						Class: "max-w-xl",
+					@dialog.Dialog(dialog.Props{
+						ID: "css-dialog",
 					}) {
-						@modal.Header() {
-							<div class="flex items-center gap-2">
-								<span>Generated CSS Code</span>
-								<span class="text-muted-foreground">•</span>
-								<div class="flex items-center gap-1.5">
-									<div
-										class="h-4 w-4 rounded-full"
-										data-theme-indicator
-									></div>
-									<span class="text-sm capitalize" data-theme-text></span>
-								</div>
-							</div>
-						}
-						@modal.Body() {
-							<pre data-css-display class="p-4 rounded overflow-x-auto max-h-96"></pre>
-						}
-						@modal.Footer() {
-							<div class="flex gap-2">
+						@dialog.Content(dialog.ContentProps{
+							Class: "max-w-xl",
+						}) {
+							@dialog.Header() {
+								@dialog.Title() {
+									Generated CSS Code
+								}
+								@dialog.Description() {
+									<div class="flex items-center gap-1.5">
+										<div
+											class="h-4 w-4 rounded-full"
+											data-theme-indicator
+										></div>
+										<span class="text-sm capitalize" data-theme-text></span>
+									</div>
+								}
+							}
+							<pre data-css-display class="p-4 rounded overflow-x-auto max-h-96 bg-muted"></pre>
+							@dialog.Footer() {
 								@button.Button(button.Props{
 									Attributes: templ.Attributes{"data-action": "copy-css"},
 								}) {
 									Copy to Clipboard
 								}
-								@modal.Close(modal.CloseProps{
-									For: "css-modal",
+								@dialog.Close(dialog.CloseProps{
+									For: "css-dialog",
 								}) {
 									@button.Button(button.Props{
 										Variant: button.VariantSecondary,
@@ -104,7 +104,7 @@ templ Themes() {
 										Close
 									}
 								}
-							</div>
+							}
 						}
 					}
 				</div>

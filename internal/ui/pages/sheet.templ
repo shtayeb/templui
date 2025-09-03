@@ -20,6 +20,10 @@ templ Sheet() {
 				Text: "Examples",
 				Children: []modules.TableOfContentsItem{
 					{
+						ID:   "sheet-sides",
+						Text: "Sheet Sides",
+					},
+					{
 						ID:   "external-trigger",
 						Text: "External Trigger",
 					},
@@ -71,7 +75,7 @@ templ Sheet() {
 	) {
 		@modules.PageWrapper(modules.PageWrapperProps{
 			Name:        "Sheet",
-			Description: templ.Raw("Extends the Dialog component to display content that complements the main content of the screen."),
+			Description: templ.Raw("Extends the <a href=\"/docs/components/dialog\" class=\"text-primary underline underline-offset-2 hover:opacity-80 transition-opacity\">Dialog</a> component to display content that complements the main content of the screen."),
 			Tailwind:    true,
 			VanillaJS:   true,
 			Breadcrumbs: modules.Breadcrumbs{
@@ -99,6 +103,12 @@ templ Sheet() {
 				ID:    "examples",
 			}) {
 				@modules.ExampleWrapper(modules.ExampleWrapperProps{
+					SectionName:     "Sheet Sides",
+					ShowcaseFile:    showcase.SheetSides(),
+					PreviewCodeFile: "sheet_sides.templ",
+					ID:              "sheet-sides",
+				})
+				@modules.ExampleWrapper(modules.ExampleWrapperProps{
 					SectionName:     "External Trigger",
 					ShowcaseFile:    showcase.SheetExternalTrigger(),
 					PreviewCodeFile: "sheet_external_trigger.templ",
@@ -117,7 +127,7 @@ templ Sheet() {
 			}) {
 				@modules.ComponentUsage(modules.ComponentUsageProps{
 					ComponentName: "sheet",
-					JSFiles:       []string{"sheet"},
+					JSFiles:       []string{"dialog"},
 				})
 			}
 			@modules.ContainerWrapper(modules.ContainerWrapperProps{

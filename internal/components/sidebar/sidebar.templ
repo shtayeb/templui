@@ -227,13 +227,11 @@ templ Sidebar(props ...Props) {
 		Open: false,
 	}) {
 		@sheet.Content(sheet.ContentProps{
-			Class:           "md:hidden bg-sidebar text-sidebar-foreground p-0",
+			Class:           "md:hidden bg-sidebar text-sidebar-foreground !p-0 !gap-0 flex flex-col h-full",
 			HideCloseButton: true,
 		}) {
-			<div class="flex h-full flex-col bg-sidebar text-sidebar-foreground">
-				<!-- Mobile content wrapper: visible only on mobile via JS -->
-				<div class="sidebar-mobile-portal" data-tui-sidebar-mobile-portal={ sidebarId }></div>
-			</div>
+			<!-- Mobile content wrapper: visible only on mobile via JS -->
+			<div class="sidebar-mobile-portal flex h-full flex-col" data-tui-sidebar-mobile-portal={ sidebarId }></div>
 		}
 	}
 	<!-- Desktop: Sidebar for >= 768px -->
@@ -311,11 +309,10 @@ templ Trigger(props ...TriggerProps) {
 		{{ sidebarId = ctxId.(string) }}
 	}
 	<!-- Mobile: Trigger to open the sheet created in Sidebar component -->
-	<div
-		class="md:hidden"
-		data-tui-sheet-trigger
-		data-sheet-instance={ sidebarId + "-mobile" }
-	>
+	@sheet.Trigger(sheet.TriggerProps{
+		For:   sidebarId + "-mobile",
+		Class: "md:hidden",
+	}) {
 		@button.Button(button.Props{
 			Size:    button.SizeIcon,
 			Variant: button.VariantGhost,
@@ -324,7 +321,7 @@ templ Trigger(props ...TriggerProps) {
 			@icon.PanelLeft(icon.Props{Class: "size-4"})
 			<span class="sr-only">Toggle Sidebar</span>
 		}
-	</div>
+	}
 	<!-- Desktop: Sidebar Trigger -->
 	<div class="hidden md:block">
 		@button.Button(button.Props{
@@ -374,7 +371,7 @@ templ Footer(props ...FooterProps) {
 		if p.ID != "" {
 			id={ p.ID }
 		}
-		class={ utils.TwMerge("flex flex-col gap-2 p-2", p.Class) }
+		class={ utils.TwMerge("mt-auto flex flex-col gap-2 p-2", p.Class) }
 		data-tui-sidebar="footer"
 		{ p.Attributes... }
 	>

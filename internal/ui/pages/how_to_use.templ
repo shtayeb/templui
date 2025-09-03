@@ -547,7 +547,7 @@ templ HowToUse() {
 							<p class="text-sm mt-2 mb-4 text-muted-foreground">The CLI automatically handles dependencies defined in the manifest and adjusts import paths within the copied `.templ` files to match your projects module path.</p>
 							<div class="bg-muted p-4 rounded-lg mt-4 mb-4">
 								<h4 class="font-semibold mb-2">📝 JavaScript Components</h4>
-								<p class="text-muted-foreground mb-2">For components that require JavaScript (like modals, dropdowns, etc.), the CLI automatically:</p>
+								<p class="text-muted-foreground mb-2">For components that require JavaScript (like dialogs, dropdowns, etc.), the CLI automatically:</p>
 								<ul class="list-disc pl-6 space-y-1 text-muted-foreground mb-2">
 									<li>Downloads the components JavaScript file</li>
 									<li>Adds a <code class="bg-background px-1 rounded">Script()</code> template to the component</li>
@@ -556,7 +556,7 @@ templ HowToUse() {
 								@modules.Code(modules.CodeProps{
 									Language:       "templ",
 									ShowCopyButton: true,
-									CodeContent:    "@modal.Script()  // Include in your base layout",
+									CodeContent:    "@dialog.Script()  // Include in your base layout",
 								})
 								<p class="text-sm mt-2 text-muted-foreground">Each component manages its own JavaScript - no global bundle needed!</p>
 							</div>
