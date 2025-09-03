@@ -66,12 +66,11 @@ minify-js-components:
 		internal/components/code/code.js \
 		internal/components/collapsible/collapsible.js \
 		internal/components/datepicker/datepicker.js \
-		internal/components/sheet/sheet.js \
+		internal/components/dialog/dialog.js \
 		internal/components/dropdown/dropdown.js \
 		internal/components/input/input.js \
 		internal/components/inputotp/inputotp.js \
 		internal/components/label/label.js \
-		internal/components/modal/modal.js \
 		internal/components/popover/popover.js \
 		internal/components/progress/progress.js \
 		internal/components/rating/rating.js \

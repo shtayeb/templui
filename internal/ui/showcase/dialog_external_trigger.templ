@@ -1,0 +1,45 @@
+package showcase
+
+import (
+	"github.com/templui/templui/internal/components/button"
+	"github.com/templui/templui/internal/components/dialog"
+)
+
+templ DialogExternalTrigger() {
+	<div class="space-y-4">
+		// External trigger button
+		@dialog.Trigger(dialog.TriggerProps{
+			For: "external-dialog",
+		}) {
+			@button.Button(button.Props{
+				Variant: button.VariantOutline,
+			}) {
+				Open External Dialog
+			}
+		}
+		// Dialog defined separately
+		@dialog.Dialog(dialog.Props{
+			ID: "external-dialog",
+		}) {
+			@dialog.Content(dialog.ContentProps{
+				Class: "max-w-md",
+			}) {
+				@dialog.Header() {
+					@dialog.Title() {
+						External Dialog
+					}
+					@dialog.Description() {
+						This dialog can be triggered from anywhere on the page.
+					}
+				}
+				@dialog.Footer() {
+					@dialog.Close() {
+						@button.Button() {
+							Close
+						}
+					}
+				}
+			}
+		}
+	</div>
+}

@@ -127,6 +127,9 @@ func main() {
 
 		// Sheet
 		"out/showcase/sheet_default.html": showcase.SheetDefault(),
+		"out/showcase/sheet_sides.html": showcase.SheetSides(),
+		"out/showcase/sheet_external_trigger.html": showcase.SheetExternalTrigger(),
+		"out/showcase/sheet_standalone.html": showcase.SheetStandalone(),
 
 		// Dropdown
 		"out/showcase/dropdown_default.html": showcase.DropdownDefault(),
@@ -154,8 +157,10 @@ func main() {
 		"out/showcase/input_otp_placeholder.html":    showcase.InputOTPPlaceholder(),
 		"out/showcase/input_otp_with_label.html":     showcase.InputOTPWithLabel(),
 
-		// Modal
-		"out/showcase/modal_default.html": showcase.ModalDefault(),
+		// Dialog
+		"out/showcase/dialog_default.html": showcase.DialogDefault(),
+		"out/showcase/dialog_external_trigger.html": showcase.DialogExternalTrigger(),
+		"out/showcase/dialog_standalone.html": showcase.DialogStandalone(),
 
 		// Pagination
 		"out/showcase/pagination_default.html":     showcase.PaginationDefault(),

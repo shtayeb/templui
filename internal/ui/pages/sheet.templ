@@ -20,6 +20,10 @@ templ Sheet() {
 				Text: "Examples",
 				Children: []modules.TableOfContentsItem{
 					{
+						ID:   "sheet-sides",
+						Text: "Sheet Sides",
+					},
+					{
 						ID:   "external-trigger",
 						Text: "External Trigger",
 					},
@@ -98,6 +102,12 @@ templ Sheet() {
 				Title: "Examples",
 				ID:    "examples",
 			}) {
+				@modules.ExampleWrapper(modules.ExampleWrapperProps{
+					SectionName:     "Sheet Sides",
+					ShowcaseFile:    showcase.SheetSides(),
+					PreviewCodeFile: "sheet_sides.templ",
+					ID:              "sheet-sides",
+				})
 				@modules.ExampleWrapper(modules.ExampleWrapperProps{
 					SectionName:     "External Trigger",
 					ShowcaseFile:    showcase.SheetExternalTrigger(),

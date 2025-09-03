@@ -116,7 +116,7 @@ func main() {
 	mux.Handle("GET /docs/components/input", htmxHandler(pages.Input()))
 	mux.Handle("GET /docs/components/input-otp", htmxHandler(pages.InputOtp()))
 	mux.Handle("GET /docs/components/label", htmxHandler(pages.Label()))
-	mux.Handle("GET /docs/components/modal", htmxHandler(pages.Modal()))
+	mux.Handle("GET /docs/components/dialog", htmxHandler(pages.Dialog()))
 	mux.Handle("GET /docs/components/pagination", htmxHandler(pages.Pagination()))
 	mux.Handle("GET /docs/components/progress", htmxHandler(pages.Progress()))
 	mux.Handle("GET /docs/components/radio", htmxHandler(pages.Radio()))

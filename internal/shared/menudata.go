@@ -90,6 +90,11 @@ var Sections = []Section{
 				Href: "/docs/components/date-picker",
 			},
 			{
+				Text: "Dialog",
+				Href: "/docs/components/dialog",
+			},
+
+			{
 				Text: "Dropdown",
 				Href: "/docs/components/dropdown",
 			},
@@ -112,10 +117,6 @@ var Sections = []Section{
 			{
 				Text: "Label",
 				Href: "/docs/components/label",
-			},
-			{
-				Text: "Modal",
-				Href: "/docs/components/modal",
 			},
 			{
 				Text: "Pagination",

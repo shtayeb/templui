@@ -149,9 +149,9 @@
       "hasJS": true
     },
     {
-      "name": "modal",
+      "name": "dialog",
       "description": "Overlay dialog windows",
-      "files": ["internal/components/modal/modal.templ"],
+      "files": ["internal/components/dialog/dialog.templ"],
       "dependencies": [],
       "hasJS": true
     },
