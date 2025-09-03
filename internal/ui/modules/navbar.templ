@@ -21,9 +21,10 @@ func formatStars(count int) string {
 templ Navbar() {
 	<nav class="py-1">
 		{{ stars := 0 }}
-		{{if starsVal := ctx.Value(ctxkeys.GitHubStars); starsVal != nil {
-	stars = starsVal.(int)
-}
+		{{
+		if starsVal := ctx.Value(ctxkeys.GitHubStars); starsVal != nil {
+			stars = starsVal.(int)
+		}
 		}}
 		<div class="px-6 flex justify-between items-center relative">
 			<div class="flex items-center">
@@ -84,7 +85,6 @@ templ Navbar() {
 templ NavbarMobileMenu() {
 	@sheet.Sheet(sheet.Props{
 		Side: sheet.SideLeft,
-		Open: false,
 	}) {
 		@sheet.Trigger() {
 			<button
@@ -93,80 +93,84 @@ templ NavbarMobileMenu() {
 				@icon.Menu()
 			</button>
 		}
-		@sheet.Content() {
-			<div class="space-y-4">
-				<div class="pb-4">
-					<h3 class="px-4 text-sm font-bold text-gray-600 dark:text-gray-400">Menu</h3>
-					<ul class="mt-2 space-y-1">
-						<li>
-							<a
-								href="/"
-								class="text-sm inline-flex items-center px-4 py-2 rounded-md text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
-							>
-								<span>Home</span>
-							</a>
-						</li>
-						<li>
-							<a
-								href="/docs/how-to-use"
-								class="text-sm inline-flex items-center px-4 py-2 rounded-md text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
-							>
-								<span>Docs</span>
-							</a>
-						</li>
-						<li>
-							<a
-								href="/docs/components"
-								class="text-sm inline-flex items-center px-4 py-2 rounded-md text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
-							>
-								<span>Components</span>
-							</a>
-						</li>
-						<li>
-							<a
-								href="/docs/themes"
-								class="text-sm inline-flex items-center px-4 py-2 rounded-md text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
-							>
-								<span>Themes</span>
-							</a>
-						</li>
-						<li>
-							<a
-								href="https://pro.templui.io"
-								target="_blank"
-								class="text-sm inline-flex items-center px-4 py-2 rounded-md text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
-							>
-								<span>Blocks</span>
-							</a>
-						</li>
-					</ul>
-				</div>
-				for _, section := range shared.Sections {
+		@sheet.Content(sheet.ContentProps{
+			Class: "!p-4",
+		}) {
+			<div class="flex-1 overflow-y-auto">
+				<div class="space-y-4">
 					<div class="pb-4">
-						<h3 class="px-4 text-sm font-bold text-gray-600 dark:text-gray-400">{ section.Title }</h3>
+						<h3 class="text-sm font-bold text-gray-600 dark:text-gray-400">Menu</h3>
 						<ul class="mt-2 space-y-1">
-							for _, link := range section.Links {
-								<li>
-									if link.Href == ctx.Value(ctxkeys.URLPathValue) {
-										<a
-											href={ templ.SafeURL(link.Href) }
-											class={ "text-sm inline-flex items-center px-4 py-2 rounded-md text-gray-700 dark:text-gray-200 bg-gray-100 dark:bg-gray-700" }
-										>
-											<span>{ link.Text }</span>
-										</a>
-									} else {
-										<a
-											href={ templ.SafeURL(link.Href) }
-											class={ "text-sm inline-flex items-center px-4 py-2 rounded-md text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700" }
-										>
-											<span>{ link.Text }</span>
-										</a>
-									}
-								</li>
-							}
+							<li>
+								<a
+									href="/"
+									class="text-sm inline-flex items-center px-3 py-2 rounded-md text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 w-full"
+								>
+									<span>Home</span>
+								</a>
+							</li>
+							<li>
+								<a
+									href="/docs/how-to-use"
+									class="text-sm inline-flex items-center px-3 py-2 rounded-md text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 w-full"
+								>
+									<span>Docs</span>
+								</a>
+							</li>
+							<li>
+								<a
+									href="/docs/components"
+									class="text-sm inline-flex items-center px-3 py-2 rounded-md text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 w-full"
+								>
+									<span>Components</span>
+								</a>
+							</li>
+							<li>
+								<a
+									href="/docs/themes"
+									class="text-sm inline-flex items-center px-3 py-2 rounded-md text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 w-full"
+								>
+									<span>Themes</span>
+								</a>
+							</li>
+							<li>
+								<a
+									href="https://pro.templui.io"
+									target="_blank"
+									class="text-sm inline-flex items-center px-3 py-2 rounded-md text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 w-full"
+								>
+									<span>Blocks</span>
+								</a>
+							</li>
 						</ul>
 					</div>
-				}
+					for _, section := range shared.Sections {
+						<div class="pb-4">
+							<h3 class="text-sm font-bold text-gray-600 dark:text-gray-400">{ section.Title }</h3>
+							<ul class="mt-2 space-y-1">
+								for _, link := range section.Links {
+									<li>
+										if link.Href == ctx.Value(ctxkeys.URLPathValue) {
+											<a
+												href={ templ.SafeURL(link.Href) }
+												class={ "text-sm inline-flex items-center px-3 py-2 rounded-md text-gray-700 dark:text-gray-200 bg-gray-100 dark:bg-gray-700 w-full" }
+											>
+												<span>{ link.Text }</span>
+											</a>
+										} else {
+											<a
+												href={ templ.SafeURL(link.Href) }
+												class={ "text-sm inline-flex items-center px-3 py-2 rounded-md text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 w-full" }
+											>
+												<span>{ link.Text }</span>
+											</a>
+										}
+									</li>
+								}
+							</ul>
+						</div>
+					}
+				</div>
 			</div>
 		}
 	}
