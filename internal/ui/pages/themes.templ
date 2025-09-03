@@ -69,25 +69,27 @@ templ Themes() {
 						@ThemeShowcase()
 					</div>
 					@dialog.Dialog(dialog.Props{
-						ID:    "css-dialog",
-						Class: "max-w-xl",
+						ID: "css-dialog",
 					}) {
-						@dialog.Header() {
-							<div class="flex items-center gap-2">
-								<span>Generated CSS Code</span>
-								<span class="text-muted-foreground">•</span>
-								<div class="flex items-center gap-1.5">
-									<div
-										class="h-4 w-4 rounded-full"
-										data-theme-indicator
-									></div>
-									<span class="text-sm capitalize" data-theme-text></span>
-								</div>
-							</div>
-						}
-						<pre data-css-display class="p-4 rounded overflow-x-auto max-h-96"></pre>
-						@dialog.Footer() {
-							<div class="flex gap-2">
+						@dialog.Content(dialog.ContentProps{
+							Class: "max-w-xl",
+						}) {
+							@dialog.Header() {
+								@dialog.Title() {
+									Generated CSS Code
+								}
+								@dialog.Description() {
+									<div class="flex items-center gap-1.5">
+										<div
+											class="h-4 w-4 rounded-full"
+											data-theme-indicator
+										></div>
+										<span class="text-sm capitalize" data-theme-text></span>
+									</div>
+								}
+							}
+							<pre data-css-display class="p-4 rounded overflow-x-auto max-h-96 bg-muted"></pre>
+							@dialog.Footer() {
 								@button.Button(button.Props{
 									Attributes: templ.Attributes{"data-action": "copy-css"},
 								}) {
@@ -102,7 +104,7 @@ templ Themes() {
 										Close
 									}
 								}
-							</div>
+							}
 						}
 					}
 				</div>
