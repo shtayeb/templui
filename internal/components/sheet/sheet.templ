@@ -175,7 +175,7 @@ templ Header(props ...HeaderProps) {
 	// Sheet header uses Dialog header but overrides styles
 	@dialog.Header(dialog.HeaderProps{
 		ID:         p.ID,
-		Class:      utils.TwMerge("!gap-1.5 !p-4 !text-left", p.Class),
+		Class:      utils.TwMerge("gap-1.5 p-4 text-left", p.Class),
 		Attributes: p.Attributes,
 	}) {
 		{ children... }
@@ -190,7 +190,7 @@ templ Title(props ...TitleProps) {
 	// Sheet title uses Dialog title but overrides styles
 	@dialog.Title(dialog.TitleProps{
 		ID:         p.ID,
-		Class:      utils.TwMerge("!text-base !leading-normal", p.Class),
+		Class:      utils.TwMerge("text-base leading-normal", p.Class),
 		Attributes: p.Attributes,
 	}) {
 		{ children... }
@@ -220,7 +220,7 @@ templ Footer(props ...FooterProps) {
 	// Sheet footer uses Dialog footer but overrides styles
 	@dialog.Footer(dialog.FooterProps{
 		ID:         p.ID,
-		Class:      utils.TwMerge("!mt-auto !flex !flex-col !gap-2 !p-4", p.Class),
+		Class:      utils.TwMerge("mt-auto flex flex-col gap-2 p-4", p.Class),
 		Attributes: p.Attributes,
 	}) {
 		{ children... }
@@ -256,9 +256,9 @@ func getSideClasses(side Side) string {
 			// Positioning
 			"!inset-y-0 !right-0 !left-auto !top-auto " +
 			// Size
-			"!h-full !w-3/4 sm:!max-w-sm " +
+			"h-full w-3/4 sm:max-w-sm " +
 			// Border
-			"!border-l !border-t-0 !border-r-0 !border-b-0 " +
+			"border-l border-t-0 border-r-0 border-b-0 " +
 			// Reset Dialog transforms
 			"!translate-y-0 " +
 			// Slide animation
@@ -269,9 +269,9 @@ func getSideClasses(side Side) string {
 			// Positioning
 			"!inset-y-0 !left-0 !right-auto !top-auto " +
 			// Size
-			"!h-full !w-3/4 sm:!max-w-sm " +
+			"h-full w-3/4 sm:max-w-sm " +
 			// Border
-			"!border-r !border-t-0 !border-l-0 !border-b-0 " +
+			"border-r border-t-0 border-l-0 border-b-0 " +
 			// Reset Dialog transforms
 			"!translate-y-0 " +
 			// Slide animation
@@ -282,9 +282,9 @@ func getSideClasses(side Side) string {
 			// Positioning - full width at top
 			"!inset-x-0 !top-0 !bottom-auto !left-0 !right-0 " +
 			// Size - full width, auto height
-			"!w-full !max-w-full !h-auto " +
+			"!w-full !max-w-full h-auto " +
 			// Border
-			"!border-b !border-t-0 !border-l-0 !border-r-0 " +
+			"border-b border-t-0 border-l-0 border-r-0 " +
 			// Reset Dialog transforms - IMPORTANT: reset the centering from Dialog
 			"!translate-x-0 !translate-y-0 " +
 			// Slide animation - top slides up when closing
@@ -295,9 +295,9 @@ func getSideClasses(side Side) string {
 			// Positioning - full width at bottom
 			"!inset-x-0 !bottom-0 !top-auto !left-0 !right-0 " +
 			// Size - full width, auto height
-			"!w-full !max-w-full !h-auto " +
+			"!w-full !max-w-full h-auto " +
 			// Border
-			"!border-t !border-b-0 !border-l-0 !border-r-0 " +
+			"border-t border-b-0 border-l-0 border-r-0 " +
 			// Reset Dialog transforms - IMPORTANT: reset the centering from Dialog
 			"!translate-x-0 !translate-y-0 " +
 			// Slide animation
@@ -307,8 +307,8 @@ func getSideClasses(side Side) string {
 		return baseClasses +
 			// Default to right side
 			"!inset-y-0 !right-0 !left-auto !top-auto " +
-			"!h-full !w-3/4 sm:!max-w-sm " +
-			"!border-l !border-t-0 !border-r-0 !border-b-0 " +
+			"h-full w-3/4 " +
+			"border-l border-t-0 border-r-0 border-b-0 " +
 			"!translate-y-0 " +
 			"data-[tui-dialog-open=false]:!translate-x-full " +
 			"data-[tui-dialog-open=true]:!translate-x-0"
