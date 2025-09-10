@@ -71,6 +71,10 @@ templ Dialog() {
 					},
 				},
 			},
+			{
+				ID:   "javascript-api",
+				Text: "JavaScript API",
+			},
 		},
 	) {
 		@modules.PageWrapper(modules.PageWrapperProps{
@@ -412,6 +416,25 @@ templ Dialog() {
 						},
 					})
 				</div>
+				@modules.ContainerWrapper(modules.ContainerWrapperProps{
+					Title: "JavaScript API",
+					ID:    "javascript-api",
+				}) {
+					@modules.Code(modules.CodeProps{
+						Language: "javascript",
+						CodeContent: `// Open a dialog programmatically
+window.tui.dialog.open("dialog-id");
+
+// Close a dialog
+window.tui.dialog.close("dialog-id");
+
+// Toggle dialog state
+window.tui.dialog.toggle("dialog-id");
+
+// Check if dialog is open (returns true/false)
+const isOpen = window.tui.dialog.isOpen("dialog-id");`,
+					})
+				}
 			}
 		}
 	}

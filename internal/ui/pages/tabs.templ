@@ -37,6 +37,10 @@ templ Tabs() {
 					},
 				},
 			},
+			{
+				ID:   "javascript-api",
+				Text: "JavaScript API",
+			},
 		},
 	) {
 		@modules.PageWrapper(modules.PageWrapperProps{
@@ -236,6 +240,16 @@ templ Tabs() {
 						},
 					})
 				</div>
+			}
+			@modules.ContainerWrapper(modules.ContainerWrapperProps{
+				Title: "JavaScript API",
+				ID:    "javascript-api",
+			}) {
+				@modules.Code(modules.CodeProps{
+					Language: "javascript",
+					CodeContent: `// Set active tab programmatically
+window.tui.tabs.setActive("tabs-id", "tab-value");`,
+				})
 			}
 		}
 	}
