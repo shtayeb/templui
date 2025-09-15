@@ -62,24 +62,16 @@
 
   // Handle keyboard shortcuts
   document.addEventListener("keydown", (e) => {
-    // Escape key - close sidebar (only for offcanvas mode)
-    if (e.key === "Escape") {
-      document
-        .querySelectorAll(
-          '[data-tui-sidebar-wrapper][data-tui-sidebar-state="expanded"][data-tui-sidebar-collapsible="offcanvas"]',
-        )
-        .forEach((wrapper) => {
-          const sidebarId = wrapper.getAttribute("data-tui-sidebar-id");
-          if (sidebarId) {
-            setSidebarState(sidebarId, "collapsed");
-          }
-        });
-    }
-
-    // Ctrl+B or Cmd+B - toggle sidebar
-    if ((e.ctrlKey || e.metaKey) && e.key === "b") {
+    // Ctrl/Cmd + key - toggle sidebar
+    if ((e.ctrlKey || e.metaKey) && e.key.length === 1) {
+      const wrapper = document.querySelector('[data-tui-sidebar-wrapper]');
+      if (!wrapper) return;
+      
+      const shortcut = wrapper.getAttribute("data-tui-sidebar-keyboard-shortcut");
+      if (!shortcut || shortcut.toLowerCase() !== e.key.toLowerCase()) return;
+      
       e.preventDefault();
-      const sidebar = document.querySelector('[data-sidebar="sidebar"]');
+      const sidebar = wrapper.querySelector('[data-sidebar="sidebar"]');
       if (sidebar && sidebar.id) {
         toggleSidebar(sidebar.id);
       }

@@ -35,14 +35,15 @@ const (
 )
 
 type Props struct {
-	ID          string
-	Class       string
-	Attributes  templ.Attributes
-	Side        Side        // default: "left"
-	Variant     Variant     // default: "sidebar"
-	Collapsible Collapsible // default: "offcanvas"
-	Width       string      // default: "w-64"
-	Collapsed   bool        // default: false (sidebar open)
+	ID               string
+	Class            string
+	Attributes       templ.Attributes
+	Side             Side        // default: "left"
+	Variant          Variant     // default: "sidebar"
+	Collapsible      Collapsible // default: "offcanvas"
+	Width            string      // default: "w-64"
+	Collapsed        bool        // default: false (sidebar open)
+	KeyboardShortcut string      // default: "b"
 }
 
 type TriggerProps struct {
@@ -207,6 +208,9 @@ templ Sidebar(props ...Props) {
 	if p.Width == "" {
 		{{ p.Width = "w-64" }}
 	}
+	if p.KeyboardShortcut == "" {
+		{{ p.KeyboardShortcut = "b" }}
+	}
 	// Use the sidebar's ID for mobile sheet and trigger targeting
 	{{ var sidebarId string = p.ID }}
 	{{ sidebarState := "expanded" }}
@@ -246,6 +250,7 @@ templ Sidebar(props ...Props) {
 		data-tui-sidebar-side={ string(p.Side) }
 		data-tui-sidebar-wrapper
 		data-tui-sidebar-id={ p.ID }
+		data-tui-sidebar-keyboard-shortcut={ p.KeyboardShortcut }
 	>
 		<!-- Gap element for document flow -->
 		<div
