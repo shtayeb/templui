@@ -2,11 +2,11 @@ import "./floating_ui_dom.js";
 import "./floating_ui_core.js";
 
 (function () {
-  'use strict';
-  
+  "use strict";
+
   const floatingCleanups = new Map();
   const hoverTimeouts = new Map();
-  
+
   // Ensure portal container exists
   if (!document.querySelector("[data-tui-popover-portal-container]")) {
     const portal = document.createElement("div");
@@ -14,7 +14,7 @@ import "./floating_ui_core.js";
     portal.className = "fixed inset-0 z-[9999] pointer-events-none";
     document.body.appendChild(portal);
   }
-  
+
   // Add animation styles
   if (!document.getElementById("popover-animations")) {
     const style = document.createElement("style");
@@ -27,19 +27,27 @@ import "./floating_ui_core.js";
     `;
     document.head.appendChild(style);
   }
-  
+
   // Core positioning function
   function updatePosition(trigger, content) {
     if (!window.FloatingUIDOM) return;
-    
-    const { computePosition, offset, flip, shift, arrow } = window.FloatingUIDOM;
+
+    const { computePosition, offset, flip, shift, arrow } =
+      window.FloatingUIDOM;
     const arrowEl = content.querySelector("[data-tui-popover-arrow]");
-    const placement = content.getAttribute("data-tui-popover-placement") || "bottom";
-    const offsetValue = parseInt(content.getAttribute("data-tui-popover-offset")) || (arrowEl ? 8 : 4);
-    
-    const middleware = [offset(offsetValue), flip({ padding: 10 }), shift({ padding: 10 })];
+    const placement =
+      content.getAttribute("data-tui-popover-placement") || "bottom";
+    const offsetValue =
+      parseInt(content.getAttribute("data-tui-popover-offset")) ||
+      (arrowEl ? 8 : 4);
+
+    const middleware = [
+      offset(offsetValue),
+      flip({ padding: 10 }),
+      shift({ padding: 10 }),
+    ];
     if (arrowEl) middleware.push(arrow({ element: arrowEl, padding: 5 }));
-    
+
     // Find best reference element (largest child or trigger itself)
     let ref = trigger;
     let maxArea = 0;
@@ -53,81 +61,100 @@ import "./floating_ui_core.js";
         }
       }
     }
-    
-    computePosition(ref, content, { placement, middleware }).then(({ x, y, placement: finalPlacement, middlewareData }) => {
-      Object.assign(content.style, { left: `${x}px`, top: `${y}px` });
-      
-      // Handle arrow positioning
-      if (arrowEl && middlewareData.arrow) {
-        const { x: arrowX, y: arrowY } = middlewareData.arrow;
-        
-        // Set placement attribute for CSS styling
-        arrowEl.setAttribute('data-tui-popover-placement', finalPlacement);
-        
-        // Position the arrow (X/Y only, rest handled by CSS)
-        Object.assign(arrowEl.style, {
-          left: arrowX != null ? `${arrowX}px` : '',
-          top: arrowY != null ? `${arrowY}px` : ''
-        });
-      }
-      
-      // Match trigger width if requested
-      if (content.getAttribute("data-tui-popover-match-width") === "true") {
-        content.style.setProperty("--popover-trigger-width", `${ref.offsetWidth}px`);
-      }
-    });
+
+    computePosition(ref, content, { placement, middleware }).then(
+      ({ x, y, placement: finalPlacement, middlewareData }) => {
+        Object.assign(content.style, { left: `${x}px`, top: `${y}px` });
+
+        // Handle arrow positioning
+        if (arrowEl && middlewareData.arrow) {
+          const { x: arrowX, y: arrowY } = middlewareData.arrow;
+
+          // Set placement attribute for CSS styling
+          arrowEl.setAttribute("data-tui-popover-placement", finalPlacement);
+
+          // Position the arrow (X/Y only, rest handled by CSS)
+          Object.assign(arrowEl.style, {
+            left: arrowX != null ? `${arrowX}px` : "",
+            top: arrowY != null ? `${arrowY}px` : "",
+          });
+        }
+
+        // Match trigger width if requested
+        if (content.getAttribute("data-tui-popover-match-width") === "true") {
+          content.style.setProperty(
+            "--popover-trigger-width",
+            `${ref.offsetWidth}px`,
+          );
+        }
+      },
+    );
   }
-  
-  // Open popover
-  function openPopover(trigger) {
+
+  // Internal helper to open popover with trigger element
+  function openPopoverWithTrigger(trigger) {
     if (!window.FloatingUIDOM) return;
-    
+
     const popoverId = trigger.getAttribute("data-tui-popover-trigger");
     if (!popoverId) return;
-    
+
     const content = document.getElementById(popoverId);
     if (!content) return;
-    
+
     // Move to portal
-    const portal = document.querySelector("[data-tui-popover-portal-container]");
+    const portal = document.querySelector(
+      "[data-tui-popover-portal-container]",
+    );
     if (portal && content.parentNode !== portal) {
       portal.appendChild(content);
     }
-    
+
     // Show and animate
     content.style.display = "block";
     content.classList.remove("popover-animate-out");
     content.classList.add("popover-animate-in");
     content.setAttribute("data-tui-popover-open", "true");
-    
+
     // Update all triggers
-    document.querySelectorAll(`[data-tui-popover-trigger="${popoverId}"]`).forEach(t => {
-      t.setAttribute("data-tui-popover-open", "true");
-    });
-    
+    document
+      .querySelectorAll(`[data-tui-popover-trigger="${popoverId}"]`)
+      .forEach((t) => {
+        t.setAttribute("data-tui-popover-open", "true");
+      });
+
     // Position and start auto-update
     updatePosition(trigger, content);
     const cleanup = window.FloatingUIDOM.autoUpdate(
-      trigger, 
-      content, 
+      trigger,
+      content,
       () => updatePosition(trigger, content),
-      { animationFrame: true }
+      { animationFrame: true },
     );
     floatingCleanups.set(popoverId, cleanup);
   }
-  
+
+  // Open popover by ID
+  function openPopover(id) {
+    const trigger = document.querySelector(
+      `[data-tui-popover-trigger="${id}"]`,
+    );
+    if (trigger) {
+      openPopoverWithTrigger(trigger);
+    }
+  }
+
   // Close popover
   function closePopover(popoverId, immediate = false) {
     const content = document.getElementById(popoverId);
     if (!content) return;
-    
+
     // Stop auto-update
     const cleanup = floatingCleanups.get(popoverId);
     if (cleanup) {
       cleanup();
       floatingCleanups.delete(popoverId);
     }
-    
+
     // Clear hover timeouts
     const timeouts = hoverTimeouts.get(popoverId);
     if (timeouts) {
@@ -135,19 +162,21 @@ import "./floating_ui_core.js";
       clearTimeout(timeouts.leave);
       hoverTimeouts.delete(popoverId);
     }
-    
+
     // Update attributes
     content.setAttribute("data-tui-popover-open", "false");
-    document.querySelectorAll(`[data-tui-popover-trigger="${popoverId}"]`).forEach(t => {
-      t.setAttribute("data-tui-popover-open", "false");
-    });
-    
+    document
+      .querySelectorAll(`[data-tui-popover-trigger="${popoverId}"]`)
+      .forEach((t) => {
+        t.setAttribute("data-tui-popover-open", "false");
+      });
+
     // Hide with animation
     function hide() {
       content.style.display = "none";
       content.classList.remove("popover-animate-in", "popover-animate-out");
     }
-    
+
     if (immediate) {
       hide();
     } else {
@@ -156,104 +185,133 @@ import "./floating_ui_core.js";
       setTimeout(hide, 150);
     }
   }
-  
+
+  // Check if popover is open
+  function isPopoverOpen(id) {
+    const content = document.getElementById(id);
+    return content?.getAttribute("data-tui-popover-open") === "true" || false;
+  }
+
+  // Toggle popover
+  function togglePopover(id) {
+    isPopoverOpen(id) ? closePopover(id) : openPopover(id);
+  }
+
   // Close all popovers except one
   function closeAllPopovers(exceptId = null) {
-    document.querySelectorAll('[data-tui-popover-open="true"][data-tui-popover-id]').forEach(content => {
-      if (content.id && content.id !== exceptId) {
-        closePopover(content.id);
-      }
-    });
+    document
+      .querySelectorAll('[data-tui-popover-open="true"][data-tui-popover-id]')
+      .forEach((content) => {
+        if (content.id && content.id !== exceptId) {
+          closePopover(content.id);
+        }
+      });
   }
-  
+
   // Click handler
   document.addEventListener("click", (e) => {
     // Handle trigger clicks
     const trigger = e.target.closest("[data-tui-popover-trigger]");
     if (trigger && trigger.getAttribute("data-tui-popover-type") !== "hover") {
       // Check for disabled elements
-      const disabledChild = trigger.querySelector(':disabled, [disabled], [aria-disabled="true"]');
+      const disabledChild = trigger.querySelector(
+        ':disabled, [disabled], [aria-disabled="true"]',
+      );
       if (disabledChild) {
         return; // Don't open popover if a child is disabled
       }
-      
+
       e.stopPropagation();
       const popoverId = trigger.getAttribute("data-tui-popover-trigger");
-      const isOpen = trigger.getAttribute("data-tui-popover-open") === "true";
-      
-      if (isOpen) {
-        closePopover(popoverId);
-      } else {
-        openPopover(trigger);
+      if (popoverId) {
+        togglePopover(popoverId);
       }
       return;
     }
-    
+
     // Handle click-away
     const clickedContent = e.target.closest("[data-tui-popover-id]");
-    document.querySelectorAll('[data-tui-popover-open="true"][data-tui-popover-id]').forEach(content => {
-      if (content !== clickedContent && content.getAttribute("data-tui-popover-disable-clickaway") !== "true") {
-        const popoverId = content.id;
-        const triggers = document.querySelectorAll(`[data-tui-popover-trigger="${popoverId}"]`);
-        let clickedTrigger = false;
-        
-        for (const t of triggers) {
-          if (t.contains(e.target)) {
-            clickedTrigger = true;
-            break;
+    document
+      .querySelectorAll('[data-tui-popover-open="true"][data-tui-popover-id]')
+      .forEach((content) => {
+        if (
+          content !== clickedContent &&
+          content.getAttribute("data-tui-popover-disable-clickaway") !== "true"
+        ) {
+          const popoverId = content.id;
+          const triggers = document.querySelectorAll(
+            `[data-tui-popover-trigger="${popoverId}"]`,
+          );
+          let clickedTrigger = false;
+
+          for (const t of triggers) {
+            if (t.contains(e.target)) {
+              clickedTrigger = true;
+              break;
+            }
+          }
+
+          if (!clickedTrigger) {
+            closePopover(popoverId);
           }
         }
-        
-        if (!clickedTrigger) {
-          closePopover(popoverId);
-        }
-      }
-    });
+      });
   });
-  
+
   // Hover handlers
   function handleHoverEnter(trigger, popoverId) {
     const content = document.getElementById(popoverId);
     if (!content) return;
-    
-    const delay = parseInt(content.getAttribute("data-tui-popover-hover-delay")) || 100;
+
+    const delay =
+      parseInt(content.getAttribute("data-tui-popover-hover-delay")) || 100;
     const timeouts = hoverTimeouts.get(popoverId) || {};
-    
+
     clearTimeout(timeouts.leave);
-    timeouts.enter = setTimeout(() => openPopover(trigger), delay);
+    timeouts.enter = setTimeout(() => openPopoverWithTrigger(trigger), delay);
     hoverTimeouts.set(popoverId, timeouts);
   }
-  
+
   function handleHoverLeave(popoverId, movingToRelated) {
     const content = document.getElementById(popoverId);
     if (!content) return;
-    
-    const delay = parseInt(content.getAttribute("data-tui-popover-hover-out-delay")) || 200;
+
+    const delay =
+      parseInt(content.getAttribute("data-tui-popover-hover-out-delay")) || 200;
     const timeouts = hoverTimeouts.get(popoverId) || {};
-    
+
     clearTimeout(timeouts.enter);
-    
+
     if (!movingToRelated) {
       timeouts.leave = setTimeout(() => closePopover(popoverId), delay);
       hoverTimeouts.set(popoverId, timeouts);
     }
   }
-  
+
   // Mouse events for hover popovers
   document.addEventListener("mouseover", (e) => {
     const trigger = e.target.closest("[data-tui-popover-trigger]");
     if (trigger && !trigger.contains(e.relatedTarget)) {
       if (trigger.getAttribute("data-tui-popover-type") === "hover") {
-        handleHoverEnter(trigger, trigger.getAttribute("data-tui-popover-trigger"));
+        const popoverId = trigger.getAttribute("data-tui-popover-trigger");
+        if (popoverId) {
+          handleHoverEnter(trigger, popoverId);
+        }
       }
     }
-    
+
     // Keep hover popover open when over content
     const content = e.target.closest("[data-tui-popover-id]");
-    if (content && !content.contains(e.relatedTarget) && content.getAttribute("data-tui-popover-open") === "true") {
+    if (
+      content &&
+      !content.contains(e.relatedTarget) &&
+      content.getAttribute("data-tui-popover-open") === "true"
+    ) {
       const popoverId = content.id;
-      const triggers = document.querySelectorAll(`[data-tui-popover-trigger="${popoverId}"]`);
-      
+      const triggers = document.querySelectorAll(
+        `[data-tui-popover-trigger="${popoverId}"]`,
+      );
+
       for (const t of triggers) {
         if (t.getAttribute("data-tui-popover-type") === "hover") {
           const timeouts = hoverTimeouts.get(popoverId) || {};
@@ -264,7 +322,7 @@ import "./floating_ui_core.js";
       }
     }
   });
-  
+
   document.addEventListener("mouseout", (e) => {
     const trigger = e.target.closest("[data-tui-popover-trigger]");
     if (trigger && !trigger.contains(e.relatedTarget)) {
@@ -274,17 +332,23 @@ import "./floating_ui_core.js";
         handleHoverLeave(popoverId, content?.contains(e.relatedTarget));
       }
     }
-    
+
     // Handle leaving popover content
     const content = e.target.closest("[data-tui-popover-id]");
-    if (content && !content.contains(e.relatedTarget) && content.getAttribute("data-tui-popover-open") === "true") {
+    if (
+      content &&
+      !content.contains(e.relatedTarget) &&
+      content.getAttribute("data-tui-popover-open") === "true"
+    ) {
       const popoverId = content.id;
-      const triggers = document.querySelectorAll(`[data-tui-popover-trigger="${popoverId}"]`);
-      
+      const triggers = document.querySelectorAll(
+        `[data-tui-popover-trigger="${popoverId}"]`,
+      );
+
       // Only handle hover popovers
       let isHoverPopover = false;
       let movingToTrigger = false;
-      
+
       for (const t of triggers) {
         if (t.getAttribute("data-tui-popover-type") === "hover") {
           isHoverPopover = true;
@@ -293,48 +357,65 @@ import "./floating_ui_core.js";
           }
         }
       }
-      
+
       if (isHoverPopover && !movingToTrigger) {
         handleHoverLeave(popoverId, false);
       }
     }
   });
-  
+
   // ESC key handler
   document.addEventListener("keydown", (e) => {
     if (e.key === "Escape") {
-      document.querySelectorAll('[data-tui-popover-open="true"][data-tui-popover-id]').forEach(content => {
-        if (content.getAttribute("data-tui-popover-disable-esc") !== "true") {
-          closePopover(content.id);
-        }
-      });
+      document
+        .querySelectorAll('[data-tui-popover-open="true"][data-tui-popover-id]')
+        .forEach((content) => {
+          if (content.getAttribute("data-tui-popover-disable-esc") !== "true") {
+            closePopover(content.id);
+          }
+        });
     }
   });
-  
+
   // Auto-update cursor based on disabled state
   function updateTriggerStates() {
-    document.querySelectorAll('[data-tui-popover-trigger]').forEach(trigger => {
-      const hasDisabled = trigger.querySelector(':disabled, [disabled], [aria-disabled="true"]');
-      if (hasDisabled) {
-        trigger.classList.add('cursor-not-allowed', 'opacity-50');
-        trigger.classList.remove('cursor-pointer');
-      } else {
-        trigger.classList.remove('cursor-not-allowed', 'opacity-50');
-        trigger.classList.add('cursor-pointer');
-      }
-    });
+    document
+      .querySelectorAll("[data-tui-popover-trigger]")
+      .forEach((trigger) => {
+        const hasDisabled = trigger.querySelector(
+          ':disabled, [disabled], [aria-disabled="true"]',
+        );
+        if (hasDisabled) {
+          trigger.classList.add("cursor-not-allowed", "opacity-50");
+          trigger.classList.remove("cursor-pointer");
+        } else {
+          trigger.classList.remove("cursor-not-allowed", "opacity-50");
+          trigger.classList.add("cursor-pointer");
+        }
+      });
   }
-  
+
   // Initial update and observe for changes
-  document.addEventListener('DOMContentLoaded', updateTriggerStates);
-  
-  new MutationObserver(updateTriggerStates).observe(document.body, { 
-    subtree: true, 
-    attributes: true, 
-    attributeFilter: ['disabled', 'aria-disabled'],
-    childList: true
+  document.addEventListener("DOMContentLoaded", updateTriggerStates);
+
+  new MutationObserver(updateTriggerStates).observe(document.body, {
+    subtree: true,
+    attributes: true,
+    attributeFilter: ["disabled", "aria-disabled"],
+    childList: true,
   });
-  
-  // Expose for other components
+
+  // Expose for other components (legacy)
   window.closePopover = closePopover;
+
+  // Expose public API
+  window.tui = window.tui || {};
+  window.tui.popover = {
+    open: openPopover,
+    close: closePopover,
+    closeAll: closeAllPopovers,
+    toggle: togglePopover,
+    isOpen: isPopoverOpen,
+  };
 })();
+

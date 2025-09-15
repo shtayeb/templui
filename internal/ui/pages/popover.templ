@@ -43,6 +43,10 @@ templ Popover() {
 					},
 				},
 			},
+			{
+				ID:   "javascript-api",
+				Text: "JavaScript API",
+			},
 		},
 	) {
 		@modules.PageWrapper(modules.PageWrapperProps{
@@ -229,6 +233,29 @@ templ Popover() {
 						},
 					})
 				</div>
+			}
+			@modules.ContainerWrapper(modules.ContainerWrapperProps{
+				Title: "JavaScript API",
+				ID:    "javascript-api",
+			}) {
+				@modules.Code(modules.CodeProps{
+					Language: "javascript",
+					CodeContent: `// Open a popover programmatically
+window.tui.popover.open("popover-id");
+
+// Close a popover
+window.tui.popover.close("popover-id");
+
+// Close all popovers (optionally except one)
+window.tui.popover.closeAll(); // Closes all
+window.tui.popover.closeAll("popover-id"); // Closes all except "popover-id"
+
+// Toggle popover state
+window.tui.popover.toggle("popover-id");
+
+// Check if popover is open (returns true/false)
+const isOpen = window.tui.popover.isOpen("popover-id");`,
+				})
 			}
 		}
 	}

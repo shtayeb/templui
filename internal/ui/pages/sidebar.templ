@@ -128,7 +128,7 @@ templ Sidebar() {
 			}) {
 				@modules.ComponentUsage(modules.ComponentUsageProps{
 					ComponentName: "sidebar",
-					JSFiles:       []string{"sidebar", "sheet", "popover"},
+					JSFiles:       []string{"sidebar", "dialog", "popover"},
 				})
 			}
 			@modules.ContainerWrapper(modules.ContainerWrapperProps{
@@ -272,6 +272,13 @@ templ MyPage(collapsed bool) {
 								Type:        "Collapsible",
 								Default:     "offcanvas",
 								Description: "Collapsible behavior. Options: 'offcanvas' (slides off screen), 'icon' (collapses to icon width), 'none' (cannot be collapsed).",
+								Required:    false,
+							},
+							{
+								Name:        "KeyboardShortcut",
+								Type:        "string",
+								Default:     "b",
+								Description: "Keyboard shortcut key for toggling the sidebar (used with Cmd/Ctrl).",
 								Required:    false,
 							},
 						},
