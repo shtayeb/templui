@@ -101,6 +101,13 @@ import "./floating_ui_core.js";
     const content = document.getElementById(popoverId);
     if (!content) return;
 
+    for (const t of document.querySelectorAll('[data-tui-popover-exclusive="true"]')) {
+      const id = t.id;
+      if (id && id !== popoverId) {
+        closePopover(id);
+      }
+    }
+
     // Move to portal
     const portal = document.querySelector(
       "[data-tui-popover-portal-container]",
