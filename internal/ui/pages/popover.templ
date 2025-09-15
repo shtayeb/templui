@@ -246,6 +246,10 @@ window.tui.popover.open("popover-id");
 // Close a popover
 window.tui.popover.close("popover-id");
 
+// Close all popovers (optionally except one)
+window.tui.popover.closeAll(); // Closes all
+window.tui.popover.closeAll("popover-id"); // Closes all except "popover-id"
+
 // Toggle popover state
 window.tui.popover.toggle("popover-id");
 

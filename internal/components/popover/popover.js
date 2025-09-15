@@ -413,6 +413,7 @@ import "./floating_ui_core.js";
   window.tui.popover = {
     open: openPopover,
     close: closePopover,
+    closeAll: closeAllPopovers,
     toggle: togglePopover,
     isOpen: isPopoverOpen,
   };
