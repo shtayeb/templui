@@ -3,25 +3,40 @@ package showcase
 import "github.com/templui/templui/internal/components/avatar"
 
 templ AvatarSizes() {
-	<div class="flex flex-wrap gap-2">
+	<div class="flex flex-wrap items-center gap-4">
 		@avatar.Avatar(avatar.Props{
-			Size: avatar.SizeSm,
+			Class: "size-6",
 		}) {
 			@avatar.Image(avatar.ImageProps{
 				Src: "https://avatars.githubusercontent.com/u/26936893?v=4",
+				Alt: "Small avatar",
 			})
+			@avatar.Fallback() { SM }
 		}
 		@avatar.Avatar() {
 			@avatar.Image(avatar.ImageProps{
 				Src: "https://avatars.githubusercontent.com/u/26936893?v=4",
+				Alt: "Default avatar",
 			})
+			@avatar.Fallback() { MD }
 		}
 		@avatar.Avatar(avatar.Props{
-			Size: avatar.SizeLg,
+			Class: "size-12",
 		}) {
 			@avatar.Image(avatar.ImageProps{
 				Src: "https://avatars.githubusercontent.com/u/26936893?v=4",
+				Alt: "Large avatar",
 			})
+			@avatar.Fallback() { LG }
+		}
+		@avatar.Avatar(avatar.Props{
+			Class: "size-16",
+		}) {
+			@avatar.Image(avatar.ImageProps{
+				Src: "https://avatars.githubusercontent.com/u/26936893?v=4",
+				Alt: "Extra large avatar",
+			})
+			@avatar.Fallback() { XL }
 		}
 	</div>
 }

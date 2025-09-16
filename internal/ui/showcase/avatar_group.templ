@@ -3,40 +3,40 @@ package showcase
 import "github.com/templui/templui/internal/components/avatar"
 
 templ AvatarGroup() {
-	@avatar.Group(avatar.GroupProps{
-		Spacing: avatar.GroupSpacingLg,
-	}) {
-		@avatar.Avatar(avatar.Props{
-			InGroup: true,
-		}) {
+	<div class="flex -space-x-3 *:ring-2 *:ring-background">
+		@avatar.Avatar() {
 			@avatar.Image(avatar.ImageProps{
 				Src: "https://avatars.githubusercontent.com/u/26936893?v=4",
 				Alt: "User avatar",
 			})
+			@avatar.Fallback() {
+				AA 
+			}
+		}
+		@avatar.Avatar() {
+			@avatar.Image(avatar.ImageProps{
+				Src: "https://avatars.githubusercontent.com/u/26936893?v=4",
+				Alt: "User avatar",
+			})
+			@avatar.Fallback() {
+				BB 
+			}
+		}
+		@avatar.Avatar() {
+			@avatar.Image(avatar.ImageProps{
+				Src: "https://avatars.githubusercontent.com/u/26936893?v=4",
+				Alt: "User avatar",
+			})
+			@avatar.Fallback() {
+				CC 
+			}
 		}
 		@avatar.Avatar(avatar.Props{
-			InGroup: true,
+			Class: "text-muted-foreground",
 		}) {
-			@avatar.Image(avatar.ImageProps{
-				Src: "https://avatars.githubusercontent.com/u/26936893?v=4",
-				Alt: "User avatar",
-			})
+			@avatar.Fallback() {
+				+2 
+			}
 		}
-		@avatar.Avatar(avatar.Props{
-			InGroup: true,
-		}) {
-			@avatar.Image(avatar.ImageProps{
-				Src: "https://avatars.githubusercontent.com/u/26936893?v=4",
-				Alt: "User avatar",
-			})
-		}
-		@avatar.GroupOverflow(2, avatar.Props{
-			InGroup: true,
-		}) {
-			@avatar.Image(avatar.ImageProps{
-				Src: "https://avatars.githubusercontent.com/u/26936893?v=4",
-				Alt: "User avatar",
-			})
-		}
-	}
+	</div>
 }
