@@ -15,7 +15,7 @@ import (
 const (
 	outputDir      = "./internal/components/icon/"
 	iconContentDir = "./icon/content" // Directory for individual icon contents
-	lucideVersion  = "0.507.0"        // Current Lucide version - update as needed
+	lucideVersion  = "0.544.0"        // Current Lucide version - update as needed
 )
 
 type GitHubContent struct {
