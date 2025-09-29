@@ -120,8 +120,8 @@
       "name": "icon",
       "description": "SVG icon library",
       "files": [
-        "internal/components/icon/icondata.go",
-        "internal/components/icon/icondefs.go",
+        "internal/components/icon/icon_data.go",
+        "internal/components/icon/icon_defs.go",
         "internal/components/icon/icon.go"
       ],
       "dependencies": []
