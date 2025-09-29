@@ -7,9 +7,11 @@ import (
 
 templ AvatarWithIcon() {
 	@avatar.Avatar() {
-		@icon.Camera(icon.Props{
-			Size:  22,
-			Class: "text-muted-foreground",
-		})
+		@avatar.Fallback() {
+			@icon.Camera(icon.Props{
+				Size:  22,
+				Class: "text-muted-foreground",
+			})
+		}
 	}
 }
